@@ -1,31 +1,29 @@
 import numpy as np
+import setting
 
 # マスの状態
-EMPTY = 0  # 空きマス
-WHITE = -1  # 白石
-BLACK = 1  # 黒石
-WALL = 2  # 壁
+EMPTY = setting.EMPTY
+WHITE = setting.WHITE
+BLACK = setting.BLACK
+WALL = setting.WALL
 
 # ボードのサイズ
-BOARD_SIZE = 8
+BOARD_SIZE = setting.BOARD_SIZE
 
 # 方向(2進数)
-NONE = 0
-LEFT = 2**0  # =1
-UPPER_LEFT = 2**1  # =2
-UPPER = 2**2  # =4
-UPPER_RIGHT = 2**3  # =8
-RIGHT = 2**4  # =16
-LOWER_RIGHT = 2**5  # =32
-LOWER = 2**6  # =64
-LOWER_LEFT = 2**7  # =128
+NONE = setting.NONE
+LEFT = setting.LEFT
+UPPER_LEFT = setting.UPPER_LEFT
+UPPER = setting.UPPER
+UPPER_RIGHT = setting.UPPER_RIGHT
+RIGHT = setting.RIGHT
+LOWER_RIGHT = setting.LOWER_RIGHT
+LOWER = setting.LOWER
+LOWER_LEFT = setting.LOWER_LEFT
 
-
+# ターンの最大数
 MAX_TURNS = 60
 
-"""
-ボードの表現
-"""
 
 
 class Board:
@@ -194,6 +192,9 @@ class Board:
     """
     石を置くことによる盤面の変化をボードに反映
     """
+
+    def getMovablePos(self):
+        return np.where(self.MovablePos == True)
 
     def flipDiscs(self, x: int, y: int) -> bool:
 

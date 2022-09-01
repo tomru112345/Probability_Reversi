@@ -3,6 +3,12 @@ import gym
 import numpy as np
 from gym.spaces import Discrete, Box
 from board import Board
+import tkinter
+import setting
+from render import Render
+
+WIDTH = setting.WIDTH
+HEIGHT = setting.HEIGHT
 
 
 class Env(gym.Env):
@@ -16,10 +22,17 @@ class Env(gym.Env):
         # self.observation_space = Box(
         #     np.zeros(observation.shape), np.ones(observation.shape))
         self.board = Board()
+        self.screen = tkinter.Tk()
 
+        # ウインドウのタイトルを定義する
+        self.screen.title("確率オセロ")
+        self.screen.geometry(f"{WIDTH + 1}x{HEIGHT + 1}")
+        # キャンバスエリア
+        self.render_class = Render(self.screen)
+        self.render_class.createWidgets()
         self.done = False
 
-    def step(self, action):
+    def step(self, action: int):
         # 手番の表示
         if self.board.CurrentColor == 1:
             print('黒の番です:', end="")
@@ -43,14 +56,17 @@ class Env(gym.Env):
             for x in range(10):
                 print('{:^3}'.format(self.board.RawBoard[y, x]), end='')
             print()
-        pass
 
-    def _handle_input(self, action: int) -> int:
+        if mode == "human":
+            self.render_class.createBoard(self.board)
+            pass
+
+    def _handle_input(self, action: int) -> Tuple[int, int]:
         # 手の表現
         # 0 <= action < 66
         # 0 <= action < 63 は盤面に置く
         # 64 はパス
         # 65 はサレンダー
-        x = action % 8
-        y = action / 8
+        x = (action % 8 + 1)
+        y = (action // 8 + 1)
         return x, y
