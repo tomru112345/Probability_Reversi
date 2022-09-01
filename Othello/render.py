@@ -15,10 +15,12 @@ COM_COLOR = 'white'  # 相手の石の色
 PLACABLE_COLOR = 'yellow'  # 次に石を置ける場所を示す色
 
 
-class Render():
+class RenderWindow():
     def __init__(self, master: tkinter.Tk):
+        super().__init__()
         self.master = master
         self.master.resizable(0, 0)
+
     def createWidgets(self):
         '''ウィジェットを作成・配置する'''
 
@@ -46,7 +48,10 @@ class Render():
                 ye = (y + 1) * SQUARE
                 # 長方形を描画
                 if x == 0 or y == 0 or x == BOARD_SIZE + 1 or y == BOARD_SIZE + 1:
-                    _color = "gray"
+                    if board.CurrentColor > 0:
+                        _color = "black"
+                    else:
+                        _color = "white"
                     outline_color = "black"
                 else:
                     _color = "green"

@@ -1,3 +1,4 @@
+from typing import Tuple
 import numpy as np
 import setting
 
@@ -25,11 +26,12 @@ LOWER_LEFT = setting.LOWER_LEFT
 MAX_TURNS = 60
 
 
-
 class Board:
 
     def __init__(self):
+        self.reset()
 
+    def reset(self):
         # 全マスを空きマスに設定
         self.RawBoard = np.zeros((BOARD_SIZE + 2, BOARD_SIZE + 2), dtype=int)
 
@@ -57,10 +59,6 @@ class Board:
 
         # MovablePosとMovableDirを初期化
         self.initMovable()
-
-    """
-    どの方向に石が裏返るかをチェック
-    """
 
     def checkMobility(self, x, y, color):
 
@@ -296,7 +294,6 @@ class Board:
                 y_tmp += 1
 
         # 下
-        print(dir, LOWER)
         if dir & LOWER:  # AND演算子
 
             y_tmp = y + 1
@@ -325,10 +322,6 @@ class Board:
                 # さらに1マス左下に進めてループを回す
                 x_tmp -= 1
                 y_tmp += 1
-
-    """
-    石を置く
-    """
 
     def move(self, x: int, y: int) -> bool:
 
@@ -398,3 +391,10 @@ class Board:
 
         # ここまでたどり着いたらゲームは終わっている
         return True
+
+    def count_stones(self) -> Tuple[int, int]:
+        black_num = 0
+        white_num = 0
+        black_num = np.count_nonzero(self.RawBoard == 1)
+        white_num = np.count_nonzero(self.RawBoard == -1)
+        return black_num, white_num
