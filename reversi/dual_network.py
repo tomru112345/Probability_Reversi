@@ -15,17 +15,15 @@ DN_RESIDUAL_NUM = 16  # 残差ブロックの数（本家は19）
 DN_INPUT_SHAPE = (6, 6, 2)  # 入力シェイプ
 DN_OUTPUT_SIZE = 37  # 行動数(配置先(6*6)+パス(1))
 
-# 畳み込み層の作成
-
 
 def conv(filters):
+    """畳み込み層の作成"""
     return Conv2D(filters, 3, padding='same', use_bias=False,
                   kernel_initializer='he_normal', kernel_regularizer=l2(0.0005))
 
-# 残差ブロックの作成
-
 
 def residual_block():
+    """残差ブロックの作成"""
     def f(x):
         sc = x
         x = conv(DN_FILTERS)(x)
@@ -38,10 +36,9 @@ def residual_block():
         return x
     return f
 
-# デュアルネットワークの作成
-
 
 def dual_network():
+    """デュアルネットワークの作成"""
     # モデル作成済みの場合は無処理
     if os.path.exists('./model/best.h5'):
         return

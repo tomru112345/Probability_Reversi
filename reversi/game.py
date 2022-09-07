@@ -6,12 +6,15 @@
 import random
 import math
 
-# ゲーム状態
+
 class State:
-    # 初期化
+    """ゲーム状態"""
+
     def __init__(self, pieces=None, enemy_pieces=None, depth=0):
+        """初期化"""
         # 方向定数
-        self.dxy = ((1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1))
+        self.dxy = ((1, 0), (1, 1), (0, 1), (-1, 1),
+                    (-1, 0), (-1, -1), (0, -1), (1, -1))
 
         # 連続パスによる終了
         self.pass_end = False
@@ -28,31 +31,32 @@ class State:
             self.enemy_pieces = [0] * 36
             self.enemy_pieces[15] = self.enemy_pieces[20] = 1
 
-    # 石の数の取得
     def piece_count(self, pieces):
+        """石の数の取得"""
         count = 0
         for i in pieces:
             if i == 1:
-                count +=  1
+                count += 1
         return count
 
-    # 負けかどうか
     def is_lose(self):
+        """負けかどうか"""
         return self.is_done() and self.piece_count(self.pieces) < self.piece_count(self.enemy_pieces)
 
-    # 引き分けかどうか
     def is_draw(self):
+        """引き分けかどうか"""
         return self.is_done() and self.piece_count(self.pieces) == self.piece_count(self.enemy_pieces)
 
-    # ゲーム終了かどうか
     def is_done(self):
+        """ゲーム終了かどうか"""
         return self.piece_count(self.pieces) + self.piece_count(self.enemy_pieces) == 36 or self.pass_end
 
-    # 次の状態の取得
     def next(self, action):
-        state = State(self.pieces.copy(), self.enemy_pieces.copy(), self.depth+1)
+        """次の状態の取得"""
+        state = State(self.pieces.copy(),
+                      self.enemy_pieces.copy(), self.depth+1)
         if action != 36:
-            state.is_legal_action_xy(action%6, int(action/6), True)
+            state.is_legal_action_xy(action % 6, int(action/6), True)
         w = state.pieces
         state.pieces = state.enemy_pieces
         state.enemy_pieces = w
@@ -62,32 +66,32 @@ class State:
             state.pass_end = True
         return state
 
-    # 合法手のリストの取得
     def legal_actions(self):
+        """合法手のリストの取得"""
         actions = []
-        for j in range(0,6):
-            for i in range(0,6):
+        for j in range(0, 6):
+            for i in range(0, 6):
                 if self.is_legal_action_xy(i, j):
                     actions.append(i+j*6)
         if len(actions) == 0:
-            actions.append(36) # パス
+            actions.append(36)  # パス
         return actions
 
-    # 任意のマスが合法手かどうか
     def is_legal_action_xy(self, x, y, flip=False):
-        # 任意のマスの任意の方向が合法手かどうか
+        """任意のマスが合法手かどうか"""
         def is_legal_action_xy_dxy(x, y, dx, dy):
+            """任意のマスの任意の方向が合法手かどうか"""
             # １つ目 相手の石
             x, y = x+dx, y+dy
             if y < 0 or 5 < y or x < 0 or 5 < x or \
-                self.enemy_pieces[x+y*6] != 1:
+                    self.enemy_pieces[x+y*6] != 1:
                 return False
 
             # 2つ目以降
             for j in range(6):
                 # 空
                 if y < 0 or 5 < y or x < 0 or 5 < x or \
-                    (self.enemy_pieces[x+y*6] == 0 and self.pieces[x+y*6] == 0):
+                        (self.enemy_pieces[x+y*6] == 0 and self.pieces[x+y*6] == 0):
                     return False
 
                 # 自分の石
@@ -120,12 +124,12 @@ class State:
                 flag = True
         return flag
 
-    # 先手かどうか
     def is_first_player(self):
-        return self.depth%2 == 0
+        """先手かどうか"""
+        return self.depth % 2 == 0
 
-    # 文字列表示
     def __str__(self):
+        """文字列表示"""
         ox = ('o', 'x') if self.is_first_player() else ('x', 'o')
         str = ''
         for i in range(36):
@@ -139,10 +143,12 @@ class State:
                 str += '\n'
         return str
 
-# ランダムで行動選択
+
 def random_action(state):
+    """ランダムで行動選択"""
     legal_actions = state.legal_actions()
     return legal_actions[random.randint(0, len(legal_actions)-1)]
+
 
 # 動作確認
 if __name__ == '__main__':

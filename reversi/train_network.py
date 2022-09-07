@@ -14,18 +14,16 @@ import pickle
 # パラメータの準備
 RN_EPOCHS = 100  # 学習回数
 
-# 学習データの読み込み
-
 
 def load_data():
+    """学習データの読み込み"""
     history_path = sorted(Path('./data').glob('*.history'))[-1]
     with history_path.open(mode='rb') as f:
         return pickle.load(f)
 
-# デュアルネットワークの学習
-
 
 def train_network():
+    """デュアルネットワークの学習"""
     # 学習データの読み込み
     history = load_data()
     xs, y_policies, y_values = zip(*history)

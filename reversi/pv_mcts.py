@@ -13,10 +13,9 @@ import numpy as np
 # パラメータの準備
 PV_EVALUATE_COUNT = 50  # 1推論あたりのシミュレーション回数（本家は1600）
 
-# 推論
-
 
 def predict(model, state):
+    """推論"""
     # 推論のための入力データのシェイプの変換
     a, b, c = DN_INPUT_SHAPE
     x = np.array([state.pieces, state.enemy_pieces])
@@ -33,31 +32,30 @@ def predict(model, state):
     value = y[1][0][0]
     return policies, value
 
-# ノードのリストを試行回数のリストに変換
-
 
 def nodes_to_scores(nodes):
+    """ノードのリストを試行回数のリストに変換"""
     scores = []
     for c in nodes:
         scores.append(c.n)
     return scores
 
-# モンテカルロ木探索のスコアの取得
-
 
 def pv_mcts_scores(model, state, temperature):
-    # モンテカルロ木探索のノードの定義
+    """モンテカルロ木探索のスコアの取得"""
     class Node:
-        # ノードの初期化
+        """モンテカルロ木探索のノードの定義"""
+
         def __init__(self, state, p):
+            """ノードの初期化"""
             self.state = state  # 状態
             self.p = p  # 方策
             self.w = 0  # 累計価値
             self.n = 0  # 試行回数
             self.child_nodes = None  # 子ノード群
 
-        # 局面の価値の計算
         def evaluate(self):
+            """局面の価値の計算"""
             # ゲーム終了時
             if self.state.is_done():
                 # 勝敗結果で価値を取得
@@ -94,8 +92,8 @@ def pv_mcts_scores(model, state, temperature):
                 self.n += 1
                 return value
 
-        # アーク評価値が最大の子ノードを取得
         def next_child_node(self):
+            """アーク評価値が最大の子ノードを取得"""
             # アーク評価値の計算
             C_PUCT = 1.0
             t = sum(nodes_to_scores(self.child_nodes))
@@ -124,19 +122,17 @@ def pv_mcts_scores(model, state, temperature):
         scores = boltzman(scores, temperature)
     return scores
 
-# モンテカルロ木探索で行動選択
-
 
 def pv_mcts_action(model, temperature=0):
+    """モンテカルロ木探索で行動選択"""
     def pv_mcts_action(state):
         scores = pv_mcts_scores(model, state, temperature)
         return np.random.choice(state.legal_actions(), p=scores)
     return pv_mcts_action
 
-# ボルツマン分布
-
 
 def boltzman(xs, temperature):
+    """ボルツマン分布"""
     xs = [x ** (1 / temperature) for x in xs]
     return [x / sum(xs) for x in xs]
 

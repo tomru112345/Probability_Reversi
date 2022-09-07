@@ -15,19 +15,17 @@ import numpy as np
 EN_GAME_COUNT = 10  # 1評価あたりのゲーム数（本家は400）
 EN_TEMPERATURE = 1.0  # ボルツマン分布の温度
 
-# 先手プレイヤーのポイント
-
 
 def first_player_point(ended_state):
+    """先手プレイヤーのポイント"""
     # 1:先手勝利, 0:先手敗北, 0.5:引き分け
     if ended_state.is_lose():
         return 0 if ended_state.is_first_player() else 1
     return 0.5
 
-# 1ゲームの実行
-
 
 def play(next_actions):
+    """1ゲームの実行"""
     # 状態の生成
     state = State()
 
@@ -48,17 +46,15 @@ def play(next_actions):
     # 先手プレイヤーのポイントを返す
     return first_player_point(state)
 
-# ベストプレイヤーの交代
-
 
 def update_best_player():
+    """ベストプレイヤーの交代"""
     copy('./model/latest.h5', './model/best.h5')
     print('Change BestPlayer')
 
-# ネットワークの評価
-
 
 def evaluate_network():
+    """ネットワークの評価"""
     # 最新プレイヤーのモデルの読み込み
     model0 = load_model('./model/latest.h5')
 

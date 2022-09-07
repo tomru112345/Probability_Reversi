@@ -18,19 +18,17 @@ import os
 SP_GAME_COUNT = 500  # セルフプレイを行うゲーム数（本家は25000）
 SP_TEMPERATURE = 1.0  # ボルツマン分布の温度パラメータ
 
-# 先手プレイヤーの価値
-
 
 def first_player_value(ended_state):
+    """先手プレイヤーの価値"""
     # 1:先手勝利, -1:先手敗北, 0:引き分け
     if ended_state.is_lose():
         return -1 if ended_state.is_first_player() else 1
     return 0
 
-# 学習データの保存
-
 
 def write_data(history):
+    """学習データの保存"""
     now = datetime.now()
     os.makedirs('./data/', exist_ok=True)  # フォルダがない時は生成
     path = './data/{:04}{:02}{:02}{:02}{:02}{:02}.history'.format(
@@ -38,10 +36,9 @@ def write_data(history):
     with open(path, mode='wb') as f:
         pickle.dump(history, f)
 
-# 1ゲームの実行
-
 
 def play(model):
+    """1ゲームの実行"""
     # 学習データ
     history = []
 
@@ -75,10 +72,9 @@ def play(model):
         value = -value
     return history
 
-# セルフプレイ
-
 
 def self_play():
+    """セルフプレイ"""
     # 学習データ
     history = []
 

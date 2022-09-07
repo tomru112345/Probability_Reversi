@@ -88,7 +88,7 @@ class GameUI(tk.Frame):
         y = int(index/6)*40+5
         if first_player:
             self.c.create_oval(x, y, x+30, y+30, width=1.0,
-                               outline='#000000', fill='#C2272D')
+                               outline='#000000', fill='#222222')
         else:
             self.c.create_oval(x, y, x+30, y+30, width=1.0,
                                outline='#000000', fill='#FFFFFF')
@@ -96,7 +96,7 @@ class GameUI(tk.Frame):
     # 描画の更新
     def on_draw(self):
         self.c.delete('all')
-        self.c.create_rectangle(0, 0, 240, 240, width=0.0, fill='#C69C6C')
+        self.c.create_rectangle(0, 0, 240, 240, width=0.0, fill='#00DD00')
         for i in range(1, 8):
             self.c.create_line(0, i*40, 240, i*40, width=1.0, fill='#000000')
             self.c.create_line(i*40, 0, i*40, 240, width=1.0, fill='#000000')
