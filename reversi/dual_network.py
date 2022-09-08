@@ -13,8 +13,8 @@ from settings import SQUARE
 # パラメータの準備
 DN_FILTERS = 128  # 畳み込み層のカーネル数（本家は256）
 DN_RESIDUAL_NUM = 16  # 残差ブロックの数（本家は19）
-DN_INPUT_SHAPE = (SQUARE, SQUARE, 2) # 入力シェイプ
-DN_OUTPUT_SIZE = SQUARE * SQUARE + 1 # 行動数(配置先(6*6)+パス(1))
+DN_INPUT_SHAPE = (SQUARE, SQUARE, 2)  # 入力シェイプ
+DN_OUTPUT_SIZE = SQUARE * SQUARE + 1  # 行動数(配置先(6*6)+パス(1))
 
 
 def conv(filters):
@@ -41,7 +41,7 @@ def residual_block():
 def dual_network():
     """デュアルネットワークの作成"""
     # モデル作成済みの場合は無処理
-    if os.path.exists('./model/best.h5'):
+    if os.path.exists(f'./model/{SQUARE}x{SQUARE}/best.h5'):
         return
 
     # 入力層
@@ -71,8 +71,8 @@ def dual_network():
     model = Model(inputs=input, outputs=[p, v])
 
     # モデルの保存
-    os.makedirs('./model/', exist_ok=True)  # フォルダがない時は生成
-    model.save('./model/best.h5')  # ベストプレイヤーのモデル
+    os.makedirs(f'./model/{SQUARE}x{SQUARE}/', exist_ok=True)  # フォルダがない時は生成
+    model.save(f'./model/{SQUARE}x{SQUARE}/best.h5')  # ベストプレイヤーのモデル
 
     # モデルの破棄
     K.clear_session()

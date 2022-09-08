@@ -12,7 +12,7 @@ import tkinter as tk
 from settings import SQUARE
 
 # ベストプレイヤーのモデルの読み込み
-model = load_model('./model/best.h5')
+model = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
 
 # ゲームUIの定義
 
@@ -21,7 +21,7 @@ class GameUI(tk.Frame):
     # 初期化
     def __init__(self, master=None, model=None):
         tk.Frame.__init__(self, master)
-        self.master.title('リバーシ')
+        self.master.title('確率リバーシ')
 
         # ゲーム状態の生成
         self.state = State()

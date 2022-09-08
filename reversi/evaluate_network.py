@@ -10,6 +10,7 @@ from keras import backend as K
 from pathlib import Path
 from shutil import copy
 import numpy as np
+from settings import SQUARE
 
 # パラメータの準備
 EN_GAME_COUNT = 10  # 1評価あたりのゲーム数（本家は400）
@@ -49,17 +50,18 @@ def play(next_actions):
 
 def update_best_player():
     """ベストプレイヤーの交代"""
-    copy('./model/latest.h5', './model/best.h5')
+    copy(f'./model/{SQUARE}x{SQUARE}/latest.h5',
+         f'./model/{SQUARE}x{SQUARE}/best.h5')
     print('Change BestPlayer')
 
 
 def evaluate_network():
     """ネットワークの評価"""
     # 最新プレイヤーのモデルの読み込み
-    model0 = load_model('./model/latest.h5')
+    model0 = load_model(f'./model/{SQUARE}x{SQUARE}/latest.h5')
 
     # ベストプレイヤーのモデルの読み込み
-    model1 = load_model('./model/best.h5')
+    model1 = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
 
     # PV MCTSで行動選択を行う関数の生成
     next_action0 = pv_mcts_action(model0, EN_TEMPERATURE)

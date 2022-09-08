@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 import pickle
 import os
+from settings import SQUARE
 
 # パラメータの準備
 SP_GAME_COUNT = 500  # セルフプレイを行うゲーム数（本家は25000）
@@ -30,9 +31,9 @@ def first_player_value(ended_state):
 def write_data(history):
     """学習データの保存"""
     now = datetime.now()
-    os.makedirs('./data/', exist_ok=True)  # フォルダがない時は生成
-    path = './data/{:04}{:02}{:02}{:02}{:02}{:02}.history'.format(
-        now.year, now.month, now.day, now.hour, now.minute, now.second)
+    os.makedirs(f'./data/{SQUARE}x{SQUARE}/', exist_ok=True)  # フォルダがない時は生成
+    path = './data/{}x{}/{:04}{:02}{:02}{:02}{:02}{:02}.history'.format(
+        SQUARE, SQUARE, now.year, now.month, now.day, now.hour, now.minute, now.second)
     with open(path, mode='wb') as f:
         pickle.dump(history, f)
 
@@ -79,7 +80,7 @@ def self_play():
     history = []
 
     # ベストプレイヤーのモデルの読み込み
-    model = load_model('./model/best.h5')
+    model = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
 
     # 複数回のゲームの実行
     for i in range(SP_GAME_COUNT):

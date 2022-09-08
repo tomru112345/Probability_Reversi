@@ -28,9 +28,14 @@ class State:
         # 石の初期配置
         if pieces == None or enemy_pieces == None:
             self.pieces = [0] * SQUARE * SQUARE
-            self.pieces[14] = self.pieces[21] = 1
+            # 座標の指定用変数
+            center_idx = int((SQUARE * SQUARE) / 2)
+            balance_idx = int(SQUARE / 2)
+            self.pieces[center_idx - balance_idx - 1] = 1
+            self.pieces[center_idx + balance_idx] = 1
             self.enemy_pieces = [0] * SQUARE * SQUARE
-            self.enemy_pieces[15] = self.enemy_pieces[20] = 1
+            self.enemy_pieces[center_idx - balance_idx] = 1
+            self.enemy_pieces[center_idx + balance_idx - 1] = 1
 
     def piece_count(self, pieces):
         """石の数の取得"""
@@ -50,7 +55,7 @@ class State:
 
     def is_done(self):
         """ゲーム終了かどうか"""
-        return self.piece_count(self.pieces) + self.piece_count(self.enemy_pieces) == 36 or self.pass_end
+        return self.piece_count(self.pieces) + self.piece_count(self.enemy_pieces) == (SQUARE * SQUARE) or self.pass_end
 
     def next(self, action):
         """次の状態の取得"""
