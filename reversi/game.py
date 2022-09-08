@@ -5,6 +5,7 @@
 # パッケージのインポート
 import random
 import math
+from settings import SQUARE
 
 
 class State:
@@ -26,9 +27,9 @@ class State:
 
         # 石の初期配置
         if pieces == None or enemy_pieces == None:
-            self.pieces = [0] * 36
+            self.pieces = [0] * SQUARE * SQUARE
             self.pieces[14] = self.pieces[21] = 1
-            self.enemy_pieces = [0] * 36
+            self.enemy_pieces = [0] * SQUARE * SQUARE
             self.enemy_pieces[15] = self.enemy_pieces[20] = 1
 
     def piece_count(self, pieces):
@@ -55,26 +56,26 @@ class State:
         """次の状態の取得"""
         state = State(self.pieces.copy(),
                       self.enemy_pieces.copy(), self.depth+1)
-        if action != 36:
-            state.is_legal_action_xy(action % 6, int(action/6), True)
+        if action != (SQUARE * SQUARE):
+            state.is_legal_action_xy(action % SQUARE, int(action/SQUARE), True)
         w = state.pieces
         state.pieces = state.enemy_pieces
         state.enemy_pieces = w
 
         # 2回連続パス判定
-        if action == 36 and state.legal_actions() == [36]:
+        if action == (SQUARE * SQUARE) and state.legal_actions() == [SQUARE * SQUARE]:
             state.pass_end = True
         return state
 
     def legal_actions(self):
         """合法手のリストの取得"""
         actions = []
-        for j in range(0, 6):
-            for i in range(0, 6):
+        for j in range(0, SQUARE):
+            for i in range(0, SQUARE):
                 if self.is_legal_action_xy(i, j):
-                    actions.append(i+j*6)
+                    actions.append(i+j*SQUARE)
         if len(actions) == 0:
-            actions.append(36)  # パス
+            actions.append(SQUARE * SQUARE)  # パス
         return actions
 
     def is_legal_action_xy(self, x, y, flip=False):
@@ -83,39 +84,39 @@ class State:
             """任意のマスの任意の方向が合法手かどうか"""
             # １つ目 相手の石
             x, y = x+dx, y+dy
-            if y < 0 or 5 < y or x < 0 or 5 < x or \
-                    self.enemy_pieces[x+y*6] != 1:
+            if y < 0 or (SQUARE - 1) < y or x < 0 or (SQUARE - 1) < x or \
+                    self.enemy_pieces[x+y*SQUARE] != 1:
                 return False
 
             # 2つ目以降
-            for j in range(6):
+            for j in range(SQUARE):
                 # 空
-                if y < 0 or 5 < y or x < 0 or 5 < x or \
-                        (self.enemy_pieces[x+y*6] == 0 and self.pieces[x+y*6] == 0):
+                if y < 0 or (SQUARE - 1) < y or x < 0 or (SQUARE - 1) < x or \
+                        (self.enemy_pieces[x+y*SQUARE] == 0 and self.pieces[x+y*SQUARE] == 0):
                     return False
 
                 # 自分の石
-                if self.pieces[x+y*6] == 1:
+                if self.pieces[x+y*SQUARE] == 1:
                     # 反転
                     if flip:
-                        for i in range(6):
+                        for i in range(SQUARE):
                             x, y = x-dx, y-dy
-                            if self.pieces[x+y*6] == 1:
+                            if self.pieces[x+y*SQUARE] == 1:
                                 return True
-                            self.pieces[x+y*6] = 1
-                            self.enemy_pieces[x+y*6] = 0
+                            self.pieces[x+y*SQUARE] = 1
+                            self.enemy_pieces[x+y*SQUARE] = 0
                     return True
                 # 相手の石
                 x, y = x+dx, y+dy
             return False
 
         # 空きなし
-        if self.enemy_pieces[x+y*6] == 1 or self.pieces[x+y*6] == 1:
+        if self.enemy_pieces[x+y*SQUARE] == 1 or self.pieces[x+y*SQUARE] == 1:
             return False
 
         # 石を置く
         if flip:
-            self.pieces[x+y*6] = 1
+            self.pieces[x+y*SQUARE] = 1
 
         # 任意の位置が合法手かどうか
         flag = False
@@ -132,14 +133,14 @@ class State:
         """文字列表示"""
         ox = ('o', 'x') if self.is_first_player() else ('x', 'o')
         str = ''
-        for i in range(36):
+        for i in range(SQUARE * SQUARE):
             if self.pieces[i] == 1:
                 str += ox[0]
             elif self.enemy_pieces[i] == 1:
                 str += ox[1]
             else:
                 str += '-'
-            if i % 6 == 5:
+            if i % SQUARE == (SQUARE - 1):
                 str += '\n'
         return str
 

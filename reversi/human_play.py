@@ -9,6 +9,7 @@ from keras.models import load_model
 from pathlib import Path
 from threading import Thread
 import tkinter as tk
+from settings import SQUARE
 
 # ベストプレイヤーのモデルの読み込み
 model = load_model('./model/best.h5')
@@ -29,7 +30,8 @@ class GameUI(tk.Frame):
         self.next_action = pv_mcts_action(model, 0.0)
 
         # キャンバスの生成
-        self.c = tk.Canvas(self, width=240, height=240, highlightthickness=0)
+        self.c = tk.Canvas(self, width=SQUARE * 40,
+                           height=SQUARE * 40, highlightthickness=0)
         self.c.bind('<Button-1>', self.turn_of_human)
         self.c.pack()
 
@@ -51,15 +53,16 @@ class GameUI(tk.Frame):
         # クリック位置を行動に変換
         x = int(event.x/40)
         y = int(event.y/40)
-        if x < 0 or 5 < x or y < 0 or 5 < y:  # 範囲外
+        if x < 0 or (SQUARE - 1) < x or y < 0 or (SQUARE - 1) < y:  # 範囲外
             return
-        action = x + y * 6
+        action = x + y * SQUARE
 
         # 合法手でない時
         legal_actions = self.state.legal_actions()
-        if legal_actions == [36]:
-            action = 36  # パス
-        if action != 36 and not (action in legal_actions):
+        if legal_actions == [SQUARE * SQUARE]:
+            # action = 36  # パス
+            action = SQUARE * SQUARE
+        if action != (SQUARE * SQUARE) and not (action in legal_actions):
             return
 
         # 次の状態の取得
@@ -84,8 +87,8 @@ class GameUI(tk.Frame):
 
     # 石の描画
     def draw_piece(self, index, first_player):
-        x = (index % 6)*40+5
-        y = int(index/6)*40+5
+        x = (index % SQUARE)*40+5
+        y = int(index/SQUARE)*40+5
         if first_player:
             self.c.create_oval(x, y, x+30, y+30, width=1.0,
                                outline='#000000', fill='#222222')
@@ -96,11 +99,14 @@ class GameUI(tk.Frame):
     # 描画の更新
     def on_draw(self):
         self.c.delete('all')
-        self.c.create_rectangle(0, 0, 240, 240, width=0.0, fill='#00DD00')
-        for i in range(1, 8):
-            self.c.create_line(0, i*40, 240, i*40, width=1.0, fill='#000000')
-            self.c.create_line(i*40, 0, i*40, 240, width=1.0, fill='#000000')
-        for i in range(36):
+        self.c.create_rectangle(
+            0, 0, SQUARE * 40, SQUARE * 40, width=0.0, fill='#00DD00')
+        for i in range(1, SQUARE + 2):
+            self.c.create_line(0, i*40, SQUARE * 40, i*40,
+                               width=1.0, fill='#000000')
+            self.c.create_line(i*40, 0, i*40, SQUARE * 40,
+                               width=1.0, fill='#000000')
+        for i in range(SQUARE * SQUARE):
             if self.state.pieces[i] == 1:
                 self.draw_piece(i, self.state.is_first_player())
             if self.state.enemy_pieces[i] == 1:

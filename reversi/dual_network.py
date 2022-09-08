@@ -8,12 +8,13 @@ from keras.models import Model
 from keras.regularizers import l2
 from keras import backend as K
 import os
+from settings import SQUARE
 
 # パラメータの準備
 DN_FILTERS = 128  # 畳み込み層のカーネル数（本家は256）
 DN_RESIDUAL_NUM = 16  # 残差ブロックの数（本家は19）
-DN_INPUT_SHAPE = (6, 6, 2)  # 入力シェイプ
-DN_OUTPUT_SIZE = 37  # 行動数(配置先(6*6)+パス(1))
+DN_INPUT_SHAPE = (SQUARE, SQUARE, 2) # 入力シェイプ
+DN_OUTPUT_SIZE = SQUARE * SQUARE + 1 # 行動数(配置先(6*6)+パス(1))
 
 
 def conv(filters):
