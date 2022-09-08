@@ -31,7 +31,7 @@ class GameUI(tk.Frame):
 
         # キャンバスの生成
         self.c = tk.Canvas(self, width=SQUARE * 40,
-                           height=SQUARE * 40, highlightthickness=0)
+                           height=(SQUARE + 1) * 40, highlightthickness=0)
         self.c.bind('<Button-1>', self.turn_of_human)
         self.c.pack()
 
@@ -96,8 +96,32 @@ class GameUI(tk.Frame):
             self.c.create_oval(x, y, x+30, y+30, width=1.0,
                                outline='#000000', fill='#FFFFFF')
 
-    # 描画の更新
+    def draw_ratio(self, index):
+        x = (index % SQUARE)*40+20
+        y = int(index/SQUARE)*40+20
+        self.c.create_text(
+            x, y, text=str(self.state.ratio_box[index]), fill="#FF0461", font=('Yu Gothic UI', 18), anchor="center")
+
+    def draw_status(self):
+        x = int((SQUARE * 40) / 2)
+        y = SQUARE * 40+20
+        if self.state.is_first_player():
+            black_pieces = self.state.piece_count(self.state.pieces)
+            white_pieces = self.state.piece_count(self.state.enemy_pieces)
+            self.c.create_rectangle(
+                0, SQUARE * 40, SQUARE * 40, (SQUARE + 1) * 40, fill='#222222')
+            self.c.create_text(
+                x, y, text=f'{black_pieces} vs {white_pieces}', fill="#FFFFFF", font=('Yu Gothic UI', 18), anchor="center")
+        else:
+            black_pieces = self.state.piece_count(self.state.enemy_pieces)
+            white_pieces = self.state.piece_count(self.state.pieces)
+            self.c.create_rectangle(
+                0, SQUARE * 40, SQUARE * 40, (SQUARE + 1) * 40, fill='#FFFFFF')
+            self.c.create_text(
+                x, y, text=f'{black_pieces} vs {white_pieces}', fill="#222222", font=('Yu Gothic UI', 18), anchor="center")
+
     def on_draw(self):
+        """描画の更新"""
         self.c.delete('all')
         self.c.create_rectangle(
             0, 0, SQUARE * 40, SQUARE * 40, width=0.0, fill='#00DD00')
@@ -111,6 +135,8 @@ class GameUI(tk.Frame):
                 self.draw_piece(i, self.state.is_first_player())
             if self.state.enemy_pieces[i] == 1:
                 self.draw_piece(i, not self.state.is_first_player())
+            self.draw_ratio(i)
+        self.draw_status()
 
 
 # ゲームUIの実行

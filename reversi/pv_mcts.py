@@ -19,7 +19,7 @@ def predict(model, state):
     """推論"""
     # 推論のための入力データのシェイプの変換
     a, b, c = DN_INPUT_SHAPE
-    x = np.array([state.pieces, state.enemy_pieces])
+    x = np.array([state.pieces, state.enemy_pieces, state.ratio_box])
     x = x.reshape(c, a, b).transpose(1, 2, 0).reshape(1, a, b, c)
 
     # 推論

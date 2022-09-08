@@ -11,7 +11,7 @@ from settings import SQUARE
 class State:
     """ゲーム状態"""
 
-    def __init__(self, pieces=None, enemy_pieces=None, depth=0):
+    def __init__(self, pieces=None, enemy_pieces=None, ratio_box=None, depth=0):
         """初期化"""
         # 方向定数
         self.dxy = ((1, 0), (1, 1), (0, 1), (-1, 1),
@@ -25,17 +25,25 @@ class State:
         self.enemy_pieces = enemy_pieces
         self.depth = depth
 
+        # 確率用のリスト
+        self.ratio_box = ratio_box
+
         # 石の初期配置
         if pieces == None or enemy_pieces == None:
             self.pieces = [0] * SQUARE * SQUARE
+            self.enemy_pieces = [0] * SQUARE * SQUARE
+
             # 座標の指定用変数
             center_idx = int((SQUARE * SQUARE) / 2)
             balance_idx = int(SQUARE / 2)
             self.pieces[center_idx - balance_idx - 1] = 1
             self.pieces[center_idx + balance_idx] = 1
-            self.enemy_pieces = [0] * SQUARE * SQUARE
             self.enemy_pieces[center_idx - balance_idx] = 1
             self.enemy_pieces[center_idx + balance_idx - 1] = 1
+
+            # 確率値の初期化
+            self.ratio_box = [random.randrange(
+                10, 110, 10) for x in range(SQUARE * SQUARE)]
 
     def piece_count(self, pieces):
         """石の数の取得"""
@@ -60,7 +68,7 @@ class State:
     def next(self, action):
         """次の状態の取得"""
         state = State(self.pieces.copy(),
-                      self.enemy_pieces.copy(), self.depth+1)
+                      self.enemy_pieces.copy(), self.ratio_box.copy(), self.depth+1)
         if action != (SQUARE * SQUARE):
             state.is_legal_action_xy(action % SQUARE, int(action/SQUARE), True)
         w = state.pieces
@@ -121,7 +129,10 @@ class State:
 
         # 石を置く
         if flip:
-            self.pieces[x+y*SQUARE] = 1
+            if (random.random() * 100) <= self.ratio_box[x+y*SQUARE]:
+                self.pieces[x+y*SQUARE] = 1
+            else:
+                return False
 
         # 任意の位置が合法手かどうか
         flag = False
@@ -169,7 +180,6 @@ if __name__ == '__main__':
 
         # 次の状態の取得
         state = state.next(random_action(state))
-
         # 文字列表示
         print(state)
         print()
