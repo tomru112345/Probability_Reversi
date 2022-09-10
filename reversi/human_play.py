@@ -14,12 +14,12 @@ from settings import SQUARE
 # ベストプレイヤーのモデルの読み込み
 model = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
 
-# ゲームUIの定義
-
 
 class GameUI(tk.Frame):
-    # 初期化
+    """ゲームUIの定義"""
+
     def __init__(self, master=None, model=None):
+        """初期化"""
         tk.Frame.__init__(self, master)
         self.master.title('確率リバーシ')
 
@@ -28,6 +28,9 @@ class GameUI(tk.Frame):
 
         # PV MCTSで行動選択を行う関数の生成
         self.next_action = pv_mcts_action(model, 0.0)
+
+        # 一つ前の行動選択が何かを保持する
+        self.before_action = None
 
         # キャンバスの生成
         self.c = tk.Canvas(self, width=SQUARE * 40,
@@ -38,11 +41,17 @@ class GameUI(tk.Frame):
         # 描画の更新
         self.on_draw()
 
-    # 人間のターン
+    def reset(self):
+        """リセット関数"""
+        # 一つ前の行動選択が何かを保持する
+        self.before_action = None
+
     def turn_of_human(self, event):
+        """人間のターン"""
         # ゲーム終了時
         if self.state.is_done():
             self.state = State()
+            self.reset()
             self.on_draw()
             return
 
@@ -60,8 +69,11 @@ class GameUI(tk.Frame):
         # 合法手でない時
         legal_actions = self.state.legal_actions()
         if legal_actions == [SQUARE * SQUARE]:
-            # action = 36  # パス
-            action = SQUARE * SQUARE
+            action = SQUARE * SQUARE  # パス
+
+        # 前の選択の更新
+        self.before_action = action
+
         if action != (SQUARE * SQUARE) and not (action in legal_actions):
             return
 
@@ -72,8 +84,8 @@ class GameUI(tk.Frame):
         # AIのターン
         self.master.after(1, self.turn_of_ai)
 
-    # AIのターン
     def turn_of_ai(self):
+        """AIのターン"""
         # ゲーム終了時
         if self.state.is_done():
             return
@@ -83,10 +95,14 @@ class GameUI(tk.Frame):
 
         # 次の状態の取得
         self.state = self.state.next(action)
+
+        # 前の選択の更新
+        self.before_action = action
+
         self.on_draw()
 
-    # 石の描画
     def draw_piece(self, index, first_player):
+        """石の描画"""
         x = (index % SQUARE)*40+5
         y = int(index/SQUARE)*40+5
         if first_player:
@@ -97,12 +113,14 @@ class GameUI(tk.Frame):
                                outline='#000000', fill='#FFFFFF')
 
     def draw_ratio(self, index):
+        """確率をマス目に表示"""
         x = (index % SQUARE)*40+20
         y = int(index/SQUARE)*40+20
         self.c.create_text(
             x, y, text=str(self.state.ratio_box[index]), fill="#FF0461", font=('Yu Gothic UI', 18), anchor="center")
 
     def draw_status(self):
+        """現状の石の個数の表示"""
         x = int((SQUARE * 40) / 2)
         y = SQUARE * 40+20
         if self.state.is_first_player():
@@ -120,6 +138,13 @@ class GameUI(tk.Frame):
             self.c.create_text(
                 x, y, text=f'{black_pieces} vs {white_pieces}', fill="#222222", font=('Yu Gothic UI', 18), anchor="center")
 
+    def draw_select_icon(self, index):
+        """どこを選択したか表示"""
+        x = (index % SQUARE)*40+5
+        y = int(index/SQUARE)*40+5
+        self.c.create_oval(x, y, x+30, y+30, width=5.0,
+                           outline='#FF0461')
+
     def on_draw(self):
         """描画の更新"""
         self.c.delete('all')
@@ -135,11 +160,20 @@ class GameUI(tk.Frame):
                 self.draw_piece(i, self.state.is_first_player())
             if self.state.enemy_pieces[i] == 1:
                 self.draw_piece(i, not self.state.is_first_player())
-            self.draw_ratio(i)
+
+            if self.state.pieces[i] == 0 and self.state.enemy_pieces[i] == 0:
+                self.draw_ratio(i)
+
+            # 前のターン何を選んだか表示
+            if self.before_action == i:
+                self.draw_select_icon(i)
+
         self.draw_status()
 
 
-# ゲームUIの実行
-f = GameUI(model=model)
-f.pack()
-f.mainloop()
+# 動作確認
+if __name__ == '__main__':
+    # ゲームUIの実行
+    f = GameUI(model=model)
+    f.pack()
+    f.mainloop()

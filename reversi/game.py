@@ -69,7 +69,8 @@ class State:
         """次の状態の取得"""
         state = State(self.pieces.copy(),
                       self.enemy_pieces.copy(), self.ratio_box.copy(), self.depth+1)
-        if action != (SQUARE * SQUARE):
+
+        if action != (SQUARE * SQUARE):  # パスを選択していないとき
             state.is_legal_action_xy(action % SQUARE, int(action/SQUARE), True)
         w = state.pieces
         state.pieces = state.enemy_pieces
@@ -78,6 +79,7 @@ class State:
         # 2回連続パス判定
         if action == (SQUARE * SQUARE) and state.legal_actions() == [SQUARE * SQUARE]:
             state.pass_end = True
+
         return state
 
     def legal_actions(self):
