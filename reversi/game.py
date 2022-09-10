@@ -131,6 +131,7 @@ class State:
 
         # 石を置く
         if flip:
+            # 確率で石が置けるかどうか
             if (random.random() * 100) <= self.ratio_box[x+y*SQUARE]:
                 self.pieces[x+y*SQUARE] = 1
             else:
