@@ -11,5 +11,5 @@ tensorboard --logdir=./Ohtello/log/
 ### UCB1 アルゴリズム
 
 ```math
-(\frac{w}{n}) + (2 \time \log \frac{t}{n})^{\frac{1}{2}}
+(\frac{w}{n}) + (2 \times \log \frac{t}{n})^{\frac{1}{2}}
 ```
