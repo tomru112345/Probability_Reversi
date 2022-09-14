@@ -10,7 +10,8 @@ from keras.models import load_model
 from pathlib import Path
 import numpy as np
 from settings import SQUARE
-
+import os
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 # パラメータの準備
 PV_EVALUATE_COUNT = 50  # 1推論あたりのシミュレーション回数（本家は1600）
 

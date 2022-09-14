@@ -10,6 +10,8 @@ from keras import backend as K
 import os
 from settings import SQUARE
 
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+
 # パラメータの準備
 DN_FILTERS = 128  # 畳み込み層のカーネル数（本家は256）
 DN_RESIDUAL_NUM = 16  # 残差ブロックの数（本家は19）

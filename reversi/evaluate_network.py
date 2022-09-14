@@ -11,6 +11,8 @@ from pathlib import Path
 from shutil import copy
 import numpy as np
 from settings import SQUARE
+import os
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 # パラメータの準備
 EN_GAME_COUNT = 10  # 1評価あたりのゲーム数（本家は400）

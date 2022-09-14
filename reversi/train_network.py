@@ -11,14 +11,16 @@ from pathlib import Path
 import numpy as np
 import pickle
 from settings import SQUARE
-
+import os
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 # パラメータの準備
 RN_EPOCHS = 100  # 学習回数
 
 
 def load_data():
     """学習データの読み込み"""
-    history_path = sorted(Path(f'./data/{SQUARE}x{SQUARE}/').glob('*.history'))[-1]
+    history_path = sorted(
+        Path(f'./data/{SQUARE}x{SQUARE}/').glob('*.history'))[-1]
     with history_path.open(mode='rb') as f:
         return pickle.load(f)
 

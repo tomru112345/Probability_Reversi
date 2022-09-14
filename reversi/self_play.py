@@ -15,6 +15,7 @@ import pickle
 import os
 from settings import SQUARE
 
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 # パラメータの準備
 SP_GAME_COUNT = 500  # セルフプレイを行うゲーム数（本家は25000）
 SP_TEMPERATURE = 1.0  # ボルツマン分布の温度パラメータ

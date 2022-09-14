@@ -10,7 +10,8 @@ from pathlib import Path
 from threading import Thread
 import tkinter as tk
 from settings import SQUARE
-
+import os
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 # ベストプレイヤーのモデルの読み込み
 model = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
 
@@ -46,6 +47,9 @@ class GameUI(tk.Frame):
         # 一つ前の行動選択が何かを保持する
         self.before_action = None
 
+    def get_event(self, event):
+        return event
+
     def turn_of_human(self, event):
         """人間のターン"""
         # ゲーム終了時
@@ -55,7 +59,7 @@ class GameUI(tk.Frame):
             self.on_draw()
             return
 
-        # 先手でない時
+        # 先手でない時 (人間同士で戦う場合コメントアウトにする)
         if not self.state.is_first_player():
             return
 
@@ -81,7 +85,7 @@ class GameUI(tk.Frame):
         self.state = self.state.next(action)
         self.on_draw()
 
-        # AIのターン
+        # AIのターン (人間同士で戦う場合コメントアウトにする)
         self.master.after(1, self.turn_of_ai)
 
     def turn_of_ai(self):
@@ -119,6 +123,16 @@ class GameUI(tk.Frame):
         self.c.create_text(
             x, y, text=str(self.state.ratio_box[index]), fill="#FF0461", font=('Yu Gothic UI', 18), anchor="center")
 
+    def draw_legal_action(self):
+        """合法手を表示"""
+        legal_action_list = self.state.legal_actions()
+        for index in legal_action_list:
+            if index != 36:
+                x = (index % SQUARE)
+                y = int(index/SQUARE)
+                self.c.create_rectangle(
+                    x * 40, y * 40, (x + 1) * 40, (y + 1) * 40, fill='#FF9900')
+
     def draw_status(self):
         """現状の石の個数の表示"""
         x = int((SQUARE * 40) / 2)
@@ -150,6 +164,10 @@ class GameUI(tk.Frame):
         self.c.delete('all')
         self.c.create_rectangle(
             0, 0, SQUARE * 40, SQUARE * 40, width=0.0, fill='#00DD00')
+
+        # 合法手を描画
+        self.draw_legal_action()
+
         for i in range(1, SQUARE + 2):
             self.c.create_line(0, i*40, SQUARE * 40, i*40,
                                width=1.0, fill='#000000')
