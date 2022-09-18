@@ -20,6 +20,7 @@ def predict(model, state):
     """推論"""
     # 推論のための入力データのシェイプの変換
     a, b, c = DN_INPUT_SHAPE
+
     x = np.array([state.pieces, state.enemy_pieces, state.ratio_box])
     x = x.reshape(c, a, b).transpose(1, 2, 0).reshape(1, a, b, c)
 
@@ -99,6 +100,7 @@ def pv_mcts_scores(model, state, temperature):
             # アーク評価値の計算
             C_PUCT = 1.0
             t = sum(nodes_to_scores(self.child_nodes))
+            
             pucb_values = []
             for child_node in self.child_nodes:
                 pucb_values.append((-child_node.w / child_node.n if child_node.n else 0.0) +

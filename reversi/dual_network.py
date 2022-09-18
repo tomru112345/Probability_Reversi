@@ -15,8 +15,8 @@ os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 # パラメータの準備
 DN_FILTERS = 128  # 畳み込み層のカーネル数（本家は256）
 DN_RESIDUAL_NUM = 16  # 残差ブロックの数（本家は19）
-# DN_INPUT_SHAPE = (SQUARE, SQUARE, 2)  # 入力シェイプ
-DN_INPUT_SHAPE = (SQUARE, SQUARE, 3)
+# DN_INPUT_SHAPE = (SQUARE, SQUARE, 2)
+DN_INPUT_SHAPE = (SQUARE, SQUARE, 3)  # 入力シェイプ
 DN_OUTPUT_SIZE = SQUARE * SQUARE + 1  # 行動数(配置先(6*6)+パス(1))
 
 
