@@ -1,4 +1,6 @@
-# Probability_Othello
+# Probability_Reversi
+
+不確定完全情報ゲームである確率リバーシの深層強化学習に挑戦
 
 ## 学習率の確認方法
 
