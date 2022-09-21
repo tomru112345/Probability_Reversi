@@ -100,7 +100,7 @@ def pv_mcts_scores(model, state, temperature):
             # アーク評価値の計算
             C_PUCT = 1.0
             t = sum(nodes_to_scores(self.child_nodes))
-            
+
             pucb_values = []
             for child_node in self.child_nodes:
                 pucb_values.append((-child_node.w / child_node.n if child_node.n else 0.0) +

@@ -60,8 +60,10 @@ def train_network():
         print('\rTrain {}/{}'.format(epoch + 1, RN_EPOCHS), end=''))
 
     # 学習の実行
+    # model.fit(xs, [y_policies, y_values], batch_size=128, epochs=RN_EPOCHS,
+    #           verbose=0, callbacks=[lr_decay, print_callback])
     model.fit(xs, [y_policies, y_values], batch_size=128, epochs=RN_EPOCHS,
-              verbose=0, callbacks=[lr_decay, print_callback])
+              verbose=1, callbacks=[lr_decay, print_callback])
     print('')
 
     # 最新プレイヤーのモデルの保存
