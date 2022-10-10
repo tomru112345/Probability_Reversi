@@ -4,15 +4,15 @@
 
 # パッケージのインポート
 from dual_network import DN_INPUT_SHAPE
-from keras.callbacks import LearningRateScheduler, LambdaCallback
+from keras.callbacks import LearningRateScheduler, LambdaCallback, TensorBoard
 from keras.models import load_model
 from keras import backend as K
+from datetime import datetime
 from pathlib import Path
 import numpy as np
 import pickle
 from settings import SQUARE
-import os
-os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+
 # パラメータの準備
 RN_EPOCHS = 100  # 学習回数
 
@@ -54,16 +54,19 @@ def train_network():
         return x
     lr_decay = LearningRateScheduler(step_decay)
 
+    # TensorBoardのログ保存先(タイムスタンプを付けておくと見るときに便利)
+    logdir = "log/run-{}/".format(datetime.utcnow().strftime("%Y%m%d%H%M%S"))
+    li_cb = TensorBoard(log_dir=logdir, histogram_freq=1, write_graph=True)
+    # , write_grads=True
+
     # 出力
     print_callback = LambdaCallback(
         on_epoch_begin=lambda epoch, logs:
         print('\rTrain {}/{}'.format(epoch + 1, RN_EPOCHS), end=''))
 
     # 学習の実行
-    # model.fit(xs, [y_policies, y_values], batch_size=128, epochs=RN_EPOCHS,
-    #           verbose=0, callbacks=[lr_decay, print_callback])
     model.fit(xs, [y_policies, y_values], batch_size=128, epochs=RN_EPOCHS,
-              verbose=1, callbacks=[lr_decay, print_callback])
+              verbose=0, callbacks=[lr_decay, print_callback, li_cb])
     print('')
 
     # 最新プレイヤーのモデルの保存

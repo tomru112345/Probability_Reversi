@@ -7,10 +7,9 @@ from keras.layers import Activation, Add, BatchNormalization, Conv2D, Dense, Glo
 from keras.models import Model
 from keras.regularizers import l2
 from keras import backend as K
-import os
 from settings import SQUARE
+import os
 
-os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 # パラメータの準備
 DN_FILTERS = 128  # 畳み込み層のカーネル数（本家は256）

@@ -10,8 +10,7 @@ from pathlib import Path
 from threading import Thread
 import tkinter as tk
 from settings import SQUARE
-import os
-os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+
 # ベストプレイヤーのモデルの読み込み
 model = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
 
@@ -179,8 +178,7 @@ class GameUI(tk.Frame):
             if self.state.enemy_pieces[i] == 1:
                 self.draw_piece(i, not self.state.is_first_player())
 
-            if self.state.pieces[i] == 0 and self.state.enemy_pieces[i] == 0:
-                self.draw_ratio(i)
+            self.draw_ratio(i)
 
             # 前のターン何を選んだか表示
             if self.before_action == i:

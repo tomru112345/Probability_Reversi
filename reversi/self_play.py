@@ -15,7 +15,6 @@ import pickle
 import os
 from settings import SQUARE
 
-os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 # パラメータの準備
 SP_GAME_COUNT = 500  # セルフプレイを行うゲーム数（本家は25000）
 SP_TEMPERATURE = 1.0  # ボルツマン分布の温度パラメータ
@@ -25,8 +24,18 @@ def first_player_value(ended_state):
     """先手プレイヤーの価値"""
     # 1:先手勝利, -1:先手敗北, 0:引き分け
     if ended_state.is_lose():
-        return -1 if ended_state.is_first_player() else 1
+        # return -1 if ended_state.is_first_player() else 1
+        # 3:先手勝利, -3:先手敗北, 0:引き分け
+        return -3 if ended_state.is_first_player() else 3
     return 0
+
+
+def ratio_value(state: State) -> int:
+    """行動に対する確率を引いたかどうか"""
+    if state.ratio_flg:
+        return 1
+    else:
+        return -1
 
 
 def write_data(history):
@@ -60,7 +69,8 @@ def play(model):
         for action, policy in zip(state.legal_actions(), scores):
             policies[action] = policy
         # history.append([[state.pieces, state.enemy_pieces], policies, None])
-        history.append([[state.pieces, state.enemy_pieces, state.ratio_box], policies, None])
+        history.append(
+            [[state.pieces, state.enemy_pieces, state.ratio_box], policies, 0])
 
         # 行動の取得
         action = np.random.choice(state.legal_actions(), p=scores)
@@ -68,10 +78,14 @@ def play(model):
         # 次の状態の取得
         state = state.next(action)
 
+        # TODO 報酬の与え方を毎ターン毎に変化させる必要がある
+        # 確率 p を取得したかどうか
+        history[-1][2] += ratio_value(state)
+
     # 学習データに価値を追加
     value = first_player_value(state)
     for i in range(len(history)):
-        history[i][2] = value
+        history[i][2] += value
         value = -value
     return history
 
@@ -90,8 +104,8 @@ def self_play():
         h = play(model)
         history.extend(h)
 
-        # 出力
-        print('\rSelfPlay {}/{}'.format(i+1, SP_GAME_COUNT), end='')
+        # ログ出力
+        print('\rSelfPlay {}/{}'.format(i + 1, SP_GAME_COUNT), end='')
     print('')
 
     # 学習データの保存

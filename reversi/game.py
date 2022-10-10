@@ -5,7 +5,7 @@
 # パッケージのインポート
 import random
 import math
-from settings import SQUARE
+from settings import SQUARE, default_ratio_box
 
 
 class State:
@@ -28,6 +28,9 @@ class State:
         # 確率用のリスト
         self.ratio_box = ratio_box
 
+        # 確率 p を引いたかどうか
+        self.ratio_flg = False
+
         # 石の初期配置
         if pieces == None or enemy_pieces == None:
             self.pieces = [0] * SQUARE * SQUARE
@@ -42,8 +45,9 @@ class State:
             self.enemy_pieces[center_idx + balance_idx - 1] = 1
 
             # 確率値の初期化
-            self.ratio_box = [random.randrange(
-                10, 110, 10) for x in range(SQUARE * SQUARE)]
+            # self.ratio_box = [random.randrange(
+            #     10, 110, 10) for x in range(SQUARE * SQUARE)]
+            self.ratio_box = default_ratio_box
 
     def piece_count(self, pieces):
         """石の数の取得"""
@@ -72,6 +76,9 @@ class State:
 
         if action != (SQUARE * SQUARE):  # パスを選択していないとき
             state.is_legal_action_xy(action % SQUARE, int(action/SQUARE), True)
+        else:
+            # パス = 確率 1 - p を引いたことを保持する
+            self.ratio_flg = False
         w = state.pieces
         state.pieces = state.enemy_pieces
         state.enemy_pieces = w
@@ -125,6 +132,36 @@ class State:
                 x, y = x+dx, y+dy
             return False
 
+        def is_legal_action_xy_dxy_penalty(x, y, dx, dy):
+            """任意のマスの任意の方向が合法手かどうか"""
+            # １つ目 自分の石
+            x, y = x+dx, y+dy
+            if y < 0 or (SQUARE - 1) < y or x < 0 or (SQUARE - 1) < x or \
+                    self.pieces[x+y*SQUARE] != 1:
+                return False
+
+            # 2つ目以降
+            for j in range(SQUARE):
+                # 空
+                if y < 0 or (SQUARE - 1) < y or x < 0 or (SQUARE - 1) < x or \
+                        (self.enemy_pieces[x+y*SQUARE] == 0 and self.pieces[x+y*SQUARE] == 0):
+                    return False
+
+                # 相手の石
+                if self.enemy_pieces[x+y*SQUARE] == 1:
+                    # 反転
+                    if flip:
+                        for i in range(SQUARE):
+                            x, y = x-dx, y-dy
+                            if self.enemy_pieces[x+y*SQUARE] == 1:
+                                return True
+                            self.enemy_pieces[x+y*SQUARE] = 1
+                            self.pieces[x+y*SQUARE] = 0
+                    return True
+                # 自分の石
+                x, y = x+dx, y+dy
+            return False
+
         # 空きなし
         if self.enemy_pieces[x+y*SQUARE] == 1 or self.pieces[x+y*SQUARE] == 1:
             return False
@@ -133,8 +170,17 @@ class State:
         if flip:
             # 確率で石が置けるかどうか
             if (random.random() * 100) <= self.ratio_box[x+y*SQUARE]:
+                # 確率 p を引いたことを保持する
+                self.ratio_flg = True
+
                 self.pieces[x+y*SQUARE] = 1
             else:
+                # 確率 1 - p を引いたことを保持する
+                self.ratio_flg = False
+
+                self.enemy_pieces[x+y*SQUARE] = 1
+                for dx, dy in self.dxy:
+                    is_legal_action_xy_dxy_penalty(x, y, dx, dy)
                 return False
 
         # 任意の位置が合法手かどうか
