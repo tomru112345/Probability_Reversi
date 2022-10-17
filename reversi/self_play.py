@@ -26,7 +26,7 @@ def first_player_value(ended_state):
     if ended_state.is_lose():
         # return -1 if ended_state.is_first_player() else 1
         # 3:先手勝利, -3:先手敗北, 0:引き分け
-        return -3 if ended_state.is_first_player() else 3
+        return -10 if ended_state.is_first_player() else 10
     return 0
 
 
