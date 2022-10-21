@@ -14,7 +14,7 @@ model_1 = load_model(settings.file1)
 model_2 = load_model(settings.file2)
 
 
-class GameUI():
+class AIBattle():
     """ゲームUIの定義"""
 
     def __init__(self, model_1=None, model_2=None):
@@ -148,4 +148,4 @@ class GameUI():
 # 動作確認
 if __name__ == '__main__':
     # ゲームUIの実行
-    game = GameUI(model_1=model_1, model_2=model_2)
+    game = AIBattle(model_1=model_1, model_2=model_2)
