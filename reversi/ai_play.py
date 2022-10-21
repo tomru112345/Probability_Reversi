@@ -4,12 +4,14 @@
 # パッケージのインポート
 from game import State
 from pv_mcts import pv_mcts_action
+from datetime import datetime
+import settings
+import os
 from keras.models import load_model
-from settings import SQUARE
 
 # それぞれのAIのベストプレイヤーのモデルの読み込み
-model_1 = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
-model_2 = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
+model_1 = load_model(settings.file1)
+model_2 = load_model(settings.file2)
 
 
 class GameUI():
@@ -52,12 +54,12 @@ class GameUI():
         if self.game_cnt == 100:
             print()
             print(f"黒: {self.black_win_cnt}, 白: {self.white_win_cnt}")
-            # exit()
+            self.write_data()
             return
 
         self.game_cnt += 1
         # ログ出力
-        print('\r[Play_AIvsAI {}/{}] <黒: {}勝, 白: {}勝>\n'.format(self.game_cnt,
+        print('\r[Play_AIvsAI {}/{}] <黒: {}勝, 白: {}勝>'.format(self.game_cnt,
               100, self.black_win_cnt, self.white_win_cnt), end='')
         self.one_turn()
 
@@ -73,12 +75,8 @@ class GameUI():
     def one_turn(self):
         self.game_fin = False
         while self.game_fin == False:
-            print('\rState 黒: {}個, 白: {}個'.format(
-                self.black_pieces, self.white_pieces), end='')
             self.turn_clean()
             self.turn_of_ai_1()
-            print('\rState 黒: {}個, 白: {}個'.format(
-                self.black_pieces, self.white_pieces), end='')
             self.turn_of_ai_2()
 
     def turn_of_ai_1(self):
@@ -133,6 +131,18 @@ class GameUI():
             white_pieces = self.state.piece_count(self.state.pieces)
         self.black_pieces = black_pieces
         self.white_pieces = white_pieces
+
+    def write_data(self):
+        """学習データの保存"""
+        now = datetime.now()
+        os.makedirs(f'./ai_vs_ai/', exist_ok=True)  # フォルダがない時は生成
+        path = './ai_vs_ai/{:04}{:02}{:02}{:02}{:02}{:02}.txt'.format(
+            now.year, now.month, now.day, now.hour, now.minute, now.second)
+        with open(path, mode='w', encoding='utf-8') as f:
+            f.write('黒: ' + settings.file1 + '\n')
+            f.write('白: ' + settings.file2 + '\n')
+            f.write('黒: {}勝, 白: {}勝'.format(
+                self.black_win_cnt, self.white_win_cnt))
 
 
 # 動作確認

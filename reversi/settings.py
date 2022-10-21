@@ -12,3 +12,7 @@ SQUARE = 6
 
 # 普通のオセロの条件
 default_ratio_box = [100] * SQUARE * SQUARE
+
+# ai 同士の対戦用ファイルパス
+file1 = f'./model/{SQUARE}x{SQUARE}/best.h5'
+file2 = f'./model/{SQUARE}x{SQUARE}/best.h5'
