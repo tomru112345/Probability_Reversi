@@ -19,7 +19,7 @@ DN_INPUT_SHAPE = (SQUARE, SQUARE, 3)  # 入力シェイプ
 DN_OUTPUT_SIZE = SQUARE * SQUARE + 1  # 行動数(配置先(6*6)+パス(1))
 
 
-def conv(filters):
+def conv(filters: int):
     """畳み込み層の作成"""
     return Conv2D(filters, 3, padding='same', use_bias=False,
                   kernel_initializer='he_normal', kernel_regularizer=l2(0.0005))

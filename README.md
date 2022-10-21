@@ -72,4 +72,5 @@ UCB1 = (\frac{w}{n}) + (2 \times \log \frac{t}{n})^{\frac{1}{2}}
 
 - [【強化学習】softmax行動選択](https://www.tcom242242.net/entry/ai-2/%E5%BC%B7%E5%8C%96%E5%AD%A6%E7%BF%92/softmax/)
 - [スッキリわかるAlphaZero](https://horomary.hatenablog.com/entry/2021/06/21/000500)
+- [アルファ碁ゼロに使われているディープラーニングを解き明かす 論文から詳細を紹介](https://codezine.jp/article/detail/10952)
 - [MuZeroの実装解説（for Breakout）](https://horomary.hatenablog.com/entry/2021/08/04/205601)

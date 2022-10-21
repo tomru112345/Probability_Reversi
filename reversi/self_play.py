@@ -27,15 +27,19 @@ def first_player_value(ended_state):
         # return -1 if ended_state.is_first_player() else 1
         # 3:先手勝利, -3:先手敗北, 0:引き分け
         return -10 if ended_state.is_first_player() else 10
+        # return -100 if ended_state.is_first_player() else 100
     return 0
 
 
-def ratio_value(state: State) -> int:
+def ratio_value(state: State, turn_cnt: int = 1) -> int:
     """行動に対する確率を引いたかどうか"""
+    # tmp_value = (SQUARE * SQUARE) // 2 - turn_cnt // 2
     if state.ratio_flg:
         return 1
+        # return 1 * tmp_value
     else:
         return -1
+        # return -1 * tmp_value
 
 
 def write_data(history):
@@ -55,6 +59,7 @@ def play(model):
 
     # 状態の生成
     state = State()
+    turn_cnt = 0
 
     while True:
         # ゲーム終了時
@@ -79,7 +84,8 @@ def play(model):
 
         # TODO 報酬の与え方を毎ターン毎に変化させる必要がある
         # 確率 p を取得したかどうか
-        history[-1][2] += ratio_value(state)
+        turn_cnt += 1
+        history[-1][2] += ratio_value(state, turn_cnt)
 
     # 学習データに価値を追加
     value = first_player_value(state)

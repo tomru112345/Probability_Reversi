@@ -18,7 +18,7 @@ EN_GAME_COUNT = 10  # 1評価あたりのゲーム数（本家は400）
 EN_TEMPERATURE = 1.0  # ボルツマン分布の温度
 
 
-def first_player_point(ended_state):
+def first_player_point(ended_state: State):
     """先手プレイヤーのポイント"""
     # 1:先手勝利, 0:先手敗北, 0.5:引き分け
     if ended_state.is_lose():

@@ -7,7 +7,12 @@ from pv_mcts import pv_mcts_action
 from datetime import datetime
 import settings
 import os
+from threading import Thread
 from keras.models import load_model
+import time
+
+# GPU メモリを徐々に取得するように設定
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 
 # それぞれのAIのベストプレイヤーのモデルの読み込み
 model_1 = load_model(settings.file1)
@@ -15,7 +20,7 @@ model_2 = load_model(settings.file2)
 
 
 class AIBattle():
-    """ゲームUIの定義"""
+    """AI同士のバトルのクラスの定義"""
 
     def __init__(self, model_1=None, model_2=None):
         """初期化"""
@@ -43,7 +48,10 @@ class AIBattle():
         self.black_win_cnt = 0
         self.white_win_cnt = 0
 
-        self.reset()
+        # self.reset()
+        # マルチスレッド化
+        th = Thread(target=self.reset)
+        th.start()
 
     def reset(self):
         """リセット関数"""
@@ -73,6 +81,7 @@ class AIBattle():
             self.white_win_cnt += 1
 
     def one_turn(self):
+        """1 つのターンの関数"""
         self.game_fin = False
         while self.game_fin == False:
             self.turn_clean()
@@ -80,7 +89,7 @@ class AIBattle():
             self.turn_of_ai_2()
 
     def turn_of_ai_1(self):
-        """AIのターン"""
+        """AI1のターン"""
         # ゲーム終了時
         if self.state.is_done():
             return
@@ -96,7 +105,7 @@ class AIBattle():
         self.calculate_status()
 
     def turn_of_ai_2(self):
-        """AIのターン"""
+        """AI2のターン"""
         # ゲーム終了時
         if self.state.is_done():
             return
@@ -147,5 +156,12 @@ class AIBattle():
 
 # 動作確認
 if __name__ == '__main__':
-    # ゲームUIの実行
+    # 処理前の時刻
+    t_before = time.time()
+    # 実行
     game = AIBattle(model_1=model_1, model_2=model_2)
+    # 処理後の時刻
+    t_after = time.time()
+    # 経過時間を表示
+    elapsed_time = t_after - t_before
+    print(f"経過時間：{elapsed_time}")

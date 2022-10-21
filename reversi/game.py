@@ -4,7 +4,6 @@
 
 # パッケージのインポート
 import random
-import math
 from settings import SQUARE, default_ratio_box
 
 
