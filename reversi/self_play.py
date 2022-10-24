@@ -85,7 +85,7 @@ def play(model):
         # TODO 報酬の与え方を毎ターン毎に変化させる必要がある
         # 確率 p を取得したかどうか
         turn_cnt += 1
-        history[-1][2] += ratio_value(state, turn_cnt)
+        # history[-1][2] += ratio_value(state, turn_cnt)
 
     # 学習データに価値を追加
     value = first_player_value(state)
