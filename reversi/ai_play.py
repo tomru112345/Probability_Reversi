@@ -18,6 +18,8 @@ os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 model_1 = load_model(settings.file1)
 model_2 = load_model(settings.file2)
 
+EN_TEMPERATURE = 1.0
+
 
 class AIBattle():
     """AI同士のバトルのクラスの定義"""
@@ -29,8 +31,8 @@ class AIBattle():
         self.state = State()
 
         # PV MCTSで行動選択を行う関数の生成
-        self.current_action = pv_mcts_action(model_1, 0.0)
-        self.next_action = pv_mcts_action(model_2, 0.0)
+        self.current_action = pv_mcts_action(model_1, EN_TEMPERATURE)
+        self.next_action = pv_mcts_action(model_2, EN_TEMPERATURE)
 
         # 一つ前の行動選択が何かを保持する
         self.before_action = None
@@ -48,6 +50,9 @@ class AIBattle():
         self.black_win_cnt = 0
         self.white_win_cnt = 0
 
+        # 処理前の時刻
+        self.t_before = time.time()
+
         # self.reset()
         # マルチスレッド化
         th = Thread(target=self.reset)
@@ -63,11 +68,16 @@ class AIBattle():
             print()
             print(f"黒: {self.black_win_cnt}, 白: {self.white_win_cnt}")
             self.write_data()
-            return
+            # 処理後の時刻
+            t_after = time.time()
+            # 経過時間を表示
+            elapsed_time = t_after - self.t_before
+            print(f"経過時間：{elapsed_time}")
+            exit()
 
         self.game_cnt += 1
         # ログ出力
-        print('\r[Play_AIvsAI {}/{}] <黒: {}勝, 白: {}勝>'.format(self.game_cnt,
+        print('\rPlay_AIvsAI {}/{}'.format(self.game_cnt,
               100, self.black_win_cnt, self.white_win_cnt), end='')
         self.one_turn()
 
@@ -156,12 +166,5 @@ class AIBattle():
 
 # 動作確認
 if __name__ == '__main__':
-    # 処理前の時刻
-    t_before = time.time()
     # 実行
     game = AIBattle(model_1=model_1, model_2=model_2)
-    # 処理後の時刻
-    t_after = time.time()
-    # 経過時間を表示
-    elapsed_time = t_after - t_before
-    print(f"経過時間：{elapsed_time}")
