@@ -15,7 +15,7 @@ from settings import SQUARE
 PV_EVALUATE_COUNT = 50  # 1推論あたりのシミュレーション回数（本家は1600）
 
 
-def predict(model, state):
+def predict(model, state: State):
     """推論"""
     # 推論のための入力データのシェイプの変換
     a, b, c = DN_INPUT_SHAPE

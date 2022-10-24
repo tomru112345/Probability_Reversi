@@ -17,6 +17,7 @@ dual_network()
 
 for i in range(10):
     print('Train', i, '====================')
+
     # セルフプレイ部
     self_play()
 

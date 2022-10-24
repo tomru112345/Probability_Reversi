@@ -42,7 +42,8 @@ def train_network():
     model = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
 
     # モデルのコンパイル
-    model.compile(loss=['categorical_crossentropy', 'mse'], optimizer='adam')
+    model.compile(loss=['categorical_crossentropy', 'mse'],
+                  metrics=['accuracy'], optimizer='adam')
 
     # 学習率
     def step_decay(epoch):

@@ -75,6 +75,8 @@ UCB1 = (\frac{w}{n}) + (2 \times \log \frac{t}{n})^{\frac{1}{2}}
 ## 参考文献
 
 - [【強化学習】softmax行動選択](https://www.tcom242242.net/entry/ai-2/%E5%BC%B7%E5%8C%96%E5%AD%A6%E7%BF%92/softmax/)
+- [今年49歳になるおっさんでも作れたAlphaZero](https://tail-island.github.io/programming/2018/06/20/alpha-zero.html)
+- [“深層学習”ではなく“深層強化学習”が決め手 将棋界最強のAlphaZeroと互角の強さ「dlshogi」の秘密](https://logmi.jp/tech/articles/324191)
 - [スッキリわかるAlphaZero](https://horomary.hatenablog.com/entry/2021/06/21/000500)
 - [アルファ碁ゼロに使われているディープラーニングを解き明かす 論文から詳細を紹介](https://codezine.jp/article/detail/10952)
 - [MuZeroの実装解説（for Breakout）](https://horomary.hatenablog.com/entry/2021/08/04/205601)
