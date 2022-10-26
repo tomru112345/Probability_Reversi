@@ -16,7 +16,8 @@ import os
 from settings import SQUARE
 
 # パラメータの準備
-SP_GAME_COUNT = 500  # セルフプレイを行うゲーム数（本家は25000）
+# SP_GAME_COUNT = 500  # セルフプレイを行うゲーム数（本家は25000）
+SP_GAME_COUNT = 1000
 SP_TEMPERATURE = 1.0  # ボルツマン分布の温度パラメータ
 
 
@@ -24,9 +25,9 @@ def first_player_value(ended_state):
     """先手プレイヤーの価値"""
     # 1:先手勝利, -1:先手敗北, 0:引き分け
     if ended_state.is_lose():
-        # return -1 if ended_state.is_first_player() else 1
+        return -1 if ended_state.is_first_player() else 1
         # 3:先手勝利, -3:先手敗北, 0:引き分け
-        return -10 if ended_state.is_first_player() else 10
+        # return -10 if ended_state.is_first_player() else 10
         # return -100 if ended_state.is_first_player() else 100
     return 0
 

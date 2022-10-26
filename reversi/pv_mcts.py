@@ -4,7 +4,7 @@
 
 # パッケージのインポート
 from game import State
-from dual_network import DN_INPUT_SHAPE
+from dual_network import DN_INPUT_SHAPE, DN_OUTPUT_SIZE
 from math import sqrt
 from keras.models import load_model
 from pathlib import Path
@@ -133,6 +133,18 @@ def pv_mcts_action(model, temperature=0):
         return np.random.choice(state.legal_actions(), p=scores)
     return pv_mcts_action
 
+def pv_mcts_action_policy(model, temperature=0):
+    """モンテカルロ木探索で行動選択+盤面の方策の出力"""
+    def pv_mcts_action_policy(state):
+        scores = pv_mcts_scores(model, state, temperature)
+        
+        # 学習データに状態と方策を追加
+        policies = [0] * DN_OUTPUT_SIZE
+        for action, policy in zip(state.legal_actions(), scores):
+            policies[action] = policy
+        policies = policies[:DN_OUTPUT_SIZE - 1]
+        return np.random.choice(state.legal_actions(), p=scores), policies
+    return pv_mcts_action_policy
 
 def boltzman(xs, temperature):
     """ボルツマン分布"""

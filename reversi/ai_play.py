@@ -3,13 +3,17 @@
 # ====================
 # パッケージのインポート
 from game import State
-from pv_mcts import pv_mcts_action
+from pv_mcts import pv_mcts_action, pv_mcts_action_policy
 from datetime import datetime
 import settings
+from settings import SQUARE
 import os
+import numpy as np
 from threading import Thread
 from keras.models import load_model
 import time
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 # GPU メモリを徐々に取得するように設定
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
@@ -31,9 +35,23 @@ class AIBattle():
         self.state = State()
 
         # PV MCTSで行動選択を行う関数の生成
-        self.current_action = pv_mcts_action(model_1, EN_TEMPERATURE)
-        self.next_action = pv_mcts_action(model_2, EN_TEMPERATURE)
+        # self.current_action = pv_mcts_action(model_1, EN_TEMPERATURE)
+        # self.next_action = pv_mcts_action(model_2, EN_TEMPERATURE)
+        # self.current_action, self.policies_1 = pv_mcts_action_policy(model_1, EN_TEMPERATURE)
+        self.current_action_policy = pv_mcts_action_policy(model_1, EN_TEMPERATURE)
+        self.next_action_policy = pv_mcts_action_policy(model_2, EN_TEMPERATURE)
 
+        # ターンの方策
+        self.turn_policies = None
+
+        # ターン数
+        self.turn_num = 0
+
+        # 保存用グラフ
+        now = datetime.now()
+        self.path = './ai_vs_ai/color_map/{:04}{:02}{:02}{:02}{:02}{:02}/'.format(
+                now.year, now.month, now.day, now.hour, now.minute, now.second)
+        os.makedirs(self.path, exist_ok=True)  # フォルダがない時は生成
         # 一つ前の行動選択が何かを保持する
         self.before_action = None
 
@@ -53,10 +71,10 @@ class AIBattle():
         # 処理前の時刻
         self.t_before = time.time()
 
-        # self.reset()
+        self.reset()
         # マルチスレッド化
-        th = Thread(target=self.reset)
-        th.start()
+        # th = Thread(target=self.reset)
+        # th.start()
 
     def reset(self):
         """リセット関数"""
@@ -64,7 +82,7 @@ class AIBattle():
         self.before_action = None
         self.calculate_status()
         # 百回対戦させる
-        if self.game_cnt == 100:
+        if self.game_cnt == 1:
             print()
             print(f"黒: {self.black_win_cnt}, 白: {self.white_win_cnt}")
             self.write_data()
@@ -76,10 +94,10 @@ class AIBattle():
             exit()
 
         self.game_cnt += 1
+        self.one_turn()
         # ログ出力
         print('\rPlay_AIvsAI {}/{}'.format(self.game_cnt,
               100, self.black_win_cnt, self.white_win_cnt), end='')
-        self.one_turn()
 
     def get_event(self, event):
         return event
@@ -93,10 +111,15 @@ class AIBattle():
     def one_turn(self):
         """1 つのターンの関数"""
         self.game_fin = False
+        self.turn_num = 0
         while self.game_fin == False:
             self.turn_clean()
             self.turn_of_ai_1()
+            self.turn_num += 1
+            self.create_color_map()
             self.turn_of_ai_2()
+            self.turn_num += 1
+            self.create_color_map()
 
     def turn_of_ai_1(self):
         """AI1のターン"""
@@ -104,8 +127,8 @@ class AIBattle():
         if self.state.is_done():
             return
 
-        # 行動の取得
-        action = self.current_action(self.state)
+        # 行動の取得, ターンの方策の更新
+        action, self.turn_policies = self.current_action_policy(self.state)
 
         # 次の状態の取得
         self.state = self.state.next(action)
@@ -120,8 +143,8 @@ class AIBattle():
         if self.state.is_done():
             return
 
-        # 行動の取得
-        action = self.next_action(self.state)
+        # 行動の取得, ターンの方策の更新
+        action, self.turn_policies = self.next_action_policy(self.state)
 
         # 次の状態の取得
         self.state = self.state.next(action)
@@ -129,6 +152,17 @@ class AIBattle():
         # 前の選択の更新
         self.before_action = action
         self.calculate_status()
+
+    def create_color_map(self):
+        # カラーマップを作成表示
+        turn_policies_np = np.array(self.turn_policies)
+        turn_policies_np = turn_policies_np.reshape([SQUARE, SQUARE])
+        plt.figure()
+        plt.imshow(turn_policies_np, cmap=plt.cm.jet, interpolation='nearest', vmin=0, vmax=1)
+        plt.title('{}'.format(self.turn_num))
+        plt.colorbar()
+        plt.savefig(self.path + '{}.png'.format(self.turn_num))
+        plt.close()
 
     def turn_clean(self):
         # ゲーム終了時
