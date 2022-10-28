@@ -27,50 +27,11 @@ python -m pip install -r requirements.txt
 tensorboard --logdir=./reversi/log/
 ```
 
-## Functional API
+## 学習速度の向上へ
 
-Sequential では分岐や複数の出力があるネットワーク構造は作成できない
+実行速度を上げるために cython で書く
 
-- Functional API と呼ばれる複雑なモデルを定義するためのインターフェースを使用
-
-```python
-# モデルの作成
-model = Sequential()
-model.add(Dense(256, activation='sigmoid', input_shape=(784,)))
-model.add(Dense(128, activation='sigmoid'))
-model.add(Dropout(rate=0.5))
-model.add(Dense(10, activation='softmax'))
-```
-
-```python
-# モデルの作成
-input = Input(shape=(784,))
-x = Dense(256, activation='sigmoid')(input)
-x = Dense(128, activation='sigmoid')(x)
-x = Dropout(rate=0.5)(x)
-x = Dense(10, activation='softmax')(x)
-model = Model(inputs=input, outputs=x)
-```
-
-## 正則化
-
-### L2 正則化
-
-極端な「重み」を 0 に近づける
-
-## 残差ブロックの生成
-
-
-
-## 学習内容
-
-### UCB1 アルゴリズム
-
-UCB1 値: 成功率 + バイアス
-
-```math
-UCB1 = (\frac{w}{n}) + (2 \times \log \frac{t}{n})^{\frac{1}{2}}
-```
+- [AlphaZeroで6x6オセロ](https://qiita.com/AokiMasataka/items/40868c7a09b8d67c3101)
 
 ## 参考文献
 

@@ -44,8 +44,6 @@ class State:
             self.enemy_pieces[center_idx + balance_idx - 1] = 1
 
             # 確率値の初期化
-            # self.ratio_box = [random.randrange(
-            #     10, 110, 10) for x in range(SQUARE * SQUARE)]
             self.ratio_box = default_ratio_box
 
     def piece_count(self, pieces):
