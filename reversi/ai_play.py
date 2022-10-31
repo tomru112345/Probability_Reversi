@@ -38,8 +38,10 @@ class AIBattle():
         # self.current_action = pv_mcts_action(model_1, EN_TEMPERATURE)
         # self.next_action = pv_mcts_action(model_2, EN_TEMPERATURE)
         # self.current_action, self.policies_1 = pv_mcts_action_policy(model_1, EN_TEMPERATURE)
-        self.current_action_policy = pv_mcts_action_policy(model_1, EN_TEMPERATURE)
-        self.next_action_policy = pv_mcts_action_policy(model_2, EN_TEMPERATURE)
+        self.current_action_policy = pv_mcts_action_policy(
+            model_1, EN_TEMPERATURE)
+        self.next_action_policy = pv_mcts_action_policy(
+            model_2, EN_TEMPERATURE)
 
         # ターンの方策
         self.turn_policies = None
@@ -48,10 +50,10 @@ class AIBattle():
         self.turn_num = 0
 
         # 保存用グラフ
-        now = datetime.now()
-        self.path = './ai_vs_ai/color_map/{:04}{:02}{:02}{:02}{:02}{:02}/'.format(
-                now.year, now.month, now.day, now.hour, now.minute, now.second)
-        os.makedirs(self.path, exist_ok=True)  # フォルダがない時は生成
+        # now = datetime.now()
+        # self.path = './ai_vs_ai/color_map/{:04}{:02}{:02}{:02}{:02}{:02}/'.format(
+        #     now.year, now.month, now.day, now.hour, now.minute, now.second)
+        # os.makedirs(self.path, exist_ok=True)  # フォルダがない時は生成
         # 一つ前の行動選択が何かを保持する
         self.before_action = None
 
@@ -69,35 +71,23 @@ class AIBattle():
         self.white_win_cnt = 0
 
         # 処理前の時刻
-        self.t_before = time.time()
+        # self.t_before = time.time()
 
-        self.reset()
+        # self.reset()
         # マルチスレッド化
         # th = Thread(target=self.reset)
         # th.start()
 
-    def reset(self):
+    def start_battle(self):
         """リセット関数"""
         # 一つ前の行動選択が何かを保持する
         self.before_action = None
         self.calculate_status()
-        # 百回対戦させる
-        if self.game_cnt == 1:
-            print()
-            print(f"黒: {self.black_win_cnt}, 白: {self.white_win_cnt}")
-            self.write_data()
-            # 処理後の時刻
-            t_after = time.time()
-            # 経過時間を表示
-            elapsed_time = t_after - self.t_before
-            print(f"経過時間：{elapsed_time}")
-            exit()
-
         self.game_cnt += 1
+        print('\rPlay_AIvsAI {}/{} {}:{}'.format(self.game_cnt,
+              1000, self.black_win_cnt, self.white_win_cnt), end='')
         self.one_turn()
         # ログ出力
-        print('\rPlay_AIvsAI {}/{}'.format(self.game_cnt,
-              100, self.black_win_cnt, self.white_win_cnt), end='')
 
     def get_event(self, event):
         return event
@@ -115,11 +105,9 @@ class AIBattle():
         while self.game_fin == False:
             self.turn_clean()
             self.turn_of_ai_1()
-            self.turn_num += 1
-            self.create_color_map()
+            # self.create_color_map()
             self.turn_of_ai_2()
-            self.turn_num += 1
-            self.create_color_map()
+            # self.create_color_map()
 
     def turn_of_ai_1(self):
         """AI1のターン"""
@@ -127,6 +115,7 @@ class AIBattle():
         if self.state.is_done():
             return
 
+        self.turn_num += 1
         # 行動の取得, ターンの方策の更新
         action, self.turn_policies = self.current_action_policy(self.state)
 
@@ -143,6 +132,7 @@ class AIBattle():
         if self.state.is_done():
             return
 
+        self.turn_num += 1
         # 行動の取得, ターンの方策の更新
         action, self.turn_policies = self.next_action_policy(self.state)
 
@@ -158,7 +148,8 @@ class AIBattle():
         turn_policies_np = np.array(self.turn_policies)
         turn_policies_np = turn_policies_np.reshape([SQUARE, SQUARE])
         plt.figure()
-        plt.imshow(turn_policies_np, cmap=plt.cm.jet, interpolation='nearest', vmin=0, vmax=1)
+        plt.imshow(turn_policies_np, cmap=plt.cm.jet,
+                   interpolation='nearest', vmin=0, vmax=1)
         plt.title('{}'.format(self.turn_num))
         plt.colorbar()
         plt.savefig(self.path + '{}.png'.format(self.turn_num))
@@ -202,3 +193,7 @@ class AIBattle():
 if __name__ == '__main__':
     # 実行
     game = AIBattle(model_1=model_1, model_2=model_2)
+    # th = Thread(target=game.reset)
+    # th.start()
+    for i in range(1000):
+        game.start_battle()
