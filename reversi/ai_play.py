@@ -160,7 +160,6 @@ class AIBattle():
         if self.state.is_done():
             self.state = State()
             self.preview_result()
-            self.reset()
             self.calculate_status()
             self.game_fin = True
             return
