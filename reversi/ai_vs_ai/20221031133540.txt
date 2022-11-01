@@ -1,3 +1,0 @@
-黒: ./model/4x4/best.h5
-白: ./model/4x4/best.h5
-黒: 2勝, 白: 98勝

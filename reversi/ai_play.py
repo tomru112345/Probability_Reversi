@@ -9,9 +9,7 @@ import settings
 from settings import SQUARE
 import os
 import numpy as np
-from threading import Thread
 from keras.models import load_model
-import time
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
@@ -35,13 +33,8 @@ class AIBattle():
         self.state = State()
 
         # PV MCTSで行動選択を行う関数の生成
-        # self.current_action = pv_mcts_action(model_1, EN_TEMPERATURE)
-        # self.next_action = pv_mcts_action(model_2, EN_TEMPERATURE)
-        # self.current_action, self.policies_1 = pv_mcts_action_policy(model_1, EN_TEMPERATURE)
-        self.current_action_policy = pv_mcts_action_policy(
-            model_1, EN_TEMPERATURE)
-        self.next_action_policy = pv_mcts_action_policy(
-            model_2, EN_TEMPERATURE)
+        self.next_action = pv_mcts_action_policy(model_1, EN_TEMPERATURE) if self.state.is_first_player(
+        ) else pv_mcts_action_policy(model_2, EN_TEMPERATURE)
 
         # ターンの方策
         self.turn_policies = None
@@ -70,14 +63,6 @@ class AIBattle():
         self.black_win_cnt = 0
         self.white_win_cnt = 0
 
-        # 処理前の時刻
-        # self.t_before = time.time()
-
-        # self.reset()
-        # マルチスレッド化
-        # th = Thread(target=self.reset)
-        # th.start()
-
     def start_battle(self):
         """リセット関数"""
         # 一つ前の行動選択が何かを保持する
@@ -103,13 +88,17 @@ class AIBattle():
         self.game_fin = False
         self.turn_num = 0
         while self.game_fin == False:
-            self.turn_clean()
-            self.turn_of_ai_1()
-            # self.create_color_map()
-            self.turn_of_ai_2()
+            # ゲーム終了時
+            if self.state.is_done():
+                self.state = State()
+                self.preview_result()
+                self.calculate_status()
+                self.game_fin = True
+                return
+            self.turn_of_ai()
             # self.create_color_map()
 
-    def turn_of_ai_1(self):
+    def turn_of_ai(self):
         """AI1のターン"""
         # ゲーム終了時
         if self.state.is_done():
@@ -117,25 +106,7 @@ class AIBattle():
 
         self.turn_num += 1
         # 行動の取得, ターンの方策の更新
-        action, self.turn_policies = self.current_action_policy(self.state)
-
-        # 次の状態の取得
-        self.state = self.state.next(action)
-
-        # 前の選択の更新
-        self.before_action = action
-        self.calculate_status()
-
-    def turn_of_ai_2(self):
-        """AI2のターン"""
-        # ゲーム終了時
-        if self.state.is_done():
-            return
-
-        self.turn_num += 1
-        # 行動の取得, ターンの方策の更新
-        action, self.turn_policies = self.next_action_policy(self.state)
-
+        action, self.turn_policies = self.next_action(self.state)
         # 次の状態の取得
         self.state = self.state.next(action)
 
@@ -154,15 +125,6 @@ class AIBattle():
         plt.colorbar()
         plt.savefig(self.path + '{}.png'.format(self.turn_num))
         plt.close()
-
-    def turn_clean(self):
-        # ゲーム終了時
-        if self.state.is_done():
-            self.state = State()
-            self.preview_result()
-            self.calculate_status()
-            self.game_fin = True
-            return
 
     def calculate_status(self):
         """現状の石の個数の表示"""
@@ -192,7 +154,5 @@ class AIBattle():
 if __name__ == '__main__':
     # 実行
     game = AIBattle(model_1=model_1, model_2=model_2)
-    # th = Thread(target=game.reset)
-    # th.start()
     for i in range(1000):
         game.start_battle()
