@@ -42,9 +42,10 @@ def predict(model: Model, state: State):
 
 def nodes_to_scores(nodes: List["Node"]):
     """ノードのリストを試行回数のリストに変換"""
-    scores = []
-    for c in nodes:
-        scores.append(c.n)
+    # scores = []
+    # for c in nodes:
+    #     scores.append(c.n)
+    scores = [c. n for c in nodes]
     return scores
 
 
@@ -78,21 +79,17 @@ class Node:
             self.w += value
             self.n += 1
             # 子ノードの展開
-            self.child_nodes = []
+            # self.child_nodes = []
             # 十分に self (current Node) がプレイされたら展開(1ノード掘り進める)する
             # if self.n == self.expand_base:
-            #     self.child_nodes = [Node(self.state.next(action), self.expand_base)
-            #                         for action in self.state.legal_actions()]
-            # if self.n < self.expand_base:
-            #     for action, policy in zip(self.state.legal_actions(), policies):
-            #         self.child_nodes.append(
-            #             Node(state=self.state.next(action), p=policy))
-            # self.child_nodes = [Node(self.state.next(action), p=policy, expand_base=self.expand_base)
-            #                     for action, policy in zip(self.state.legal_actions(), policies)]
+            #     self.child_nodes = [Node(self.state.next(action), p=policy, expand_base=self.expand_base)
+            #                         for action, policy in zip(self.state.legal_actions(), policies)]
 
-            for action, policy in zip(self.state.legal_actions(), policies):
-                self.child_nodes.append(
-                    Node(state=self.state.next(action), p=policy, expand_base=self.expand_base))
+            self.child_nodes = [Node(self.state.next(action), p=policy, expand_base=self.expand_base)
+                                for action, policy in zip(self.state.legal_actions(), policies)]
+            # for action, policy in zip(self.state.legal_actions(), policies):
+            #     self.child_nodes.append(
+            #         Node(state=self.state.next(action), p=policy, expand_base=self.expand_base))
             return value
         else:
             # アーク評価値が最大の子ノードの評価で価値を取得
@@ -130,10 +127,10 @@ class MCTS:
         xs = [x ** (1 / self.temperature) for x in xs]
         return [x / sum(xs) for x in xs]
 
-    def pv_mcts_scores(self) -> List["Node"]:
-        """モンテカルロ木探索のスコアの取得"""
+    def get_scores(self) -> List["Node"]:
+        """スコアの取得"""
         # 現在の局面のノードの作成
-        root_node = Node(state=state, p=0)
+        root_node = Node(state=state, p=0, expand_base=10)
         # 複数回の評価の実行
         for _ in range(PV_EVALUATE_COUNT):
             root_node.evaluate()
@@ -148,13 +145,13 @@ class MCTS:
             scores = self.boltzman(scores)
         return scores
 
-    def pv_mcts_action(self):
-        """モンテカルロ木探索で行動選択"""
+    def get_action(self):
+        """行動選択"""
         @watch.watch
-        def pv_mcts_action(state: State):
-            scores = self.pv_mcts_scores()
+        def get_action(state: State):
+            scores = self.get_scores()
             return np.random.choice(state.legal_actions(), p=scores)
-        return pv_mcts_action
+        return get_action
 
 
 # 動作確認
@@ -166,7 +163,7 @@ if __name__ == '__main__':
     state = State()
     # モンテカルロ木探索で行動取得を行う関数の生成
     mcts = MCTS(model=model, temperature=1.0)
-    next_action = mcts.pv_mcts_action()
+    next_action = mcts.get_action()
 
     # ゲーム終了までループ
     while True:
