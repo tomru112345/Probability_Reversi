@@ -10,6 +10,7 @@ from keras.models import load_model
 from pathlib import Path
 import numpy as np
 from settings import SQUARE
+import watch
 
 # パラメータの準備
 PV_EVALUATE_COUNT = 50  # 1推論あたりのシミュレーション回数（本家は1600）
@@ -35,11 +36,14 @@ def predict(model, state: State):
     return policies, value
 
 
+# @watch.watch
 def nodes_to_scores(nodes):
     """ノードのリストを試行回数のリストに変換"""
     scores = []
     for c in nodes:
         scores.append(c.n)
+
+    # scores = [c.n for c in nodes]
     return scores
 
 
@@ -128,16 +132,18 @@ def pv_mcts_scores(model, state, temperature):
 
 def pv_mcts_action(model, temperature=0):
     """モンテカルロ木探索で行動選択"""
+    @watch.watch
     def pv_mcts_action(state):
         scores = pv_mcts_scores(model, state, temperature)
         return np.random.choice(state.legal_actions(), p=scores)
     return pv_mcts_action
 
+
 def pv_mcts_action_policy(model, temperature=0):
     """モンテカルロ木探索で行動選択+盤面の方策の出力"""
     def pv_mcts_action_policy(state):
         scores = pv_mcts_scores(model, state, temperature)
-        
+
         # 学習データに状態と方策を追加
         policies = [0] * DN_OUTPUT_SIZE
         for action, policy in zip(state.legal_actions(), scores):
@@ -145,6 +151,7 @@ def pv_mcts_action_policy(model, temperature=0):
         policies = policies[:DN_OUTPUT_SIZE - 1]
         return np.random.choice(state.legal_actions(), p=scores), policies
     return pv_mcts_action_policy
+
 
 def boltzman(xs, temperature):
     """ボルツマン分布"""
@@ -177,4 +184,4 @@ if __name__ == '__main__':
         state = state.next(action)
 
         # 文字列表示
-        print(state)
+        # print(state)

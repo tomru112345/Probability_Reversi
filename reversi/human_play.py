@@ -18,7 +18,7 @@ model = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
 class GameUI(tk.Frame):
     """ゲームUIの定義"""
 
-    def __init__(self, master=None, model=None):
+    def __init__(self, master=None, model=None, first_ai=False):
         """初期化"""
         tk.Frame.__init__(self, master)
         self.master.title('確率リバーシ')
@@ -38,6 +38,11 @@ class GameUI(tk.Frame):
         self.c.bind('<Button-1>', self.turn_of_human)
         self.c.pack()
 
+        # AI が先行かどうか
+        self.first_ai = first_ai
+        if self.first_ai:
+            self.turn_of_ai()
+
         # 描画の更新
         self.on_draw()
 
@@ -45,6 +50,9 @@ class GameUI(tk.Frame):
         """リセット関数"""
         # 一つ前の行動選択が何かを保持する
         self.before_action = None
+        # AI が先行かどうか
+        if self.first_ai:
+            self.turn_of_ai()
 
     def get_event(self, event):
         return event
@@ -59,7 +67,9 @@ class GameUI(tk.Frame):
             return
 
         # 先手でない時 (人間同士で戦う場合コメントアウトにする)
-        if not self.state.is_first_player():
+        if not self.first_ai and not self.state.is_first_player():
+            return
+        if self.first_ai and self.state.is_first_player():
             return
 
         # クリック位置を行動に変換
@@ -190,6 +200,6 @@ class GameUI(tk.Frame):
 # 動作確認
 if __name__ == '__main__':
     # ゲームUIの実行
-    f = GameUI(model=model)
+    f = GameUI(model=model, first_ai=True)
     f.pack()
     f.mainloop()
