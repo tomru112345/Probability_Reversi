@@ -1,4 +1,9 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <vector>
+using namespace std;
+namespace py = pybind11;
+
 // #include <Eigen/Dense>
 // #include <pybind11/eigen.h>
 
@@ -19,17 +24,17 @@ public:
         this->temperature = temperature;
     }
 
-    float *boltzman(float xs[])
+    vector<float> boltzman(vector<float> xs)
     {
-        int len_xs = sizeof(xs) / sizeof(xs[0]);
+        int len_xs = xs.size();
         float sum_xs = 0;
         for (int i = 0; i < len_xs; i++)
         {
             float x = xs[i];
-            xs[i] = std::pow(x, 1 / temperature);
+            xs[i] = pow(x, 1 / temperature);
             sum_xs += xs[i];
         }
-        float new_xs[len_xs];
+        vector<float> new_xs(len_xs);
         for (int i = 0; i < len_xs; i++)
         {
             new_xs[i] = 0.0;
@@ -39,8 +44,10 @@ public:
     }
 };
 
-PYBIND11_MODULE(mcts, m)
-{
-    pybind11::class_<MCTS>(m, "MCTS").def("boltzman", &MCTS::boltzman);
-    // m.def("MCTS", &MCTS);
+PYBIND11_PLUGIN(cppMCTS){
+  py::module m("cppMCTS", "pybind11 example plugin");
+  py::class_<MCTS>(m, "MCTS")
+	  .def(py::init<float>())
+	  .def("boltzman", &MCTS::boltzman);
+  return m.ptr();
 }
