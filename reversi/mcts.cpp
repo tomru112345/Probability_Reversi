@@ -44,10 +44,11 @@ public:
     }
 };
 
-PYBIND11_PLUGIN(cppMCTS){
-  py::module m("cppMCTS", "pybind11 example plugin");
-  py::class_<MCTS>(m, "MCTS")
-	  .def(py::init<float>())
-	  .def("boltzman", &MCTS::boltzman);
-  return m.ptr();
+PYBIND11_PLUGIN(cppMCTS)
+{
+    py::module m("cppMCTS", "pybind11 example plugin");
+    py::class_<MCTS>(m, "MCTS")
+        .def(py::init<float>())
+        .def("boltzman", &MCTS::boltzman);
+    return m.ptr();
 }
