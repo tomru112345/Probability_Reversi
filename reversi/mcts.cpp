@@ -19,14 +19,14 @@ public:
         this.temperature = temperature;
     }
 
-    float *boltzman(float[] xs)
+    float *boltzman(float xs[])
     {
         int len_xs = sizeof(xs) / sizeof(xs[0]);
         float sum_xs = 0;
         for (int i = 0; i < len_xs; i++)
         {
             float x = xs[i];
-            xs[i] = std::pow(x, 1 / self.temperature);
+            xs[i] = std::pow(x, 1 / temperature);
             sum_xs += xs[i];
         }
         float new_xs[len_xs];
