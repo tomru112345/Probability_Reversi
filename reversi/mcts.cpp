@@ -35,9 +35,9 @@ public:
             new_xs[i] = 0.0;
             new_xs[i] = xs[i] / sum_xs;
         }
-        return *new_xs;
+        return new_xs;
     }
-}
+};
 
 PYBIND11_MODULE(mcts, m)
 {
