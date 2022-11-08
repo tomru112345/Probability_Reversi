@@ -41,5 +41,6 @@ public:
 
 PYBIND11_MODULE(mcts, m)
 {
-    m.def("MCTS", &MCTS);
+    pybind11::class_<MCTS>(m, "MCTS").def("boltzman", &MCTS::boltzman);
+    // m.def("MCTS", &MCTS);
 }
