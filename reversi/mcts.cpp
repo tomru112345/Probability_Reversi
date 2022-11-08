@@ -16,7 +16,7 @@ public:
     float temperature = 0;
     MCTS(float temperature)
     {
-        this.temperature = temperature;
+        this->temperature = temperature;
     }
 
     float *boltzman(float xs[])
@@ -35,7 +35,7 @@ public:
             new_xs[i] = 0.0;
             new_xs[i] = xs[i] / sum_xs;
         }
-        return new_xs;
+        return *new_xs;
     }
 }
 
