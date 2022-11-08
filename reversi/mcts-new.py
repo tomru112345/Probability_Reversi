@@ -24,7 +24,6 @@ def predict(model: Model, state: State):
     """推論"""
     # 推論のための入力データのシェイプの変換
     a, b, c = DN_INPUT_SHAPE
-
     x = np.array([state.pieces, state.enemy_pieces, state.ratio_box])
     x = x.reshape(c, a, b).transpose(1, 2, 0).reshape(1, a, b, c)
 
@@ -118,13 +117,13 @@ class Node:
 class MCTS:
     """モンテカルロ木探索クラス"""
 
-    def __init__(self, model: Model, temperature: float = 0) -> None:
-        self.model = model
+    def __init__(self, temperature: float = 0) -> None:
         self.temperature = temperature
 
-    def boltzman(self, xs: List["Node"]):
+    def boltzman(self, xs: List[float]) -> List[float]:
         """ボルツマン分布"""
         xs = [x ** (1 / self.temperature) for x in xs]
+        print(type([x / sum(xs) for x in xs]))
         return [x / sum(xs) for x in xs]
 
     def get_scores(self) -> List["Node"]:
@@ -162,7 +161,7 @@ if __name__ == '__main__':
     # 状態の生成
     state = State()
     # モンテカルロ木探索で行動取得を行う関数の生成
-    mcts = MCTS(model=model, temperature=1.0)
+    mcts = MCTS(temperature=1.0)
     next_action = mcts.get_action()
 
     # ゲーム終了までループ
