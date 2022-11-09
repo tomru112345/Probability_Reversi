@@ -120,6 +120,7 @@ public:
             {
                 if (is_legal_action_xy(i, j))
                 {
+                    cout << i + j * 4 << endl;
                     actions.push_back(i + j * 4);
                 }
             }
