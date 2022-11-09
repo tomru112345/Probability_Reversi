@@ -19,9 +19,9 @@ private:
     bool pass_end = false;
 
 public:
-    State(vector<int>()
+    State()
     {
-        depth = 0;
+        int depth = 0;
         vector<int> pieces = vector<int>(16, 0);
         vector<int> enemy_pieces = vector<int>(16, 0);
         vector<int> ratio_box = vector<int>(16, 100);
