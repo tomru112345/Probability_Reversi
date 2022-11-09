@@ -238,6 +238,7 @@ PYBIND11_PLUGIN(cppState)
 {
     py::module m("cppState", "pybind11 example plugin");
     py::class_<State>(m, "State")
+        .def(py::init())
         .def(py::init<vector<int>, vector<int>, vector<int>, int>())
         .def("piece_count", &State::piece_count)
         .def("is_done", &State::is_done)
