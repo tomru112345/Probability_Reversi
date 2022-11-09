@@ -233,9 +233,10 @@ public:
     }
 };
 
-PYBIND11_PLUGIN(cppState)
+PYBIND11_MODULE(cppState, m)
 {
-    py::module m("cppState", "pybind11 example plugin");
+    m.doc() = "pybind11 example plugin";
+    m.def("cppState", &cppState);
     py::class_<State>(m, "State")
         .def(py::init())
         .def(py::init<vector<int>, vector<int>, vector<int>, int>())
@@ -249,5 +250,4 @@ PYBIND11_PLUGIN(cppState)
         .def("is_legal_action_xy_dxy_penalty", &State::is_legal_action_xy_dxy_penalty)
         .def("is_legal_action_xy", &State::is_legal_action_xy)
         .def("is_first_player", &State::is_first_player);
-    return m.ptr();
 }
