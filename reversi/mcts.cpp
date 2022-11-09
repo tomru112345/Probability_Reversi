@@ -17,8 +17,9 @@ namespace py = pybind11;
 class MCTS
 {
 private:
-public:
     float temperature = 0;
+
+public:
     MCTS(float temperature)
     {
         this->temperature = temperature;
