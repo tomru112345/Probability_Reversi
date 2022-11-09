@@ -9,6 +9,7 @@ namespace py = pybind11;
 class State
 {
 private:
+public:
     vector<int> pieces;
     vector<int> enemy_pieces;
     vector<int> ratio_box;
@@ -17,8 +18,6 @@ private:
     int depth = 0;
     vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     bool pass_end = false;
-
-public:
     State()
     {
         vector<int> pieces = vector<int>(16, 0);
