@@ -228,14 +228,15 @@ public:
             // }
         }
         bool flag = false;
-        for (int i = 0; i < dxy.size(); i++)
-        {
+        cout << dxy.size() << endl;
+        // for (int i = 0; i < dxy.size(); i++)
+        // {
         //     if (is_legal_action_xy_dxy(x, y, dxy[i][0], dxy[i][1], flip))
         //     {
         //         flag = true;
         //     }
             cout << "a" << endl;
-        }
+        // }
         return flag;
     }
 
