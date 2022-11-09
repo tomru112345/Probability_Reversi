@@ -99,9 +99,6 @@ class State:
 
     def is_legal_action_xy(self, x, y, flip=False):
         """任意のマスが合法手かどうか"""
-        print(flip)
-        if flip:
-            exit()
         def is_legal_action_xy_dxy(x, y, dx, dy):
             """任意のマスの任意の方向が合法手かどうか"""
             # １つ目 相手の石
