@@ -105,7 +105,8 @@ public:
             {
                 if (is_legal_action_xy(i, j))
                 {
-                    actions.push_back(i + j * 4);
+                    int val = i + j * 4;
+                    actions.push_back(val);
                 }
             }
         }
