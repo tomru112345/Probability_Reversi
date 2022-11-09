@@ -15,7 +15,7 @@ private:
     static const int center_idx = 8;
     static const int balance_idx = 2;
     int depth = 0;
-    vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
+    static vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     bool pass_end = false;
 
 public:
