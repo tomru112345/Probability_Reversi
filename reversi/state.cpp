@@ -19,25 +19,24 @@ private:
     bool pass_end = false;
 
 public:
-    State(vector<int> pieces, vector<int> enemy_pieces, vector<int> ratio_box, int depth = 0)
+    State(vector<int>()
+    {
+        depth = 0;
+        vector<int> pieces = vector<int>(16, 0);
+        vector<int> enemy_pieces = vector<int>(16, 0);
+        vector<int> ratio_box = vector<int>(16, 100);
+        pieces[center_idx - balance_idx - 1] = 1;
+        pieces[center_idx + balance_idx] = 1;
+        enemy_pieces[center_idx - balance_idx] = 1;
+        enemy_pieces[center_idx + balance_idx - 1] = 1;
+    }
+    State(vector<int> pieces, vector<int> enemy_pieces, vector<int> ratio_box, int depth)
     {
         this->pieces = pieces;
         this->enemy_pieces = enemy_pieces;
         this->ratio_box = ratio_box;
         this->depth = depth;
-
-        if (this->pieces.size() == 0 || this->enemy_pieces.size() == 0)
-        {
-            vector<int> pieces = vector<int>(16, 0);
-            vector<int> enemy_pieces = vector<int>(16, 0);
-            vector<int> ratio_box = vector<int>(16, 100);
-            this->pieces[center_idx - balance_idx - 1] = 1;
-            this->pieces[center_idx + balance_idx] = 1;
-            this->enemy_pieces[center_idx - balance_idx] = 1;
-            this->enemy_pieces[center_idx + balance_idx - 1] = 1;
-        }
     }
-
     int piece_count(vector<int> pieces)
     {
         int cnt = 0;
