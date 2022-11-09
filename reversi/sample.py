@@ -40,7 +40,9 @@ if __name__ == '__main__':
     # print(state.piece_count(state.pieces))
     # print(random_action(state))
     # ゲーム終了までのループ
-    state = state.next(random_action(state))
+    legal_actions = state.legal_actions()
+    actions = legal_actions[random.randint(0, len(legal_actions)-1)]
+    state = state.next(actions)
     print(state.pieces)
     # while True:
     #     # ゲーム終了時
