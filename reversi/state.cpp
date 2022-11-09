@@ -89,6 +89,16 @@ public:
     {
         State state = State(pieces, enemy_pieces, ratio_box, depth + 1);
         vector<int> pass_vec = {16};
+        if (action != 16){
+            int ac_x = action % 4;
+            int ac_y = action / 4;
+            state.is_legal_action_xy(ac_x, ac_y, true);
+        }
+
+        vector<int> w = state.pieces;
+        state.pieces = state.enemy_pieces;
+        state.enemy_pieces = w;
+
         if (action == 16 && state.legal_actions() == pass_vec)
         {
             pass_end = true;
@@ -157,44 +167,44 @@ public:
         return false;
     }
 
-    bool is_legal_action_xy_dxy_penalty(int x, int y, int dx, int dy, bool flip = false)
-    {
-        x += dx;
-        y += dy;
-        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((enemy_pieces[x + y * 4]) != 1))
-        {
-            return false;
-        }
+    // bool is_legal_action_xy_dxy_penalty(int x, int y, int dx, int dy, bool flip = false)
+    // {
+    //     x += dx;
+    //     y += dy;
+    //     if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((enemy_pieces[x + y * 4]) != 1))
+    //     {
+    //         return false;
+    //     }
 
-        for (int j = 0; j < 4; j++)
-        {
-            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (((enemy_pieces[x + y * 4]) == 0) && ((pieces[x + y * 4]) == 0)))
-            {
-                return false;
-            }
-            if (pieces[x + y * 4] == 1)
-            {
-                if (flip)
-                {
-                    for (int i = 0; i < 3; i++)
-                    {
-                        x -= dx;
-                        y -= dy;
-                        if (pieces[x + y * 4] == 1)
-                        {
-                            return true;
-                        }
-                        pieces[x + y * 4] = 1;
-                        enemy_pieces[x + y * 4] = 0;
-                    }
-                    return true;
-                }
-                x += dx;
-                y += dy;
-            }
-        }
-        return false;
-    }
+    //     for (int j = 0; j < 4; j++)
+    //     {
+    //         if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (((enemy_pieces[x + y * 4]) == 0) && ((pieces[x + y * 4]) == 0)))
+    //         {
+    //             return false;
+    //         }
+    //         if (pieces[x + y * 4] == 1)
+    //         {
+    //             if (flip)
+    //             {
+    //                 for (int i = 0; i < 3; i++)
+    //                 {
+    //                     x -= dx;
+    //                     y -= dy;
+    //                     if (pieces[x + y * 4] == 1)
+    //                     {
+    //                         return true;
+    //                     }
+    //                     pieces[x + y * 4] = 1;
+    //                     enemy_pieces[x + y * 4] = 0;
+    //                 }
+    //                 return true;
+    //             }
+    //             x += dx;
+    //             y += dy;
+    //         }
+    //     }
+    //     return false;
+    // }
 
     bool is_legal_action_xy(int x, int y, bool flip = false)
     {
@@ -208,15 +218,15 @@ public:
             {
                 pieces[x + y * 4] = 1;
             }
-            else
-            {
-                enemy_pieces[x + y * 4] = 1;
-                for (int i = 0; i < dxy.size(); i++)
-                {
-                    is_legal_action_xy_dxy_penalty(x, y, dxy[i][0], dxy[i][1], flip);
-                }
-                return false;
-            }
+            // else
+            // {
+            //     enemy_pieces[x + y * 4] = 1;
+            //     for (int i = 0; i < dxy.size(); i++)
+            //     {
+            //         is_legal_action_xy_dxy_penalty(x, y, dxy[i][0], dxy[i][1], flip);
+            //     }
+            //     return false;
+            // }
         }
         bool flag = false;
         for (int i = 0; i < dxy.size(); i++)
