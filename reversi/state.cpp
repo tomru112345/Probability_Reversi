@@ -238,8 +238,8 @@ PYBIND11_PLUGIN(cppState)
 {
     py::module m("cppState", "pybind11 example plugin");
     py::class_<State>(m, "State")
-        .def(py::init())
-        .def(py::init<vector<int>, vector<int>, vector<int>, int>())
+        .def("State", py::overload_cast(&State))
+        .def("State", py::overload_cast<vector<int>, vector<int>, vector<int>, int>(&State))
         .def("piece_count", &State::piece_count)
         .def("is_done", &State::is_done)
         .def("is_lose", &State::is_lose)
@@ -250,5 +250,6 @@ PYBIND11_PLUGIN(cppState)
         .def("is_legal_action_xy_dxy_penalty", &State::is_legal_action_xy_dxy_penalty)
         .def("is_legal_action_xy", &State::is_legal_action_xy)
         .def("is_first_player", &State::is_first_player);
+        // .def(py::init<vector<int>, vector<int>, vector<int>, int>())
     return m.ptr();
 }
