@@ -235,8 +235,6 @@ public:
 
 PYBIND11_MODULE(cppState, m)
 {
-    m.doc() = "pybind11 example plugin";
-    m.def("cppState", &cppState);
     py::class_<State>(m, "State")
         .def(py::init())
         .def(py::init<vector<int>, vector<int>, vector<int>, int>())
