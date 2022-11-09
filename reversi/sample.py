@@ -41,7 +41,8 @@ def print_reversi(state):
 if __name__ == '__main__':
     # 状態の生成
     state = State()
-
+    print(state.legal_actions())
+    # print(random_action(state))
     # ゲーム終了までのループ
     # while True:
     #     # ゲーム終了時

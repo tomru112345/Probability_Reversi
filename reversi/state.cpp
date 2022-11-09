@@ -15,7 +15,7 @@ private:
     static const int center_idx = 8;
     static const int balance_idx = 2;
     int depth = 0;
-    static vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
+    vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     bool pass_end = false;
 
 public:
@@ -105,12 +105,13 @@ public:
             {
                 if (is_legal_action_xy(i, j))
                 {
-                    int val = i + j * 4;
-                    actions.push_back(val);
+                //    int val = i + j * 4;
+                //    actions.push_back(val);
+		cout << "a" << endl;
                 }
             }
         }
-        if (actions.size() == 0)
+        if (actions.empty())
         {
             actions.push_back(16);
         }
