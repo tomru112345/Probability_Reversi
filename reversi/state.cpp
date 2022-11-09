@@ -9,16 +9,18 @@ namespace py = pybind11;
 class State
 {
 private:
+    static const int center_idx = 8;
+    static const int balance_idx = 2;
+
 public:
     vector<int> pieces;
     vector<int> enemy_pieces;
     vector<int> ratio_box;
-    static const int center_idx = 8;
-    static const int balance_idx = 2;
+
     int depth = 0;
     vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     bool pass_end = false;
-    
+
     State()
     {
         pieces = vector<int>(16, 0);
@@ -88,47 +90,26 @@ public:
     }
 
     State next(int action)
-     {
-         State state = State(pieces, enemy_pieces, ratio_box, depth + 1);
-         vector<int> pass_vec = {16};
-         if (action != 16){
-             int ac_x = action % 4;
-             int ac_y = action / 4;
-             state.is_legal_action_xy(ac_x, ac_y, true);
-         }
+    {
+        State state = State(pieces, enemy_pieces, ratio_box, depth + 1);
+        vector<int> pass_vec = {16};
+        if (action != 16)
+        {
+            int ac_x = action % 4;
+            int ac_y = action / 4;
+            state.is_legal_action_xy(ac_x, ac_y, true);
+        }
 
-         vector<int> w = state.pieces;
-         state.pieces = state.enemy_pieces;
-         state.enemy_pieces = w;
+        vector<int> w = state.pieces;
+        state.pieces = state.enemy_pieces;
+        state.enemy_pieces = w;
 
-         if (action == 16 && state.legal_actions() == pass_vec)
-         {
-             pass_end = true;
-    
-    	 }
-         return state;
-     }
-
-    //void next(int action)
-    //{
-    //    depth++;
-    //    vector<int> pass_vec = {16};
-    //    if (action != 16)
-    //    {
-            //int ac_x = action % 4;
-            //int ac_y = action / 4;
-          //  is_legal_action_xy(ac_x, ac_y, true);
-        //}
-
-        //vector<int> w = pieces;
-       // pieces = enemy_pieces;
-       // enemy_pieces = w;
-
-       // if (action == 16 && legal_actions() == pass_vec)
-      //  {
-       //     pass_end = true;
-     //   }
-    //}
+        if (action == 16 && state.legal_actions() == pass_vec)
+        {
+            pass_end = true;
+        }
+        return state;
+    }
 
     vector<int> legal_actions()
     {
@@ -262,8 +243,7 @@ public:
         return flag;
     }
 
-    bool
-    is_first_player()
+    bool is_first_player()
     {
         return (depth % 2 == 0);
     }
@@ -280,12 +260,12 @@ PYBIND11_MODULE(cppState, m)
     py::class_<State>(m, "State")
         .def(py::init())
         .def(py::init<vector<int>, vector<int>, vector<int>, int>())
-	.def_readwrite("pieces", &State::pieces)
-	.def_readwrite("enemy_pieces", &State::enemy_pieces)
-	.def_readwrite("ratio_box", &State::ratio_box)
-	.def_readwrite("depth", &State::depth)
-	.def_readwrite("dxy", &State::dxy)
-	.def_readwrite("pass_end", &State::pass_end)
+        .def_readwrite("pieces", &State::pieces)
+        .def_readwrite("enemy_pieces", &State::enemy_pieces)
+        .def_readwrite("ratio_box", &State::ratio_box)
+        .def_readwrite("depth", &State::depth)
+        .def_readwrite("dxy", &State::dxy)
+        .def_readwrite("pass_end", &State::pass_end)
         .def("piece_count", &State::piece_count)
         .def("is_done", &State::is_done)
         .def("is_lose", &State::is_lose)
