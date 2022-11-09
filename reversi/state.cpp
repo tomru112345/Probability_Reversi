@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <iostream>
 #include <vector>
-// #include <tuple>
 #include <cstdlib>
 using namespace std;
 namespace py = pybind11;
@@ -9,29 +9,31 @@ namespace py = pybind11;
 class State
 {
 private:
-    vector<int> pieces(16, 0);
-    vector<int> enemy_pieces(16, 0);
-    vector<int> ratio_box(16, 100);
-    int center_idx = 16 / 2;
-    int balance_idx = 4 / 2;
-    // 石の初期配置
-    pieces[center_idx - balance_idx - 1] = 1;
-    pieces[center_idx + balance_idx] = 1;
-    enemy_pieces[center_idx - balance_idx] = 1;
-    enemy_pieces[center_idx + balance_idx - 1] = 1;
+    vector<int> pieces;
+    vector<int> enemy_pieces;
+    vector<int> ratio_box;
+    static const int center_idx = 8;
+    static const int balance_idx = 2;
     int depth = 0;
-    vector<int> dxy{{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
-    // tuple<int, int> dxy = make_tuple((1, 0), (1, 1), (0, 1), (-1, 1),
-    //                                  (-1, 0), (-1, -1), (0, -1), (1, -1));
+    vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     bool pass_end = false;
-
 public:
-    State(vector<int> pieces, vector<int> enemy_pieces, vector<int> ratio_box, int depth)
+    State(vector<int> pieces, vector<int> enemy_pieces, vector<int> ratio_box, int depth = 0)
     {
-        this.pieces = pieces;
-        this.enemy_pieces = enemy_pieces;
-        this.ratio_box = ratio_box;
-        this.depth = depth;
+        this->pieces = pieces;
+        this->enemy_pieces = enemy_pieces;
+        this->ratio_box = ratio_box;
+        this->depth = depth;
+
+	if (this->pieces.size() == 0 || this->enemy_pieces.size() == 0){
+		vector<int> pieces = vector<int>(16, 0);
+    		vector<int> enemy_pieces = vector<int>(16, 0);
+    		vector<int> ratio_box = vector<int>(16, 100);
+		this->pieces[center_idx - balance_idx - 1] = 1;
+    		this->pieces[center_idx + balance_idx] = 1;
+    		this->enemy_pieces[center_idx - balance_idx] = 1;
+    		this->enemy_pieces[center_idx + balance_idx - 1] = 1;
+	}
     }
 
     int piece_count(vector<int> pieces)
@@ -49,7 +51,7 @@ public:
 
     bool is_done()
     {
-        if ((piece_count(this->pieces) + piece_count(this->enemy_pieces) == 16) || this->pass_end)
+        if ((piece_count(pieces) + piece_count(enemy_pieces) == 16) || pass_end)
         {
             return true;
         }
@@ -61,7 +63,7 @@ public:
 
     bool is_lose()
     {
-        if (is_done() && (piece_count(this->pieces) < piece_count(this->enemy_pieces)))
+        if (is_done() && (piece_count(pieces) < piece_count(enemy_pieces)))
         {
             return true;
         }
@@ -73,7 +75,7 @@ public:
 
     bool is_draw()
     {
-        if (is_done() && (piece_count(this->pieces) == piece_count(this->enemy_pieces)))
+        if (is_done() && (piece_count(pieces) == piece_count(enemy_pieces)))
         {
             return true;
         }
@@ -85,10 +87,11 @@ public:
 
     State next(int action)
     {
-        State state = State(this->pieces, this->enemy_pieces, this->ratio_box, this->depth + 1);
-        if (action == 16 && state.legal_actions() == [16])
+        State state = State(pieces, enemy_pieces, ratio_box, depth + 1);
+        vector<int> pass_vec = {16};
+	if (action == 16 && state.legal_actions() == pass_vec)
         {
-            this->pass_end = true;
+            pass_end = true;
         }
         return state;
     }
@@ -117,18 +120,18 @@ public:
     {
         x += dx;
         y += dy;
-        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((this->enemy_pieces[x + y * 4]) != 1))
+        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((enemy_pieces[x + y * 4]) != 1))
         {
             return false;
         }
 
         for (int j = 0; j < 4; j++)
         {
-            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((this->enemy_pieces[x + y * 4]) == 0) && ((this->pieces[x + y * 4]) == 0))
+            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((enemy_pieces[x + y * 4]) == 0) && ((pieces[x + y * 4]) == 0))
             {
                 return false;
             }
-            if (this->pieces[x + y * 4] == 1)
+            if (pieces[x + y * 4] == 1)
             {
                 if (flip)
                 {
@@ -136,12 +139,12 @@ public:
                     {
                         x -= dx;
                         y -= dy;
-                        if (this->pieces[x + y * 4] == 1)
+                        if (pieces[x + y * 4] == 1)
                         {
                             return true;
                         }
-                        this->piece[x + y * 4] = 1;
-                        this->enemy_pieces[x + y * 4] = 0;
+                        pieces[x + y * 4] = 1;
+                        enemy_pieces[x + y * 4] = 0;
                     }
                     return true;
                 }
@@ -156,18 +159,18 @@ public:
     {
         x += dx;
         y += dy;
-        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((this->enemy_pieces[x + y * 4]) != 1))
+        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((enemy_pieces[x + y * 4]) != 1))
         {
             return false;
         }
 
         for (int j = 0; j < 4; j++)
         {
-            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((this->enemy_pieces[x + y * 4]) == 0) && ((this->pieces[x + y * 4]) == 0))
+            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (((enemy_pieces[x + y * 4]) == 0) && ((pieces[x + y * 4]) == 0)))
             {
                 return false;
             }
-            if (this->pieces[x + y * 4] == 1)
+            if (pieces[x + y * 4] == 1)
             {
                 if (flip)
                 {
@@ -175,12 +178,12 @@ public:
                     {
                         x -= dx;
                         y -= dy;
-                        if (this->pieces[x + y * 4] == 1)
+                        if (pieces[x + y * 4] == 1)
                         {
                             return true;
                         }
-                        this->piece[x + y * 4] = 1;
-                        this->enemy_pieces[x + y * 4] = 0;
+                        pieces[x + y * 4] = 1;
+                        enemy_pieces[x + y * 4] = 0;
                     }
                     return true;
                 }
@@ -193,32 +196,30 @@ public:
 
     bool is_legal_action_xy(int x, int y, bool flip = false)
     {
-        if (this->enemy_pieces[x + y * 4] == 1 || this->pieces[x + y * 4] == 1)
+        if (enemy_pieces[x + y * 4] == 1 || pieces[x + y * 4] == 1)
         {
             return false;
         }
         if (flip)
         {
-            if (rand() % 101 <= this->ratio_box[x + y * 4])
+            if (rand() % 101 <= ratio_box[x + y * 4])
             {
-                this->pieces[x + y * 4] = 1;
+                pieces[x + y * 4] = 1;
             }
             else
             {
-                this->enemy_pieces[x + y * 4] = 1;
-                // for dx, dy in self.dxy:
-                //     is_legal_action_xy_dxy_penalty(x, y, dx, dy)
-                for (int i = 0; i < this->dxy.size(); i++)
+                enemy_pieces[x + y * 4] = 1;
+                for (int i = 0; i < dxy.size(); i++)
                 {
-                    is_legal_action_xy_dxy_penalty(x, y, this->dxy[i][0], this->dxy[i][1], flip);
+                    is_legal_action_xy_dxy_penalty(x, y, dxy[i][0], dxy[i][1], flip);
                 }
                 return false;
             }
         }
         bool flag = false;
-        for (int i = 0; i < this->dxy.size(); i++)
+        for (int i = 0; i < dxy.size(); i++)
         {
-            if (is_legal_action_xy_dxy(x, y, this->dxy[i][0], this->dxy[i][1], flip))
+            if (is_legal_action_xy_dxy(x, y, dxy[i][0], dxy[i][1], flip))
             {
                 flag = true;
             }
@@ -228,7 +229,7 @@ public:
 
     bool is_first_player()
     {
-        return (this->depth % 2 == 0);
+        return (depth % 2 == 0);
     }
 };
 
