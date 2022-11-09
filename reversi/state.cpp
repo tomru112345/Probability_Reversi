@@ -21,7 +21,6 @@ private:
 public:
     State()
     {
-        int depth = 0;
         vector<int> pieces = vector<int>(16, 0);
         vector<int> enemy_pieces = vector<int>(16, 0);
         vector<int> ratio_box = vector<int>(16, 100);
@@ -128,7 +127,7 @@ public:
 
         for (int j = 0; j < 4; j++)
         {
-            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((enemy_pieces[x + y * 4]) == 0) && ((pieces[x + y * 4]) == 0))
+            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (enemy_pieces[x + y * 4] == 0 && pieces[x + y * 4] == 0))
             {
                 return false;
             }
