@@ -18,22 +18,24 @@ public:
     int depth = 0;
     vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     bool pass_end = false;
+    
     State()
     {
-        vector<int> pieces = vector<int>(16, 0);
-        vector<int> enemy_pieces = vector<int>(16, 0);
-        vector<int> ratio_box = vector<int>(16, 100);
+        pieces = vector<int>(16, 0);
+        enemy_pieces = vector<int>(16, 0);
+        ratio_box = vector<int>(16, 100);
         pieces[center_idx - balance_idx - 1] = 1;
         pieces[center_idx + balance_idx] = 1;
         enemy_pieces[center_idx - balance_idx] = 1;
         enemy_pieces[center_idx + balance_idx - 1] = 1;
     }
-    State(vector<int> pieces, vector<int> enemy_pieces, vector<int> ratio_box, int depth)
+
+    State(vector<int> p, vector<int> ep, vector<int> r, int d)
     {
-        this->pieces = pieces;
-        this->enemy_pieces = enemy_pieces;
-        this->ratio_box = ratio_box;
-        this->depth = depth;
+        pieces = p;
+        enemy_pieces = ep;
+        ratio_box = r;
+        depth = d;
     }
 
     int piece_count(vector<int> pieces)
@@ -85,47 +87,48 @@ public:
         }
     }
 
-    // State next(int action)
-    // {
-    //     State state = State(pieces, enemy_pieces, ratio_box, depth + 1);
-    //     vector<int> pass_vec = {16};
-    //     if (action != 16){
-    //         int ac_x = action % 4;
-    //         int ac_y = action / 4;
-    //         state.is_legal_action_xy(ac_x, ac_y, true);
-    //     }
+    State next(int action)
+     {
+         State state = State(pieces, enemy_pieces, ratio_box, depth + 1);
+         vector<int> pass_vec = {16};
+         if (action != 16){
+             int ac_x = action % 4;
+             int ac_y = action / 4;
+             state.is_legal_action_xy(ac_x, ac_y, true);
+         }
 
-    //     vector<int> w = state.pieces;
-    //     state.pieces = state.enemy_pieces;
-    //     state.enemy_pieces = w;
+         vector<int> w = state.pieces;
+         state.pieces = state.enemy_pieces;
+         state.enemy_pieces = w;
 
-    //     if (action == 16 && state.legal_actions() == pass_vec)
-    //     {
-    //         pass_end = true;
-    //     }
-    //     return state;
-    // }
+         if (action == 16 && state.legal_actions() == pass_vec)
+         {
+             pass_end = true;
+    
+    	 }
+         return state;
+     }
 
-    void next(int action)
-    {
-        depth++;
-        vector<int> pass_vec = {16};
-        if (action != 16)
-        {
-            int ac_x = action % 4;
-            int ac_y = action / 4;
-            is_legal_action_xy(ac_x, ac_y, true);
-        }
+    //void next(int action)
+    //{
+    //    depth++;
+    //    vector<int> pass_vec = {16};
+    //    if (action != 16)
+    //    {
+            //int ac_x = action % 4;
+            //int ac_y = action / 4;
+          //  is_legal_action_xy(ac_x, ac_y, true);
+        //}
 
-        vector<int> w = pieces;
-        pieces = enemy_pieces;
-        enemy_pieces = w;
+        //vector<int> w = pieces;
+       // pieces = enemy_pieces;
+       // enemy_pieces = w;
 
-        if (action == 16 && legal_actions() == pass_vec)
-        {
-            pass_end = true;
-        }
-    }
+       // if (action == 16 && legal_actions() == pass_vec)
+      //  {
+       //     pass_end = true;
+     //   }
+    //}
 
     vector<int> legal_actions()
     {
@@ -277,6 +280,12 @@ PYBIND11_MODULE(cppState, m)
     py::class_<State>(m, "State")
         .def(py::init())
         .def(py::init<vector<int>, vector<int>, vector<int>, int>())
+	.def_readwrite("pieces", &State::pieces)
+	.def_readwrite("enemy_pieces", &State::enemy_pieces)
+	.def_readwrite("ratio_box", &State::ratio_box)
+	.def_readwrite("depth", &State::depth)
+	.def_readwrite("dxy", &State::dxy)
+	.def_readwrite("pass_end", &State::pass_end)
         .def("piece_count", &State::piece_count)
         .def("is_done", &State::is_done)
         .def("is_lose", &State::is_lose)
