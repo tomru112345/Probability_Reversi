@@ -227,16 +227,16 @@ public:
             //     return false;
             // }
         }
-        // bool flag = false;
-        // for (int i = 0; i < dxy.size(); i++)
-        // {
+        bool flag = false;
+        for (int i = 0; i < dxy.size(); i++)
+        {
         //     if (is_legal_action_xy_dxy(x, y, dxy[i][0], dxy[i][1], flip))
         //     {
         //         flag = true;
         //     }
-        // }
-        // return flag;
-        return true;
+            cout << "a" << endl;
+        }
+        return flag;
     }
 
     bool is_first_player()
