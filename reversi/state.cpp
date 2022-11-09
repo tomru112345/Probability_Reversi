@@ -117,7 +117,6 @@ public:
                 {
                 //    int val = i + j * 4;
                 //    actions.push_back(val);
-		cout << "a" << endl;
                 }
             }
         }
@@ -228,15 +227,16 @@ public:
             //     return false;
             // }
         }
-        bool flag = false;
-        for (int i = 0; i < dxy.size(); i++)
-        {
-            if (is_legal_action_xy_dxy(x, y, dxy[i][0], dxy[i][1], flip))
-            {
-                flag = true;
-            }
-        }
-        return flag;
+        // bool flag = false;
+        // for (int i = 0; i < dxy.size(); i++)
+        // {
+        //     if (is_legal_action_xy_dxy(x, y, dxy[i][0], dxy[i][1], flip))
+        //     {
+        //         flag = true;
+        //     }
+        // }
+        // return flag;
+        return true;
     }
 
     bool is_first_player()
