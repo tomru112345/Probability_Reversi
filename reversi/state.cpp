@@ -109,7 +109,7 @@ public:
         if (action == 16 && leg_vec == pass_vec)
         {
             state.pass_end = true;
-	}
+        }
         return state;
     }
 
@@ -132,50 +132,6 @@ public:
             actions.push_back(16);
         }
         return actions;
-    }
-
-    bool is_legal_action_xy_dxy(int x, int y, int dx, int dy, bool flip = false)
-    {
-	int new_x = x;
-	int new_y = y;
-	new_x += dx;
-	new_y += dy;
-        if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x) || (this->enemy_pieces[new_x + new_y * 4] != 1))
-        {
-            cout << "a" << endl;
-            return false;
-        }
-
-        for (int j = 0; j < 4; j++)
-        {
-            if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x) || (this->enemy_pieces[new_x + new_y * 4] == 0 && this->pieces[new_x + new_y * 4] == 0))
-            {
-		cout << "b" << endl;
-                return false;
-            }
-            if (this->pieces[new_x + new_y * 4] == 1)
-            {
-                if (flip)
-                {
-                    for (int i = 0; i < 4; i++)
-                    {
-                        new_x -= dx;
-                        new_y -= dy;
-                        if (this->pieces[new_x + new_y * 4] == 1)
-                        {
-                            return true;
-                        }
-                        this->pieces[new_x + new_y * 4] = 1;
-                        this->enemy_pieces[new_x + new_y * 4] = 0;
-                    }
-                    return true;
-                }
-                new_x += dx;
-                new_y += dy;
-            }
-        }
-	cout << "c" << endl;
-        return false;
     }
 
     // bool is_legal_action_xy_dxy_penalty(int x, int y, int dx, int dy, bool flip = false)
@@ -219,6 +175,50 @@ public:
 
     bool is_legal_action_xy(int x, int y, bool flip = false)
     {
+        bool is_legal_action_xy_dxy(int x, int y, int dx, int dy, bool flip = false)
+        {
+            int new_x = x;
+            int new_y = y;
+            new_x += dx;
+            new_y += dy;
+            if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x) || (this->enemy_pieces[new_x + new_y * 4] != 1))
+            {
+                cout << "a" << endl;
+                return false;
+            }
+
+            for (int j = 0; j < 4; j++)
+            {
+                if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x) || (this->enemy_pieces[new_x + new_y * 4] == 0 && this->pieces[new_x + new_y * 4] == 0))
+                {
+                    cout << "b" << endl;
+                    return false;
+                }
+                if (this->pieces[new_x + new_y * 4] == 1)
+                {
+                    if (flip)
+                    {
+                        for (int i = 0; i < 4; i++)
+                        {
+                            new_x -= dx;
+                            new_y -= dy;
+                            if (this->pieces[new_x + new_y * 4] == 1)
+                            {
+                                return true;
+                            }
+                            this->pieces[new_x + new_y * 4] = 1;
+                            this->enemy_pieces[new_x + new_y * 4] = 0;
+                        }
+                        return true;
+                    }
+                    new_x += dx;
+                    new_y += dy;
+                }
+            }
+            cout << "c" << endl;
+            return false;
+        }
+
         if (this->enemy_pieces[x + y * 4] == 1 || this->pieces[x + y * 4] == 1)
         {
             return false;
@@ -256,7 +256,6 @@ public:
         return (this->depth % 2 == 0);
     }
 };
-
 
 PYBIND11_MODULE(cppState, m)
 {
