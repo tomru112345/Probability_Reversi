@@ -140,7 +140,7 @@ public:
         int new_y = y;
         new_x += dx;
         new_y += dy;
-        cout << new_x << ", " << new_y << endl;
+        cout << new_x << ", " << new_y << ", " << this->enemy_pieces[new_x + new_y * 4] << endl;
         if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x) || (this->enemy_pieces[new_x + new_y * 4] != 1))
         {
             cout << "a" << endl;
