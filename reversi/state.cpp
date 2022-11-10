@@ -106,7 +106,7 @@ public:
 
         vector<int> pass_vec = {16};
         vector<int> leg_vec = state.legal_actions();
-        cout << leg_vec == pass_vec << endl;
+        cout << (leg_vec == pass_vec) << endl;
         if (action == 16 && leg_vec == pass_vec)
         {
             pass_end = true;
