@@ -141,19 +141,24 @@ public:
         new_x += dx;
         new_y += dy;
         cout << new_x << ", " << new_y << ", " << this->enemy_pieces[new_x + new_y * 4] << endl;
-        if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x) || (this->enemy_pieces[new_x + new_y * 4] != 1))
+        if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x))
         {
-            cout << "a" << endl;
+            return false;
+        }
+        else if (this->enemy_pieces[new_x + new_y * 4] != 1){
             return false;
         }
 
         for (int j = 0; j < 4; j++)
         {
-            if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x) || (this->enemy_pieces[new_x + new_y * 4] == 0 && this->pieces[new_x + new_y * 4] == 0))
+            if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x))
             {
-                cout << "b" << endl;
                 return false;
             }
+            else if (this->enemy_pieces[new_x + new_y * 4] == 0 && this->pieces[new_x + new_y * 4] == 0){
+                return false;
+            }
+            
             if (this->pieces[new_x + new_y * 4] == 1)
             {
                 if (flip)
@@ -175,7 +180,6 @@ public:
                 new_y += dy;
             }
         }
-        cout << "c" << endl;
         return false;
     }
 
