@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <algorithm>
 using namespace std;
 namespace py = pybind11;
 
@@ -103,8 +104,10 @@ public:
         state.pieces = state.enemy_pieces;
         state.enemy_pieces = w;
 
-        // vector<int> pass_vec = {16};
-        if (action == 16 && state.legal_actions() == [16])
+        vector<int> pass_vec = {16};
+        vector<int> leg_vec = state.legal_actions();
+        cout << leg_vec == pass_vec << endl;
+        if (action == 16 && leg_vec == pass_vec)
         {
             pass_end = true;
         }
