@@ -136,40 +136,45 @@ public:
 
     bool is_legal_action_xy_dxy(int x, int y, int dx, int dy, bool flip = false)
     {
-        x += dx;
-        y += dy;
-        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (this->enemy_pieces[x + y * 4] != 1))
+	int new_x = x;
+	int new_y = y;
+	new_x += dx;
+	new_y += dy;
+        if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x) || (this->enemy_pieces[new_x + new_y * 4] != 1))
         {
+            cout << "a" << endl;
             return false;
         }
 
         for (int j = 0; j < 4; j++)
         {
-            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (this->enemy_pieces[x + y * 4] == 0 && this->pieces[x + y * 4] == 0))
+            if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x) || (this->enemy_pieces[new_x + new_y * 4] == 0 && this->pieces[new_x + new_y * 4] == 0))
             {
+		cout << "b" << endl;
                 return false;
             }
-            if (this->pieces[x + y * 4] == 1)
+            if (this->pieces[new_x + new_y * 4] == 1)
             {
                 if (flip)
                 {
                     for (int i = 0; i < 4; i++)
                     {
-                        x -= dx;
-                        y -= dy;
-                        if (this->pieces[x + y * 4] == 1)
+                        new_x -= dx;
+                        new_y -= dy;
+                        if (this->pieces[new_x + new_y * 4] == 1)
                         {
                             return true;
                         }
-                        this->pieces[x + y * 4] = 1;
-                        this->enemy_pieces[x + y * 4] = 0;
+                        this->pieces[new_x + new_y * 4] = 1;
+                        this->enemy_pieces[new_x + new_y * 4] = 0;
                     }
                     return true;
                 }
-                x += dx;
-                y += dy;
+                new_x += dx;
+                new_y += dy;
             }
         }
+	cout << "c" << endl;
         return false;
     }
 
