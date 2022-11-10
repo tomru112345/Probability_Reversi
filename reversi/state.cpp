@@ -179,44 +179,44 @@ public:
         return false;
     }
 
-    // bool is_legal_action_xy_dxy_penalty(int x, int y, int dx, int dy, bool flip = false)
-    // {
-    //     x += dx;
-    //     y += dy;
-    //     if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (this->enemy_pieces[x + y * 4] != 1))
-    //     {
-    //         return false;
-    //     }
+    bool is_legal_action_xy_dxy_penalty(int x, int y, int dx, int dy, bool flip = false)
+    {
+        x += dx;
+        y += dy;
+        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (this->enemy_pieces[x + y * 4] != 1))
+        {
+            return false;
+        }
 
-    //     for (int j = 0; j < 4; j++)
-    //     {
-    //         if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((this->enemy_pieces[x + y * 4] == 0) && (this->pieces[x + y * 4] == 0)))
-    //         {
-    //             return false;
-    //         }
-    //         if (this->pieces[x + y * 4] == 1)
-    //         {
-    //             if (flip)
-    //             {
-    //                 for (int i = 0; i < 4; i++)
-    //                 {
-    //                     x -= dx;
-    //                     y -= dy;
-    //                     if (this->pieces[x + y * 4] == 1)
-    //                     {
-    //                         return true;
-    //                     }
-    //                     this->pieces[x + y * 4] = 1;
-    //                     this->enemy_pieces[x + y * 4] = 0;
-    //                 }
-    //                 return true;
-    //             }
-    //             x += dx;
-    //             y += dy;
-    //         }
-    //     }
-    //     return false;
-    // }
+        for (int j = 0; j < 4; j++)
+        {
+            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((this->enemy_pieces[x + y * 4] == 0) && (this->pieces[x + y * 4] == 0)))
+            {
+                return false;
+            }
+            if (this->pieces[x + y * 4] == 1)
+            {
+                if (flip)
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        x -= dx;
+                        y -= dy;
+                        if (this->pieces[x + y * 4] == 1)
+                        {
+                            return true;
+                        }
+                        this->pieces[x + y * 4] = 1;
+                        this->enemy_pieces[x + y * 4] = 0;
+                    }
+                }
+                return true;
+            }
+            x += dx;
+            y += dy;
+        }
+        return false;
+    }
 
     bool is_legal_action_xy(int x, int y, bool flip = false)
     {
@@ -226,20 +226,20 @@ public:
         }
         if (flip)
         {
-            this->pieces[x + y * 4] = 1;
-            // if (rand() % 101 <= this->ratio_box[x + y * 4])
-            // {
-            //     this->pieces[x + y * 4] = 1;
-            // }
-            // else
-            // {
-            //     this->enemy_pieces[x + y * 4] = 1;
-            //     for (int i = 0; i < this->dxy.size(); i++)
-            //     {
-            //         is_legal_action_xy_dxy_penalty(x, y, this->dxy[i][0], this->dxy[i][1], flip);
-            //     }
-            //     return false;
-            // }
+            // this->pieces[x + y * 4] = 1;
+            if (rand() % 101 <= this->ratio_box[x + y * 4])
+            {
+                this->pieces[x + y * 4] = 1;
+            }
+            else
+            {
+                this->enemy_pieces[x + y * 4] = 1;
+                for (int i = 0; i < this->dxy.size(); i++)
+                {
+                    is_legal_action_xy_dxy_penalty(x, y, this->dxy[i][0], this->dxy[i][1], flip);
+                }
+                return false;
+            }
         }
         bool flag = false;
         for (int i = 0; i < this->dxy.size(); i++)
@@ -276,7 +276,7 @@ PYBIND11_MODULE(cppState, m)
         .def("next", &State::next)
         .def("legal_actions", &State::legal_actions)
         .def("is_legal_action_xy_dxy", &State::is_legal_action_xy_dxy)
-        // .def("is_legal_action_xy_dxy_penalty", &State::is_legal_action_xy_dxy_penalty)
+        .def("is_legal_action_xy_dxy_penalty", &State::is_legal_action_xy_dxy_penalty)
         .def("is_legal_action_xy", &State::is_legal_action_xy)
         .def("is_first_player", &State::is_first_player);
 }
