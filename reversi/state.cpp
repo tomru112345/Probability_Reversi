@@ -103,8 +103,8 @@ public:
         state.pieces = state.enemy_pieces;
         state.enemy_pieces = w;
 
-        vector<int> pass_vec = {16};
-        if (action == 16 && state.legal_actions() == pass_vec)
+        // vector<int> pass_vec = {16};
+        if (action == 16 && state.legal_actions() == [16])
         {
             pass_end = true;
         }
@@ -118,7 +118,7 @@ public:
         {
             for (int i = 0; i < 4; i++)
             {
-                if (is_legal_action_xy(i, j))
+                if (is_legal_action_xy(i, j, false))
                 {
                     cout << i + j * 4 << endl;
                     actions.push_back(i + j * 4);
