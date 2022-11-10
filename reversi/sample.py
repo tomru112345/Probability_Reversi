@@ -36,6 +36,9 @@ def print_reversi(state):
 if __name__ == '__main__':
     # 状態の生成
     state = State()
+    print(state.pieces)
+    print(state.enemy_pieces)
+    print()
     # ゲーム終了までのループ
     while True:
         # ゲーム終了時
@@ -44,6 +47,8 @@ if __name__ == '__main__':
         # 次の状態の取得
         state = state.next(random_action(state))
         # 文字列表示
-        print(state.depth)
-        # print_reversi(state)
-        #  print()
+        #  print(state.depth)
+        print(state.enemy_pieces)
+        print(state.pieces)
+        #  print_reversi(state)
+        print()
