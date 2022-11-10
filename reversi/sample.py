@@ -40,18 +40,14 @@ if __name__ == '__main__':
     # print(state.piece_count(state.pieces))
     # print(random_action(state))
     # ゲーム終了までのループ
-    legal_actions = state.legal_actions()
-    actions = legal_actions[random.randint(0, len(legal_actions)-1)]
-    state = state.next(actions)
-    print(state.pieces)
-    # while True:
+    while True:
     #     # ゲーム終了時
-    #     if state.is_done():
-    #         break
+         if state.is_done():
+             break
 
     #     # 次の状態の取得
-    #     state = state.next(random_action(state))
-    #     # 文字列表示
-    #     print(state.depth)
-    #     # print_reversi(state)
-    #     #  print()
+         state = state.next(random_action(state))
+         # 文字列表示
+         print(state.depth)
+         # print_reversi(state)
+         #  print()

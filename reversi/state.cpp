@@ -24,21 +24,21 @@ public:
 
     State()
     {
-        pieces = vector<int>(16, 0);
-        enemy_pieces = vector<int>(16, 0);
-        ratio_box = vector<int>(16, 100);
-        pieces[center_idx - balance_idx - 1] = 1;
-        pieces[center_idx + balance_idx] = 1;
-        enemy_pieces[center_idx - balance_idx] = 1;
-        enemy_pieces[center_idx + balance_idx - 1] = 1;
+        this->pieces = vector<int>(16, 0);
+        this->enemy_pieces = vector<int>(16, 0);
+        this->ratio_box = vector<int>(16, 100);
+        this->pieces[center_idx - balance_idx - 1] = 1;
+        this->pieces[center_idx + balance_idx] = 1;
+        this->enemy_pieces[center_idx - balance_idx] = 1;
+        this->enemy_pieces[center_idx + balance_idx - 1] = 1;
     }
 
     State(vector<int> p, vector<int> ep, vector<int> r, int d)
     {
-        pieces = p;
-        enemy_pieces = ep;
-        ratio_box = r;
-        depth = d;
+        this->pieces = p;
+        this->enemy_pieces = ep;
+        this->ratio_box = r;
+        this->depth = d;
     }
 
     int piece_count(vector<int> pieces)
@@ -56,7 +56,7 @@ public:
 
     bool is_done()
     {
-        if ((piece_count(pieces) + piece_count(enemy_pieces) == 16) || pass_end)
+        if ((piece_count(this->pieces) + piece_count(this->enemy_pieces) == 16) || this->pass_end)
         {
             return true;
         }
@@ -68,7 +68,7 @@ public:
 
     bool is_lose()
     {
-        if (is_done() && (piece_count(pieces) < piece_count(enemy_pieces)))
+        if (is_done() && (piece_count(this->pieces) < piece_count(this->enemy_pieces)))
         {
             return true;
         }
@@ -80,7 +80,7 @@ public:
 
     bool is_draw()
     {
-        if (is_done() && (piece_count(pieces) == piece_count(enemy_pieces)))
+        if (is_done() && (piece_count(this->pieces) == piece_count(this->enemy_pieces)))
         {
             return true;
         }
@@ -92,7 +92,7 @@ public:
 
     State next(int action)
     {
-        State state = State(pieces, enemy_pieces, ratio_box, depth + 1);
+        State state = State(this->pieces, this->enemy_pieces, this->ratio_box, depth + 1);
         if (action != 16)
         {
             int ac_x = action % 4;
@@ -106,11 +106,10 @@ public:
 
         vector<int> pass_vec = {16};
         vector<int> leg_vec = state.legal_actions();
-        cout << (leg_vec == pass_vec) << endl;
         if (action == 16 && leg_vec == pass_vec)
         {
-            pass_end = true;
-        }
+            state.pass_end = true;
+	}
         return state;
     }
 
@@ -139,18 +138,18 @@ public:
     {
         x += dx;
         y += dy;
-        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (enemy_pieces[x + y * 4] != 1))
+        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (this->enemy_pieces[x + y * 4] != 1))
         {
             return false;
         }
 
         for (int j = 0; j < 4; j++)
         {
-            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (enemy_pieces[x + y * 4] == 0 && pieces[x + y * 4] == 0))
+            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (this->enemy_pieces[x + y * 4] == 0 && this->pieces[x + y * 4] == 0))
             {
                 return false;
             }
-            if (pieces[x + y * 4] == 1)
+            if (this->pieces[x + y * 4] == 1)
             {
                 if (flip)
                 {
@@ -158,12 +157,12 @@ public:
                     {
                         x -= dx;
                         y -= dy;
-                        if (pieces[x + y * 4] == 1)
+                        if (this->pieces[x + y * 4] == 1)
                         {
                             return true;
                         }
-                        pieces[x + y * 4] = 1;
-                        enemy_pieces[x + y * 4] = 0;
+                        this->pieces[x + y * 4] = 1;
+                        this->enemy_pieces[x + y * 4] = 0;
                     }
                     return true;
                 }
@@ -178,18 +177,18 @@ public:
     {
         x += dx;
         y += dy;
-        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((enemy_pieces[x + y * 4]) != 1))
+        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (this->enemy_pieces[x + y * 4] != 1))
         {
             return false;
         }
 
         for (int j = 0; j < 4; j++)
         {
-            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (((enemy_pieces[x + y * 4]) == 0) && ((pieces[x + y * 4]) == 0)))
+            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((this->enemy_pieces[x + y * 4] == 0) && (this->pieces[x + y * 4] == 0)))
             {
                 return false;
             }
-            if (pieces[x + y * 4] == 1)
+            if (this->pieces[x + y * 4] == 1)
             {
                 if (flip)
                 {
@@ -197,12 +196,12 @@ public:
                     {
                         x -= dx;
                         y -= dy;
-                        if (pieces[x + y * 4] == 1)
+                        if (this->pieces[x + y * 4] == 1)
                         {
                             return true;
                         }
-                        pieces[x + y * 4] = 1;
-                        enemy_pieces[x + y * 4] = 0;
+                        this->pieces[x + y * 4] = 1;
+                        this->enemy_pieces[x + y * 4] = 0;
                     }
                     return true;
                 }
@@ -215,30 +214,30 @@ public:
 
     bool is_legal_action_xy(int x, int y, bool flip = false)
     {
-        if (enemy_pieces[x + y * 4] == 1 || pieces[x + y * 4] == 1)
+        if (this->enemy_pieces[x + y * 4] == 1 || this->pieces[x + y * 4] == 1)
         {
             return false;
         }
         if (flip)
         {
-            if (rand() % 101 <= ratio_box[x + y * 4])
+            if (rand() % 101 <= this->ratio_box[x + y * 4])
             {
-                pieces[x + y * 4] = 1;
+                this->pieces[x + y * 4] = 1;
             }
             else
             {
-                enemy_pieces[x + y * 4] = 1;
-                for (int i = 0; i < dxy.size(); i++)
+                this->enemy_pieces[x + y * 4] = 1;
+                for (int i = 0; i < this->dxy.size(); i++)
                 {
-                    is_legal_action_xy_dxy_penalty(x, y, dxy[i][0], dxy[i][1], flip);
+                    is_legal_action_xy_dxy_penalty(x, y, this->dxy[i][0], this->dxy[i][1], flip);
                 }
                 return false;
             }
         }
         bool flag = false;
-        for (int i = 0; i < dxy.size(); i++)
+        for (int i = 0; i < this->dxy.size(); i++)
         {
-            if (is_legal_action_xy_dxy(x, y, dxy[i][0], dxy[i][1], flip))
+            if (is_legal_action_xy_dxy(x, y, this->dxy[i][0], this->dxy[i][1], flip))
             {
                 flag = true;
             }
@@ -248,15 +247,10 @@ public:
 
     bool is_first_player()
     {
-        return (depth % 2 == 0);
+        return (this->depth % 2 == 0);
     }
 };
 
-int main()
-{
-    State state = State();
-    cout << state.is_first_player() << endl;
-}
 
 PYBIND11_MODULE(cppState, m)
 {
