@@ -97,6 +97,36 @@ class State:
             actions.append(SQUARE * SQUARE)  # パス
         return actions
 
+    # def is_legal_action_xy_dxy(self, x, y, dx, dy, flip=False):
+    #     """任意のマスの任意の方向が合法手かどうか"""
+    #     # １つ目 相手の石
+    #     x, y = x+dx, y+dy
+    #     if y < 0 or (SQUARE - 1) < y or x < 0 or (SQUARE - 1) < x or \
+    #             self.enemy_pieces[x+y*SQUARE] != 1:
+    #         return False
+
+    #     # 2つ目以降
+    #     for j in range(SQUARE):
+    #         # 空
+    #         if y < 0 or (SQUARE - 1) < y or x < 0 or (SQUARE - 1) < x or \
+    #                 (self.enemy_pieces[x+y*SQUARE] == 0 and self.pieces[x+y*SQUARE] == 0):
+    #             return False
+
+    #         # 自分の石
+    #         if self.pieces[x+y*SQUARE] == 1:
+    #             # 反転
+    #             if flip:
+    #                 for i in range(SQUARE):
+    #                     x, y = x-dx, y-dy
+    #                     if self.pieces[x+y*SQUARE] == 1:
+    #                         return True
+    #                     self.pieces[x+y*SQUARE] = 1
+    #                     self.enemy_pieces[x+y*SQUARE] = 0
+    #             return True
+    #         # 相手の石
+    #         x, y = x+dx, y+dy
+    #     return False
+
     def is_legal_action_xy(self, x, y, flip=False):
         """任意のマスが合法手かどうか"""
         def is_legal_action_xy_dxy(x, y, dx, dy):
@@ -184,6 +214,7 @@ class State:
         flag = False
         for dx, dy in self.dxy:
             if is_legal_action_xy_dxy(x, y, dx, dy):
+            # if self.is_legal_action_xy_dxy(x, y, dx, dy, flip):
                 flag = True
         return flag
 
