@@ -14,9 +14,9 @@ private:
     static const int balance_idx = 2;
 
 public:
-    vector<int> pieces;
-    vector<int> enemy_pieces;
-    vector<int> ratio_box;
+    vector<int> pieces = vector<int>(16, 0);
+    vector<int> enemy_pieces = vector<int>(16, 0);
+    vector<int> ratio_box = vector<int>(16, 100);
 
     int depth = 0;
     vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
@@ -24,9 +24,6 @@ public:
 
     State()
     {
-        this->pieces = vector<int>(16, 0);
-        this->enemy_pieces = vector<int>(16, 0);
-        this->ratio_box = vector<int>(16, 100);
         this->pieces[center_idx - balance_idx - 1] = 1;
         this->pieces[center_idx + balance_idx] = 1;
         this->enemy_pieces[center_idx - balance_idx] = 1;
@@ -144,7 +141,8 @@ public:
         {
             return false;
         }
-        else if (this->enemy_pieces[new_x + new_y * 4] != 1){
+        else if (this->enemy_pieces[new_x + new_y * 4] != 1)
+        {
             return false;
         }
 
@@ -154,7 +152,8 @@ public:
             {
                 return false;
             }
-            else if (this->enemy_pieces[new_x + new_y * 4] == 0 && this->pieces[new_x + new_y * 4] == 0){
+            else if (this->enemy_pieces[new_x + new_y * 4] == 0 && this->pieces[new_x + new_y * 4] == 0)
+            {
                 return false;
             }
             cout << "ai" << endl;
