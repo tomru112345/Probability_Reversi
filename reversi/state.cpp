@@ -172,11 +172,11 @@ public:
                         this->pieces[new_x + new_y * 4] = 1;
                         this->enemy_pieces[new_x + new_y * 4] = 0;
                     }
-                    return true;
                 }
-                new_x += dx;
-                new_y += dy;
+                return true;
             }
+            new_x += dx;
+            new_y += dy;
         }
         return false;
     }
