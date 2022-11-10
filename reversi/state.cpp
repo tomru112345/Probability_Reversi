@@ -140,12 +140,13 @@ public:
         int new_y = y;
         new_x += dx;
         new_y += dy;
-        cout << new_x << ", " << new_y << ", " << this->enemy_pieces[new_x + new_y * 4] << endl;
         if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x))
         {
+            cout << "a" << endl;
             return false;
         }
         else if (this->enemy_pieces[new_x + new_y * 4] != 1){
+            cout << "b" << endl;
             return false;
         }
 
@@ -153,9 +154,11 @@ public:
         {
             if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x))
             {
+                cout << "c" << endl;
                 return false;
             }
             else if (this->enemy_pieces[new_x + new_y * 4] == 0 && this->pieces[new_x + new_y * 4] == 0){
+                cout << "d" << endl;
                 return false;
             }
             
@@ -180,6 +183,7 @@ public:
                 new_y += dy;
             }
         }
+        cout << "e" << endl;
         return false;
     }
 
