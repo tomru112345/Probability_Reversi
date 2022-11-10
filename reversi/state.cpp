@@ -156,7 +156,6 @@ public:
             {
                 return false;
             }
-            cout << "ai" << endl;
             if (this->pieces[new_x + new_y * 4] == 1)
             {
                 if (flip)
