@@ -142,11 +142,9 @@ public:
         new_y += dy;
         if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x))
         {
-            cout << "a" << endl;
             return false;
         }
         else if (this->enemy_pieces[new_x + new_y * 4] != 1){
-            cout << "b" << endl;
             return false;
         }
 
@@ -154,14 +152,12 @@ public:
         {
             if ((new_y < 0) || (3 < new_y) || (new_x < 0) || (3 < new_x))
             {
-                cout << "c" << endl;
                 return false;
             }
             else if (this->enemy_pieces[new_x + new_y * 4] == 0 && this->pieces[new_x + new_y * 4] == 0){
-                cout << "d" << endl;
                 return false;
             }
-            
+            cout << "ai" << endl;
             if (this->pieces[new_x + new_y * 4] == 1)
             {
                 if (flip)
@@ -183,7 +179,6 @@ public:
                 new_y += dy;
             }
         }
-        cout << "e" << endl;
         return false;
     }
 
