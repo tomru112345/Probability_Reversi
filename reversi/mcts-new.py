@@ -118,19 +118,20 @@ class Node:
 class MCTS:
     """モンテカルロ木探索クラス"""
 
-    def __init__(self, temperature: float = 0) -> None:
+    def __init__(self, model: Model, state: State, temperature: float = 0) -> None:
+        self.model = model
         self.temperature = temperature
 
     def boltzman(self, xs: List[float]) -> List[float]:
         """ボルツマン分布"""
         xs = [x ** (1 / self.temperature) for x in xs]
-        print(type([x / sum(xs) for x in xs]))
         return [x / sum(xs) for x in xs]
 
-    def get_scores(self, model: Model) -> List[float]:
+    def get_scores(self, state) -> List[float]:
         """スコアの取得"""
         # 現在の局面のノードの作成
-        root_node = Node(model=model, state=state, p=0, expand_base=10)
+        root_node = Node(model=self.model, state=state,
+                         p=0, expand_base=10)
         # 複数回の評価の実行
         for _ in range(PV_EVALUATE_COUNT):
             root_node.evaluate()
@@ -145,13 +146,10 @@ class MCTS:
             scores = self.boltzman(scores)
         return scores
 
-    def get_action(self):
+    def get_action(self, state):
         """行動選択"""
-        @watch.watch
-        def get_action(state: State, model: Model):
-            scores = self.get_scores(model)
-            return np.random.choice(state.legal_actions(), p=scores)
-        return get_action
+        scores = self.get_scores(state)
+        return np.random.choice(state.legal_actions(), p=scores)
 
 
 # 動作確認
@@ -162,8 +160,8 @@ if __name__ == '__main__':
     # 状態の生成
     state = State()
     # モンテカルロ木探索で行動取得を行う関数の生成
-    mcts = MCTS(temperature=1.0)
-    next_action = mcts.get_action()
+    mcts = MCTS(model=model, state=state, temperature=1.0)
+    # next_action = mcts.get_action()
 
     # ゲーム終了までループ
     while True:
@@ -171,7 +169,8 @@ if __name__ == '__main__':
         if state.is_done():
             break
         # 行動の取得
-        action = next_action(state, model)
+        # action = next_action(state)
+        action = mcts.get_action(state)
         # 次の状態の取得
         state = state.next(action)
         # 文字列表示
