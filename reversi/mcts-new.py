@@ -39,7 +39,7 @@ def predict(model: Model, state: State):
     return policies, value
 
 
-def nodes_to_scores(nodes: List["Node"]):
+def nodes_to_scores(nodes: List["Node"]) -> List[float]:
     """ノードのリストを試行回数のリストに変換"""
     # scores = []
     # for c in nodes:
@@ -51,7 +51,8 @@ def nodes_to_scores(nodes: List["Node"]):
 class Node:
     """ノードの定義"""
 
-    def __init__(self, state: State, p: int, expand_base: int = 10) -> None:
+    def __init__(self, model: Model, state: State, p: int, expand_base: int = 10) -> None:
+        self.model = model  # 学習モデル
         self.state: State = state  # 状態
         self.p = p  # 方策
         self.w: int = 0  # 累計価値
@@ -73,7 +74,7 @@ class Node:
         # 子ノードが存在しない時
         if not self.child_nodes:
             # ニューラルネットワークの推論で方策と価値を取得
-            policies, value = predict(model, self.state)
+            policies, value = predict(self.model, self.state)
             # 累計価値と試行回数の更新
             self.w += value
             self.n += 1
@@ -84,7 +85,7 @@ class Node:
             #     self.child_nodes = [Node(self.state.next(action), p=policy, expand_base=self.expand_base)
             #                         for action, policy in zip(self.state.legal_actions(), policies)]
 
-            self.child_nodes = [Node(self.state.next(action), p=policy, expand_base=self.expand_base)
+            self.child_nodes = [Node(model=self.model, state=self.state.next(action), p=policy, expand_base=self.expand_base)
                                 for action, policy in zip(self.state.legal_actions(), policies)]
             # for action, policy in zip(self.state.legal_actions(), policies):
             #     self.child_nodes.append(
@@ -126,10 +127,10 @@ class MCTS:
         print(type([x / sum(xs) for x in xs]))
         return [x / sum(xs) for x in xs]
 
-    def get_scores(self) -> List["Node"]:
+    def get_scores(self, model: Model) -> List[float]:
         """スコアの取得"""
         # 現在の局面のノードの作成
-        root_node = Node(state=state, p=0, expand_base=10)
+        root_node = Node(model=model, state=state, p=0, expand_base=10)
         # 複数回の評価の実行
         for _ in range(PV_EVALUATE_COUNT):
             root_node.evaluate()
@@ -147,8 +148,8 @@ class MCTS:
     def get_action(self):
         """行動選択"""
         @watch.watch
-        def get_action(state: State):
-            scores = self.get_scores()
+        def get_action(state: State, model: Model):
+            scores = self.get_scores(model)
             return np.random.choice(state.legal_actions(), p=scores)
         return get_action
 
@@ -170,7 +171,7 @@ if __name__ == '__main__':
         if state.is_done():
             break
         # 行動の取得
-        action = next_action(state)
+        action = next_action(state, model)
         # 次の状態の取得
         state = state.next(action)
         # 文字列表示
