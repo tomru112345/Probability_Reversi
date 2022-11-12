@@ -7,6 +7,9 @@
         "xutility": "cpp",
         "system_error": "cpp",
         "xtr1common": "cpp",
-        "iosfwd": "cpp"
+        "iosfwd": "cpp",
+        "tuple": "cpp",
+        "numeric": "cpp",
+        "algorithm": "cpp"
     }
 }
