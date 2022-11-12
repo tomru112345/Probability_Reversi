@@ -44,9 +44,10 @@ struct result_t predict(KerasModel model, State state)
     }
 
     int value = y[1][0][0];
-    result_t.p = policies;
-    result_t.v = value;
-    return result_t;
+    result_t res;
+    res.p = policies;
+    res.v = value;
+    return res;
 }
 
 vector<float> nodes_to_scores(vector<Node> nodes)
