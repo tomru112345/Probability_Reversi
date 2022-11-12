@@ -95,20 +95,20 @@ public:
             auto result = predict(this->model, this->state);
             vector<int> policies = result.p;
             int value = result.v;
-            this.w += value;
-            this.n += 1;
+            this->w += value;
+            this->n += 1;
 
             for (int i = 0; i < policies.size(); i++)
             {
-                this.child_nodes.push_back(Node(this->model, this->state.next(this->state.legal_actions().at(i)), policies.at(i)));
+                this->child_nodes.push_back(Node(this->model, this->state.next(this->state.legal_actions().at(i)), policies.at(i)));
             }
             return value;
         }
         else
         {
             value -= this->next_child_node().evaluate();
-            this.w += value;
-            this.n += 1;
+            this->w += value;
+            this->n += 1;
             return value;
         }
     }
