@@ -92,7 +92,7 @@ public:
             return value;
         }
 
-        if (child_node.empty())
+        if (this->child_nodes.empty())
         {
             auto result = predict(this->model, this->state);
             vector<int> policies = result.p;
@@ -133,7 +133,7 @@ public:
                 float tmp_v;
                 if (this->child_nodes.at(i).n)
                 {
-                    tmp_v = -child_node.w / child_node.n;
+                    tmp_v = -this->child_nodes.at(i).w / this->child_nodes.at(i).n;
                 }
                 else
                 {
