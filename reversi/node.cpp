@@ -12,7 +12,7 @@
 using namespace std;
 int PV_EVALUATE_COUNT = 50;
 
-tuple<vector<int>, int> predict(KerasModel model, State state)
+struct result_t predict(KerasModel model, State state)
 {
     int a = 4;
     int b = 4;
@@ -23,11 +23,6 @@ tuple<vector<int>, int> predict(KerasModel model, State state)
     x = x.transpose(1, 2, 0);
     x = x.reshape(1, a, b, c);
     pybind11::array_t<float> y = model.predict(x, 1);
-    struct result_t
-    {
-        vector<int> p;
-        int v;
-    };
     vector<int> tmp_act = {state.legal_actions()};
     vector<int> policies = y[0][0][tmp_act];
     int sum_policies = accumulate(policies.begin(), policies.end(), 0);
@@ -44,7 +39,14 @@ tuple<vector<int>, int> predict(KerasModel model, State state)
     }
 
     int value = y[1][0][0];
-    return result_t{policies, value};
+    struct result_t
+    {
+        vector<int> p;
+        int v;
+    };
+    result_t.p = policies;
+    result_t.v = value;
+    return result_t;
 }
 
 vector<float> nodes_to_scores(vector<Node> nodes)
