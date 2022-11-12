@@ -146,7 +146,7 @@ class MCTS:
             scores = self.boltzman(scores)
         return scores
 
-    def get_action(self, state):
+    def get_action(self, state) -> int:
         """行動選択"""
         scores = self.get_scores(state)
         return np.random.choice(state.legal_actions(), p=scores)
@@ -157,6 +157,8 @@ if __name__ == '__main__':
     # モデルの読み込み
     path = sorted(Path(f'./model/{SQUARE}x{SQUARE}/').glob('*.h5'))[-1]
     model = load_model(str(path))
+    print(type(model))
+    """
     # 状態の生成
     state = State()
     # モンテカルロ木探索で行動取得を行う関数の生成
@@ -175,3 +177,4 @@ if __name__ == '__main__':
         state = state.next(action)
         # 文字列表示
         print(state)
+    """

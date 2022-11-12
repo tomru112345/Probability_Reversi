@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <algorithm>
 using namespace std;
-namespace py = pybind11;
 
 class State
 {
@@ -257,26 +256,3 @@ public:
         return (this->depth % 2 == 0);
     }
 };
-
-PYBIND11_MODULE(cppState, m)
-{
-    py::class_<State>(m, "State")
-        .def(py::init())
-        .def(py::init<vector<int>, vector<int>, vector<int>, int>())
-        .def_readwrite("pieces", &State::pieces)
-        .def_readwrite("enemy_pieces", &State::enemy_pieces)
-        .def_readwrite("ratio_box", &State::ratio_box)
-        .def_readwrite("depth", &State::depth)
-        .def_readwrite("dxy", &State::dxy)
-        .def_readwrite("pass_end", &State::pass_end)
-        .def("piece_count", &State::piece_count)
-        .def("is_done", &State::is_done)
-        .def("is_lose", &State::is_lose)
-        .def("is_draw", &State::is_draw)
-        .def("next", &State::next)
-        .def("legal_actions", &State::legal_actions)
-        .def("is_legal_action_xy_dxy", &State::is_legal_action_xy_dxy)
-        .def("is_legal_action_xy_dxy_penalty", &State::is_legal_action_xy_dxy_penalty)
-        .def("is_legal_action_xy", &State::is_legal_action_xy)
-        .def("is_first_player", &State::is_first_player);
-}

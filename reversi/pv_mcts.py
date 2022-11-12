@@ -21,11 +21,11 @@ def predict(model, state: State):
     # 推論のための入力データのシェイプの変換
     a, b, c = DN_INPUT_SHAPE
 
-    x = np.array([state.pieces, state.enemy_pieces, state.ratio_box])
+    x: np.ndarray = np.array([state.pieces, state.enemy_pieces, state.ratio_box])
     x = x.reshape(c, a, b).transpose(1, 2, 0).reshape(1, a, b, c)
 
     # 推論
-    y = model.predict(x, batch_size=1)
+    y: np.ndarray = model.predict(x, batch_size=1)
 
     # 方策の取得
     policies = y[0][0][list(state.legal_actions())]  # 合法手のみ
