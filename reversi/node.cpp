@@ -62,7 +62,6 @@ private:
     int p = 0;
     int w = 0;
     int n = 0;
-    vector<Node> child_nodes;
 
 public:
     Node(KerasModel m, State s, int np)
@@ -70,7 +69,7 @@ public:
         model = m;
         state = s;
         p = np;
-        child_nodes = NULL;
+        vector<Node> child_nodes;
     }
 
     float evaluate()
@@ -86,14 +85,14 @@ public:
             {
                 value = 0;
             }
-            this.w += value;
-            this.n += 1;
+            this->w += value;
+            this->n += 1;
             return value;
         }
 
         if (child_node.empty())
         {
-            auto result = predict(this->model, thia->state);
+            auto result = predict(this->model, this->state);
             vector<int> policies = result.p;
             int value = result.v;
             this.w += value;
