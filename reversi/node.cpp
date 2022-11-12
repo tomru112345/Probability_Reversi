@@ -17,9 +17,10 @@ tuple<vector<int>, int> predict(KerasModel model, State state)
     int a = 4;
     int b = 4;
     int c = 3;
-    pybind::array_t<int> x = pybind::array_t<int>({state.pieces, state.enemy_pieces, state.ratio_box});
+    vector<vector<int>> tmp_l = {state.pieces, state.enemy_pieces, state.ratio_box};
+    pybind11::array_t<vector<vector<int>>> x = pybind11::array_t<vector<vector<int>>>(tmp_l);
     x = x.reshape(c, a, b).transpose(1, 2, 0).reshape(1, a, b, c);
-    pybind::array_t<float> y = model.predict(x, batch_size = 1);
+    pybind11::array_t<float> y = model.predict(x, batch_size = 1);
     struct result_t
     {
         vector<int> p;
