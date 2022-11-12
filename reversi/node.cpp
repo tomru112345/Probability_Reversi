@@ -63,6 +63,7 @@ private:
     int p = 0;
     int w = 0;
     int n = 0;
+    vector<Node> child_nodes;
 
 public:
     Node(KerasModel m, State s, int np)
@@ -70,7 +71,7 @@ public:
         model = m;
         state = s;
         p = np;
-        vector<Node> child_nodes;
+        child_nodes;
     }
 
     float evaluate()
