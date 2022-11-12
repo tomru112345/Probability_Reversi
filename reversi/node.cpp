@@ -11,6 +11,11 @@
 
 using namespace std;
 int PV_EVALUATE_COUNT = 50;
+struct result_t
+{
+    vector<int> p;
+    int v;
+};
 
 struct result_t predict(KerasModel model, State state)
 {
@@ -39,11 +44,6 @@ struct result_t predict(KerasModel model, State state)
     }
 
     int value = y[1][0][0];
-    struct result_t
-    {
-        vector<int> p;
-        int v;
-    };
     result_t.p = policies;
     result_t.v = value;
     return result_t;
