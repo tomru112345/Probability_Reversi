@@ -378,8 +378,8 @@ public:
                 tmp_v += (C_PUCT * this->child_nodes.at(i).p * sqrt(t) / (1 + this->child_nodes.at(i).n));
                 pucb_values.push_back(tmp_v);
             }
-            int argmax_i = *max_element(pucb_values.begin(), pucb_values.end());
-            return this->child_nodes.at(argmax_i);
         }
+        int argmax_i = *max_element(pucb_values.begin(), pucb_values.end());
+        return this->child_nodes.at(argmax_i);
     }
 };
