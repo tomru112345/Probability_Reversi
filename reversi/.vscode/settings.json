@@ -11,6 +11,8 @@
         "tuple": "cpp",
         "numeric": "cpp",
         "algorithm": "cpp",
-        "xlocale": "cpp"
-    }
+        "xlocale": "cpp",
+        "iostream": "cpp"
+    },
+    "files.eol": "\n"
 }
