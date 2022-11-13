@@ -22,11 +22,8 @@ struct result_t
 struct result_t predict(auto model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
-    auto result = pypre.attr("predict")(model, state).cast<result_t>();
-    result_t res;
-    res.p = result.p;
-    res.v = result.v;
-    return res;
+    result_t result = pypre.attr("predict")(model, state).cast<result_t>();
+    return result;
 }
 
 vector<float> boltzman(vector<float> xs, float temperature)
@@ -76,7 +73,7 @@ vector<float> pv_mcts_scores(auto model, State state, float temperature)
             return scores;
         }
 
-        float evaluate()
+        float evaluate(auto model)
         {
             float value = 0;
             if (this->state.is_done())
@@ -110,7 +107,7 @@ vector<float> pv_mcts_scores(auto model, State state, float temperature)
             }
             else
             {
-                value -= this->next_child_node().evaluate();
+                value -= this->next_child_node().evaluate(model);
                 this->w += value;
                 this->n += 1;
                 return value;
@@ -152,7 +149,7 @@ vector<float> pv_mcts_scores(auto model, State state, float temperature)
     Node root_node = Node(state, 0);
     for (int i = 0; i < PV_EVALUATE_COUNT; i++)
     {
-        root_node.evaluate();
+        root_node.evaluate(model);
     }
 
     vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
