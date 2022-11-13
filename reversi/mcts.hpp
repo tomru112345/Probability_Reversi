@@ -1,4 +1,3 @@
-#include "keras_model.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
@@ -17,10 +16,10 @@ class MCTS
 {
 private:
     float temperature = 0;
-    KerasModel model;
+    auto model;
 
 public:
-    MCTS(KerasModel model, float temperature)
+    MCTS(auto model, float temperature)
     {
         this->model = model;
         this->temperature = temperature;
