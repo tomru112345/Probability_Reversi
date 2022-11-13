@@ -7,7 +7,6 @@
 #include <algorithm>
 
 using namespace std;
-
 int PV_EVALUATE_COUNT = 50;
 
 class MCTS
@@ -44,7 +43,7 @@ public:
 
     vector<float> get_scores(State state)
     {
-        Node root_node = Node(this.model, state, 0);
+        Node root_node = Node(this->model, state, 0);
         for (int i = 0; i < PV_EVALUATE_COUNT; i++)
         {
             root_node.evaluate();

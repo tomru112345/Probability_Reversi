@@ -9,7 +9,6 @@
 #include <math.h>
 
 using namespace std;
-int PV_EVALUATE_COUNT = 50;
 
 struct result_t
 {
