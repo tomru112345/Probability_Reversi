@@ -2,6 +2,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include <pybind11/embed.h>
+#include "keras_model.h"
 #include "state.cpp"
 #include <vector>
 #include <tuple>
@@ -42,7 +43,7 @@ vector<float> nodes_to_scores(vector<Node> nodes)
 class Node
 {
 private:
-    auto model;
+    KerasModel model;
     State state;
     int p = 0;
     int w = 0;
@@ -50,7 +51,7 @@ private:
     vector<Node> child_nodes;
 
 public:
-    Node(auto m, State s, int np)
+    Node(KerasModel m, State s, int np)
     {
         model = m;
         state = s;

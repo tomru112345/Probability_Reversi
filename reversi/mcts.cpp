@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include "keras_model.h"
 #include "state.cpp"
 #include "node.cpp"
 #include <vector>
@@ -19,7 +20,7 @@ private:
     auto model;
 
 public:
-    MCTS(auto model, float temperature)
+    MCTS(KerasModel model, float temperature)
     {
         this->model = model;
         this->temperature = temperature;
