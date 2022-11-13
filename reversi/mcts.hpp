@@ -65,9 +65,9 @@ public:
         return scores;
     }
 
-    int get_action(State state)
+    int get_action(KerasModel model, State state)
     {
-        vector<float> scores = get_scores(state);
+        vector<float> scores = get_scores(model, state);
         vector<int> leg_ac = state.legal_actions();
         auto pypre = pybind11::module::import("py_rand_choice");
         int action = pypre.attr("choice")(leg_ac, scores).cast<int>();
