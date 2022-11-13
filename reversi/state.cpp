@@ -324,6 +324,11 @@ bool State::is_draw()
     }
 }
 
+bool State::is_first_player()
+{
+    return (this->depth % 2 == 0);
+}
+
 State State::next(int action)
 {
     State state = State(this->pieces, this->enemy_pieces, this->ratio_box, depth + 1);
@@ -487,9 +492,4 @@ bool State::is_legal_action_xy(int x, int y, bool flip = false)
         }
     }
     return flag;
-}
-
-bool State::is_first_player()
-{
-    return (this->depth % 2 == 0);
 }
