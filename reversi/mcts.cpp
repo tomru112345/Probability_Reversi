@@ -1,6 +1,5 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include "keras_model.h"
 #include "state.cpp"
 #include "node.cpp"
 #include <vector>
@@ -17,10 +16,10 @@ class MCTS
 {
 private:
     float temperature = 0;
-    KerasModel model;
+    auto model;
 
 public:
-    MCTS(KerasModel model, float temperature)
+    MCTS(auto model, float temperature)
     {
         this->model = model;
         this->temperature = temperature;
@@ -71,6 +70,8 @@ public:
     int get_action(State state)
     {
         vector<float> scores = get_scores(state);
+        // TODO
+        leg_ac = state.legal_actions();
         int action = scores[rand() % scores.size()];
         return action;
     }

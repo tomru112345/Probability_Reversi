@@ -1,13 +1,15 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
-#include "keras_model.h"
+#include <pybind11/embed.h>
 #include "state.cpp"
 #include <vector>
 #include <tuple>
 #include <numeric>
 #include <math.h>
 #include <algorithm>
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std;
 int PV_EVALUATE_COUNT = 50;
@@ -17,36 +19,13 @@ struct result_t
     int v;
 };
 
-struct result_t predict(KerasModel model, State state)
+struct result_t predict(auto model, State state)
 {
-    int a = 4;
-    int b = 4;
-    int c = 3;
-    vector<vector<int>> tmp_l = {state.pieces, state.enemy_pieces, state.ratio_box};
-    pybind11::array_t<vector<vector<int>>> x = pybind11::array_t<vector<vector<int>>>(tmp_l);
-    x = x.reshape(c, a, b);
-    x = x.transpose(1, 2, 0);
-    x = x.reshape(1, a, b, c);
-    pybind11::array_t<float> y = model.predict(x, 1);
-    vector<int> tmp_act = {state.legal_actions()};
-    vector<int> policies = y[0][0][tmp_act];
-    int sum_policies = accumulate(policies.begin(), policies.end(), 0);
-    for (int i = 0; i < policies.size(); i++)
-    {
-        if (sum_policies > 0)
-        {
-            policies.at(i) /= sum_policies;
-        }
-        else
-        {
-            policies.at(i) /= 1;
-        }
-    }
-
-    int value = y[1][0][0];
+	auto pypre = pybind11::module::import("pypredict");
+    auto result = pypre.attr("predict")(model, state).cast<result_t>();
     result_t res;
-    res.p = policies;
-    res.v = value;
+    res.p = result.p;
+    res.v = result.v;
     return res;
 }
 
@@ -63,7 +42,7 @@ vector<float> nodes_to_scores(vector<Node> nodes)
 class Node
 {
 private:
-    KerasModel model;
+    auto model;
     State state;
     int p = 0;
     int w = 0;
@@ -71,7 +50,7 @@ private:
     vector<Node> child_nodes;
 
 public:
-    Node(KerasModel m, State s, int np)
+    Node(auto m, State s, int np)
     {
         model = m;
         state = s;
@@ -152,4 +131,4 @@ public:
             return this->child_nodes.at(argmax_i);
         }
     }
-}
+};

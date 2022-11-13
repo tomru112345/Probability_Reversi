@@ -41,9 +41,6 @@ def predict(model: Model, state: State):
 
 def nodes_to_scores(nodes: List["Node"]) -> List[float]:
     """ノードのリストを試行回数のリストに変換"""
-    # scores = []
-    # for c in nodes:
-    #     scores.append(c.n)
     scores = [c. n for c in nodes]
     return scores
 

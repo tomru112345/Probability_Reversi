@@ -10,6 +10,7 @@
         "iosfwd": "cpp",
         "tuple": "cpp",
         "numeric": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "xlocale": "cpp"
     }
 }
