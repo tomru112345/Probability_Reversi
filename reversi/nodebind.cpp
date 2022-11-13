@@ -2,6 +2,10 @@
 #include <pybind11/stl.h>
 #include "keras_model.h"
 #include "node.cpp"
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <algorithm>
 
 using namespace std;
 
