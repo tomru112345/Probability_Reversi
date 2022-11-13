@@ -18,7 +18,7 @@ private:
     float temperature = 0;
 
 public:
-    MCTS(auto model, float temperature)
+    MCTS(float temperature)
     {
         this->temperature = temperature;
     }
