@@ -2,7 +2,6 @@
 #include <pybind11/stl.h>
 #include "state.hpp"
 #include <iostream>
-#include <vector>
 #include <cstdlib>
 #include <algorithm>
 
