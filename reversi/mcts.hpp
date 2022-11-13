@@ -3,6 +3,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/embed.h>
 #include "state.hpp"
+#include "keras_model.h"
 #include "node.hpp"
 #include <vector>
 #include <numeric>
@@ -42,7 +43,7 @@ public:
         return new_xs;
     }
 
-    vector<float> get_scores(auto model, State state)
+    vector<float> get_scores(KerasModel model, State state)
     {
         Node root_node = Node(model, state, 0);
         for (int i = 0; i < PV_EVALUATE_COUNT; i++)
