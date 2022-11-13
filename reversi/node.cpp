@@ -3,7 +3,6 @@
 #include <pybind11/numpy.h>
 #include <pybind11/embed.h>
 #include "keras_model.h"
-#include "state.cpp"
 #include <vector>
 #include <tuple>
 #include <numeric>
@@ -272,7 +271,7 @@ struct result_t
     int v;
 };
 
-struct result_t predict(KerasModel model, State::State state)
+struct result_t predict(KerasModel model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
     auto result = pypre.attr("predict")(model, state).cast<result_t>();
@@ -303,7 +302,7 @@ private:
     vector<Node> child_nodes;
 
 public:
-    Node(KerasModel m, State::State s, int np)
+    Node(KerasModel m, State s, int np)
     {
         model = m;
         state = s;
