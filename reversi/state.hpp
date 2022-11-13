@@ -117,4 +117,4 @@ public:
     bool is_legal_action_xy(int x, int y, bool flip = false);
 };
 
-#endif // STATE_HPP
+#endif

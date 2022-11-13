@@ -16,7 +16,7 @@ struct result_t
     int v;
 };
 
-struct result_t predict(KerasModel model, State state)
+struct result_t predict(auto model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
     auto result = pypre.attr("predict")(model, state).cast<result_t>();
@@ -30,13 +30,13 @@ class Node
 {
 private:
 public:
-    KerasModel model;
+    auto model;
     State state;
     int p = 0;
     int w = 0;
     int n = 0;
     vector<Node> child_nodes;
-    Node(KerasModel m, State s, int np)
+    Node(auto m, State s, int np)
     {
         model = m;
         state = s;
