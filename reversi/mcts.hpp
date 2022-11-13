@@ -16,12 +16,10 @@ class MCTS
 {
 private:
     float temperature = 0;
-    auto model;
 
 public:
     MCTS(auto model, float temperature)
     {
-        this->model = model;
         this->temperature = temperature;
     }
 
@@ -44,9 +42,9 @@ public:
         return new_xs;
     }
 
-    vector<float> get_scores(State state)
+    vector<float> get_scores(auto model, State state)
     {
-        Node root_node = Node(this->model, state, 0);
+        Node root_node = Node(model, state, 0);
         for (int i = 0; i < PV_EVALUATE_COUNT; i++)
         {
             root_node.evaluate();
