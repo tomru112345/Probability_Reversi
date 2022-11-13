@@ -14,7 +14,7 @@ class MCTS
 {
 private:
     float temperature = 0;
-    auto model;
+    KerasModel model;
 
 public:
     MCTS(KerasModel model, float temperature)
@@ -53,8 +53,7 @@ public:
         vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
         if (this->temperature == 0)
         {
-            vector<int>::iterator iter = max_element(scores.begin(), scores.end());
-            int action = distance(scores.begin(), iter);
+            int action = *max_element(scores.begin(), scores.end());
             scores = vector<float>(scores.size(), 0);
             scores[action] = 1;
         }

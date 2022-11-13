@@ -30,14 +30,13 @@ struct result_t predict(KerasModel model, State state)
 class Node
 {
 private:
+public:
     KerasModel model;
     State state;
     int p = 0;
     int w = 0;
     int n = 0;
     vector<Node> child_nodes;
-
-public:
     Node(KerasModel m, State s, int np)
     {
         model = m;
