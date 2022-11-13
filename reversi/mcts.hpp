@@ -43,7 +43,7 @@ public:
         return new_xs;
     }
 
-    vector<float> get_scores(KerasModel model, State state)
+    vector<float> get_scores(KerasModel::KerasModel model, State state)
     {
         Node root_node = Node(model, state, 0);
         for (int i = 0; i < PV_EVALUATE_COUNT; i++)
@@ -65,7 +65,7 @@ public:
         return scores;
     }
 
-    int get_action(KerasModel model, State state)
+    int get_action(KerasModel::KerasModel model, State state)
     {
         vector<float> scores = get_scores(model, state);
         vector<int> leg_ac = state.legal_actions();
