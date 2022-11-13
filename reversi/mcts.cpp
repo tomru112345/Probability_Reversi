@@ -1,10 +1,7 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 #include "keras_model.h"
-#include "state.cpp"
-#include "node.cpp"
+#include "state.hpp"
+#include "node.hpp"
 #include <vector>
-#include <tuple>
 #include <numeric>
 #include <math.h>
 #include <algorithm>
@@ -53,7 +50,7 @@ public:
             root_node.evaluate();
         }
 
-        vector<float> scores = nodes_to_scores(root_node.child_nodes);
+        vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
         if (this->temperature == 0)
         {
             vector<int>::iterator iter = max_element(scores.begin(), scores.end());
@@ -71,9 +68,9 @@ public:
     int get_action(State state)
     {
         vector<float> scores = get_scores(state);
-        // TODO
-        leg_ac = state.legal_actions();
-        int action = scores[rand() % scores.size()];
+        vector<int> leg_ac = state.legal_actions();
+        auto pypre = pybind11::module::import("py_rand_choice");
+        int action = pypre.attr("choice")(leg_ac, scores).cast<int>();
         return action;
     }
 };

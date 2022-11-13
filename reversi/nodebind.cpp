@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include "keras_model.h"
-#include "node.cpp"
+#include "node.hpp"
 #include <iostream>
 #include <vector>
 #include <cstdlib>
