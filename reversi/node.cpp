@@ -3,6 +3,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/embed.h>
 #include "keras_model.h"
+#include "state.hpp"
 #include <vector>
 #include <tuple>
 #include <numeric>
@@ -14,7 +15,7 @@
 using namespace std;
 int PV_EVALUATE_COUNT = 50;
 
-class State
+// class State
 {
 private:
     static const int center_idx = 8;
