@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include "state.cpp"
+#include "state.hpp"
 
 using namespace std;
 
