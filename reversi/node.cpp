@@ -281,7 +281,7 @@ struct result_t predict(KerasModel model, State state)
     return res;
 }
 
-vector<float> nodes_to_scores(vector<Node> nodes)
+vector<float> nodes_to_scores(vector<Node::Node> nodes)
 {
     vector<float> scores;
     for (int i = 0; i < nodes.size(); i++)
