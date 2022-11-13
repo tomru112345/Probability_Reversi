@@ -1,4 +1,4 @@
-from cppState import *
+from cppState import State
 import random
 from settings import SQUARE, default_ratio_box
 
