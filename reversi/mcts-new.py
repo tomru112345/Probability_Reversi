@@ -39,10 +39,10 @@ def predict(model: Model, state: State):
     return policies, value
 
 
-def nodes_to_scores(nodes: List["Node"]) -> List[float]:
-    """ノードのリストを試行回数のリストに変換"""
-    scores = [c. n for c in nodes]
-    return scores
+# def nodes_to_scores(nodes: List["Node"]) -> List[float]:
+#     """ノードのリストを試行回数のリストに変換"""
+#     scores = [c. n for c in nodes]
+#     return scores
 
 
 class Node:
@@ -56,6 +56,11 @@ class Node:
         self.n: int = 0  # 試行回数
         self.child_nodes: Optional[List[Node]] = None  # 子ノード群
         self.expand_base: int = expand_base
+
+    def nodes_to_scores(self, nodes: List["Node"]) -> List[float]:
+        """ノードのリストを試行回数のリストに変換"""
+        scores = [c. n for c in nodes]
+        return scores
 
     def evaluate(self) -> float:
         """局面 (self: current Node) の評価値の計算, 更新"""
@@ -100,7 +105,7 @@ class Node:
         """アーク評価値が最大の子ノードを取得"""
         # アーク評価値の計算
         C_PUCT = 1.0
-        t = sum(nodes_to_scores(self.child_nodes))
+        t = sum(self.nodes_to_scores(self.child_nodes))
 
         pucb_values = []
         for child_node in self.child_nodes:
@@ -134,7 +139,7 @@ class MCTS:
             root_node.evaluate()
 
         # 合法手の確率分布
-        scores = nodes_to_scores(root_node.child_nodes)
+        scores = root_node.nodes_to_scores(root_node.child_nodes)
         if self.temperature == 0:  # 最大値のみ1
             action = np.argmax(scores)
             scores = np.zeros(len(scores))
@@ -155,7 +160,6 @@ if __name__ == '__main__':
     path = sorted(Path(f'./model/{SQUARE}x{SQUARE}/').glob('*.h5'))[-1]
     model = load_model(str(path))
     print(type(model))
-    """
     # 状態の生成
     state = State()
     # モンテカルロ木探索で行動取得を行う関数の生成
@@ -174,4 +178,3 @@ if __name__ == '__main__':
         state = state.next(action)
         # 文字列表示
         print(state)
-    """

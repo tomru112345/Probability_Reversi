@@ -281,15 +281,15 @@ struct result_t predict(KerasModel model, State state)
     return res;
 }
 
-vector<float> nodes_to_scores(vector<Node::Node> nodes)
-{
-    vector<float> scores;
-    for (int i = 0; i < nodes.size(); i++)
-    {
-        scores.push_back(nodes.at(i).n);
-    }
-    return scores;
-}
+// vector<float> nodes_to_scores(vector<Node::Node> nodes)
+// {
+//     vector<float> scores;
+//     for (int i = 0; i < nodes.size(); i++)
+//     {
+//         scores.push_back(nodes.at(i).n);
+//     }
+//     return scores;
+// }
 
 class Node
 {
@@ -308,6 +308,16 @@ public:
         state = s;
         p = np;
         vector<Node> child_nodes;
+    }
+
+    vector<float> nodes_to_scores(vector<Node> nodes)
+    {
+        vector<float> scores;
+        for (int i = 0; i < nodes.size(); i++)
+        {
+            scores.push_back(nodes.at(i).n);
+        }
+        return scores;
     }
 
     float evaluate()
