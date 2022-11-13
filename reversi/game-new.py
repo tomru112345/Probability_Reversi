@@ -29,12 +29,12 @@ if __name__ == '__main__':
     # 状態の生成
     state = State()
     # ゲーム終了までのループ
-    # while True:
-    #     # ゲーム終了時
-    #     if state.is_done():
-    #         break
-    #     # 次の状態の取得
-    #     state = state.next(random_action(state))
-    #     # 文字列表示
-    #     print_reversi(state)
-    #     print()
+    while True:
+        # ゲーム終了時
+        if state.is_done():
+            break
+        # 次の状態の取得
+        state = state.next(random_action(state))
+        # 文字列表示
+        print_reversi(state)
+        print()
