@@ -331,7 +331,7 @@ bool State::is_first_player()
 
 State::State State::next(int action)
 {
-    State::State state = State::State(this->pieces, this->enemy_pieces, this->ratio_box, depth + 1);
+    State state = State(this->pieces, this->enemy_pieces, this->ratio_box, depth + 1);
     if (action != 16)
     {
         int ac_x = action % 4;
