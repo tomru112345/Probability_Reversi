@@ -88,7 +88,29 @@ public:
         return (this->depth % 2 == 0);
     }
 
-    State next(int action);
+    State next(int action)
+    {
+        State state = State(this->pieces, this->enemy_pieces, this->ratio_box, depth + 1);
+        if (action != 16)
+        {
+            int ac_x = action % 4;
+            int ac_y = action / 4;
+            state.is_legal_action_xy(ac_x, ac_y, true);
+        }
+
+        vector<int> w = state.pieces;
+        state.pieces = state.enemy_pieces;
+        state.enemy_pieces = w;
+
+        vector<int> pass_vec = {16};
+        vector<int> leg_vec = state.legal_actions();
+        if (action == 16 && leg_vec == pass_vec)
+        {
+            state.pass_end = true;
+        }
+        return state;
+    }
+
     vector<int> legal_actions();
     bool is_legal_action_xy_dxy(int x, int y, int dx, int dy, bool flip = false);
     bool is_legal_action_xy_dxy_penalty(int x, int y, int dx, int dy, bool flip = false);
