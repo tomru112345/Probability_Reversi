@@ -93,15 +93,12 @@ public:
             this->n += 1;
 
             int len_policies = policies.size();
-            // for (int i = 0; i < len_policies; i++)
-            // {
-            //     cout << policies.at(i) << " ";
-            // }
-            // cout << endl;
-            // cout << value << endl;
+            vector<Node> child_nodes;
             for (int i = 0; i < len_policies; i++)
             {
-                this->child_nodes.push_back(Node(this->model, this->state.next(this->state.legal_actions().at(i)), policies.at(i)));
+                int action = this->state.legal_actions().at(i);
+                float policy = policies.at(i);
+                this->child_nodes.push_back(Node(this->model, this->state.next(action), policy));
             }
             return value;
         }

@@ -82,9 +82,6 @@ def pv_mcts_scores(model, state, temperature):
                 self.w += value
                 self.n += 1
 
-                print(policies)
-                print(value)
-                exit()
                 # 子ノードの展開
                 self.child_nodes = []
                 for action, policy in zip(self.state.legal_actions(), policies):
