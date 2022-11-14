@@ -189,7 +189,7 @@ if __name__ == '__main__':
     state = State()
 
     # モンテカルロ木探索で行動取得を行う関数の生成
-    next_action = pv_mcts_action(model, 1.0)
+    # next_action = pv_mcts_action(model, state, 1.0)
 
     # ゲーム終了までループ
     while True:
@@ -198,7 +198,7 @@ if __name__ == '__main__':
             break
 
         # 行動の取得
-        action = next_action(state)
+        action = pv_mcts_action(model, state, 1.0)
 
         # 次の状態の取得
         state = state.next(action)
