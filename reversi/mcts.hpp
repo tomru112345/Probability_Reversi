@@ -29,8 +29,8 @@ private:
 public:
     pybind11::object model;
     State state;
-    float p = 0;
-    float w = 0;
+    float p = 0.0;
+    float w = 0.0;
     int n = 0;
     vector<Node> child_nodes;
 
@@ -60,7 +60,7 @@ public:
         int len_nodes = nodes.size();
         for (int i = 0; i < len_nodes; i++)
         {
-            cout << nodes.at(i).w << endl;
+            // cout << nodes.at(i).w << endl;
             scores.push_back(nodes.at(i).n);
         }
         return scores;
@@ -125,10 +125,11 @@ public:
             if (this->child_nodes.at(i).n != 0)
             {
                 tmp_v = -this->child_nodes.at(i).w / this->child_nodes.at(i).n;
+                cout << tmp_v << endl;
             }
             else
             {
-                tmp_v = 0;
+                tmp_v = 0.0;
             }
             tmp_v += (C_PUCT * this->child_nodes.at(i).p * sqrt(t) / (1 + this->child_nodes.at(i).n));
             pucb_values.push_back(tmp_v);
