@@ -34,7 +34,7 @@ public:
     int n = 0;
     vector<Node> child_nodes;
 
-    Node(pybind11::object m, State s, int np)
+    Node(pybind11::object m, State s, float np)
     {
         model = m;
         state = s;
@@ -44,7 +44,7 @@ public:
         vector<Node> child_nodes;
     }
 
-    Node(pybind11::object m, State s, int np, int w, int n, vector<Node> child_nodes)
+    Node(pybind11::object m, State s, float np, float w, int n, vector<Node> child_nodes)
     {
         model = m;
         state = s;
