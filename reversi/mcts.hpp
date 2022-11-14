@@ -54,14 +54,15 @@ public:
         this->child_nodes = child_nodes;
     }
 
-    vector<float> nodes_to_scores(vector<Node> nodes)
+    vector<float> nodes_to_scores()
     {
+        // vector<Node> nodes
         vector<float> scores;
-        int len_nodes = nodes.size();
+        int len_nodes = this->child_nodes.size();
         for (int i = 0; i < len_nodes; i++)
         {
             // cout << nodes.at(i).w << endl;
-            scores.push_back(nodes.at(i).n);
+            scores.push_back(this->child_nodes.at(i).n);
         }
         return scores;
     }
@@ -116,7 +117,8 @@ public:
     Node next_child_node()
     {
         float C_PUCT = 1.0;
-        vector<float> scores = nodes_to_scores(this->child_nodes);
+        // vector<float> scores = nodes_to_scores(this->child_nodes);
+        vector<float> scores = nodes_to_scores();
         for (int i = 0; i < scores.size(); i++)
         {
             cout << scores.at(i) << " ";
@@ -175,11 +177,8 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
         root_node.evaluate();
     }
 
-    vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
-    // for (int i = 0; i < scores.size(); i++){
-    //     cout << scores.at(i) << ",";
-    // }
-    // cout << endl;
+    // vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
+    vector<float> scores = root_node.nodes_to_scores();
     if (temperature == 0)
     {
         int action = *max_element(scores.begin(), scores.end());
