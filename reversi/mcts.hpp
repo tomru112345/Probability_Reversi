@@ -73,11 +73,11 @@ public:
         {
             if (this->state.is_lose())
             {
-                value = -1;
+                value = -1.0;
             }
             else
             {
-                value = 0;
+                value = 0.0;
             }
             this->w += value;
             this->n += 1;
@@ -125,13 +125,13 @@ public:
             if (this->child_nodes.at(i).n != 0)
             {
                 tmp_v = -this->child_nodes.at(i).w / this->child_nodes.at(i).n;
-                cout << tmp_v << endl;
             }
             else
             {
                 tmp_v = 0.0;
             }
             tmp_v += (C_PUCT * this->child_nodes.at(i).p * sqrt(t) / (1 + this->child_nodes.at(i).n));
+            cout << tmp_v << endl;
             pucb_values.push_back(tmp_v);
         }
         int argmax_i = *max_element(pucb_values.begin(), pucb_values.end());
