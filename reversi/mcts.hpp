@@ -7,8 +7,6 @@
 #include "state.hpp"
 #include <vector>
 #include <tuple>
-#include <cstdlib>
-#include <cmath>
 #include <numeric>
 #include <math.h>
 #include <algorithm>
@@ -106,7 +104,7 @@ public:
         for (int i = 0; i < len_child_nodes; i++)
         {
             float tmp_v;
-            if (abs(this->child_nodes.at(i).n) > 0)
+            if (this->child_nodes.at(i).n != 0)
             {
                 tmp_v = -this->child_nodes.at(i).w / this->child_nodes.at(i).n;
             }
@@ -164,8 +162,9 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
 
 int pv_mcts_action(pybind11::object model, State state, float temperature)
 {
-    vector<float> scores = pv_mcts_scores(model, state, temperature);
     vector<int> leg_ac = state.legal_actions();
+    vector<float> scores = pv_mcts_scores(model, state, temperature);
+
     auto pypre = pybind11::module::import("py_rand_choice");
     int action = pypre.attr("choice")(leg_ac, scores).cast<int>();
     return action;
