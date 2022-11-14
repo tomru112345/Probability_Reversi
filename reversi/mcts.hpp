@@ -33,7 +33,7 @@ public:
     int w = 0;
     int n = 0;
     vector<Node> child_nodes;
-    
+
     Node(pybind11::object m, State s, int np)
     {
         model = m;
@@ -42,6 +42,16 @@ public:
         w = 0;
         n = 0;
         vector<Node> child_nodes;
+    }
+
+    Node(pybind11::object m, State s, int np, int w, int n, vector<Node> child_nodes)
+    {
+        model = m;
+        state = s;
+        p = np;
+        this->w = w;
+        this->n = n;
+        this->child_nodes = child_nodes;
     }
 
     vector<float> nodes_to_scores(vector<Node> nodes)
@@ -85,7 +95,7 @@ public:
             cout << this->n << endl;
             for (int i = 0; i < len_policies; i++)
             {
-                this->child_nodes.push_back(Node(this->model, this->state.next(this->state.legal_actions().at(i)), policies.at(i)));
+                this->child_nodes.push_back(Node(this->model, this->state.next(this->state.legal_actions().at(i)), policies.at(i)), this->w, this->n, this->child_nodes);
             }
             return value;
         }
