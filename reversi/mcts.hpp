@@ -269,7 +269,7 @@ public:
 tuple<vector<int>, int> predict(int *model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
-    tuple<vector<int>, int> tupleValue = (tuple<vector<int>, int>)pypre.attr("predict")(model, state);
+    tuple<vector<int>, int> tupleValue = pypre.attr("predict")(model, state);
     return tupleValue;
 }
 
