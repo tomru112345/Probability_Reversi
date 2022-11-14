@@ -22,7 +22,7 @@ struct result_t
 result_t predict(auto model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
-    result_t result = pypre.attr("predict")(model, state).cast<result_t>();
+    result_t result = pypre.attr("predict")(model, state).cast<vector<int>, int>();
     return result;
 }
 
