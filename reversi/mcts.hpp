@@ -6,6 +6,7 @@
 #include <pybind11/embed.h>
 #include "state.hpp"
 #include <vector>
+#include <tuple>
 #include <numeric>
 #include <math.h>
 #include <algorithm>
@@ -22,7 +23,10 @@ struct result_t
 result_t predict(auto model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
-    result_t result = pypre.attr("predict")(model, state).cast<vector<int>, int>();
+    tuple<vector<int>, int> tupleValue = pypre.attr("predict")(model, state).cast<tuple<vector<int>, int>>();
+    result_t result;
+    result.p = get<0>(tupleValue);
+    result.v = get<1>(tupleValue);
     return result;
 }
 
