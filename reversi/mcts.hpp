@@ -33,6 +33,7 @@ public:
     int w = 0;
     int n = 0;
     vector<Node> child_nodes;
+    
     Node(pybind11::object m, State s, int np)
     {
         model = m;
@@ -57,7 +58,7 @@ public:
 
     float evaluate()
     {
-        float value = 0;
+        int value = 0;
         if (this->state.is_done())
         {
             if (this->state.is_lose())
@@ -77,7 +78,7 @@ public:
         {
             tuple<vector<int>, int> result = predict(this->model, this->state);
             vector<int> policies = get<0>(result);
-            int value = get<1>(result);
+            value = get<1>(result);
             this->w += value;
             this->n += 1;
 
