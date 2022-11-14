@@ -4,6 +4,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include <pybind11/embed.h>
+#include <iostream>
 #include "state.hpp"
 #include <vector>
 #include <tuple>
