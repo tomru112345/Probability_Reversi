@@ -1,6 +1,7 @@
 from cppState import State
 import random
 from settings import SQUARE, default_ratio_box
+import watch
 
 
 def random_action(state):
@@ -24,9 +25,9 @@ def print_reversi(state):
             str += '\n'
     print(str)
 
-
-if __name__ == '__main__':
-    # 状態の生成
+@watch.watch
+def main():
+# 状態の生成
     state = State()
     # ゲーム終了までのループ
     while True:
@@ -38,3 +39,6 @@ if __name__ == '__main__':
         # 文字列表示
         print_reversi(state)
         print()
+
+if __name__ == '__main__':
+    main()

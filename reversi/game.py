@@ -5,6 +5,7 @@
 # パッケージのインポート
 import random
 from settings import SQUARE, default_ratio_box
+import watch
 
 
 class State:
@@ -245,7 +246,8 @@ def random_action(state):
 
 
 # 動作確認
-if __name__ == '__main__':
+@watch.watch
+def main():
     # 状態の生成
     state = State()
 
@@ -260,3 +262,6 @@ if __name__ == '__main__':
         # 文字列表示
         print(state)
         print()
+
+if __name__ == '__main__':
+    main()
