@@ -379,10 +379,9 @@ vector<float> boltzman(vector<float> xs, float temperature)
         xs[i] = pow(x, 1 / temperature);
         sum_xs += xs[i];
     }
-    vector<float> new_xs(len_xs);
+    vector<float> new_xs(len_xs, 0.0);
     for (int i = 0; i < len_xs; i++)
     {
-        new_xs[i] = 0.0;
         new_xs[i] = xs[i] / sum_xs;
     }
     return new_xs;
@@ -400,7 +399,7 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
     if (temperature == 0)
     {
         int action = *max_element(scores.begin(), scores.end());
-        scores = vector<float>(scores.size(), 0);
+        scores = vector<float>(scores.size(), 0.0);
         scores[action] = 1;
     }
     else
