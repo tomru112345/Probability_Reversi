@@ -8,6 +8,8 @@
 #include "./keras_model.h"
 #include <vector>
 #include <tuple>
+#include <cstdlib>
+#include <cmath>
 #include <numeric>
 #include <math.h>
 #include <algorithm>
@@ -351,7 +353,7 @@ public:
         for (int i = 0; i < this->child_nodes.size(); i++)
         {
             float tmp_v;
-            if (this->child_nodes.at(i).n)
+            if (abs(this->child_nodes.at(i).n) > 0)
             {
                 tmp_v = -this->child_nodes.at(i).w / this->child_nodes.at(i).n;
             }
