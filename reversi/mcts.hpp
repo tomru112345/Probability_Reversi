@@ -75,7 +75,6 @@ public:
 
         if (this->child_nodes.empty())
         {
-            cout << "a" << endl;
             tuple<vector<int>, int> result = predict(this->model, this->state);
             vector<int> policies = get<0>(result);
             value = get<1>(result);
@@ -83,6 +82,7 @@ public:
             this->n += 1;
 
             int len_policies = policies.size();
+            cout << this->n << endl;
             for (int i = 0; i < len_policies; i++)
             {
                 this->child_nodes.push_back(Node(this->model, this->state.next(this->state.legal_actions().at(i)), policies.at(i)));
