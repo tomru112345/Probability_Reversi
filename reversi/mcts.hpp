@@ -5,7 +5,6 @@
 #include <pybind11/numpy.h>
 #include <pybind11/embed.h>
 // #include "state.hpp"
-#include "./keras_model.h"
 #include <vector>
 #include <tuple>
 #include <cstdlib>
