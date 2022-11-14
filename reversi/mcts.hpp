@@ -129,6 +129,7 @@ public:
 class MCTS
 {
 public:
+    float temperature;
     MCTS(float temperature)
     {
         this->temperature = temperature;
