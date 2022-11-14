@@ -92,10 +92,11 @@ public:
             this->n += 1;
 
             int len_policies = policies.size();
-            cout << this->n << endl;
+            cout << len_policies << endl;
+            cout << value << endl;
             for (int i = 0; i < len_policies; i++)
             {
-                this->child_nodes.push_back(Node(this->model, this->state.next(this->state.legal_actions().at(i)), policies.at(i), this->w, this->n, this->child_nodes));
+                this->child_nodes.push_back(Node(this->model, this->state.next(this->state.legal_actions().at(i)), policies.at(i)));
             }
             return value;
         }
