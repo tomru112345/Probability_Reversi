@@ -14,20 +14,12 @@
 using namespace std;
 int PV_EVALUATE_COUNT = 50;
 
-struct result_t
-{
-    vector<int> p;
-    int v;
-};
 
-result_t predict(auto model, State state)
+tuple<vector<int>, int> predict(auto model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
     tuple<vector<int>, int> tupleValue = pypre.attr("predict")(model, state).cast<tuple<vector<int>, int>>();
-    result_t result;
-    result.p = get<0>(tupleValue);
-    result.v = get<1>(tupleValue);
-    return result;
+    return tupleValue;
 }
 
 class Node
@@ -76,9 +68,9 @@ public:
 
         if (this->child_nodes.empty())
         {
-            auto result = predict(model, this->state);
-            vector<int> policies = result.p;
-            int value = result.v;
+            tuple<vector<int>, int> result = predict(model, this->state);
+            vector<int> policies = get<0>(result);
+            int value = get<1>(result);
             this->w += value;
             this->n += 1;
 
