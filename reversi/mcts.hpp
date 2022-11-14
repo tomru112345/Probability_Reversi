@@ -96,15 +96,17 @@ public:
             for (int i = 0; i < len_policies; i++)
             {
                 int action = this->state.legal_actions().at(i);
+                State next_state = this->state.next(action);
                 float policy = policies.at(i);
-                cout << policy << endl;
-                this->child_nodes.push_back(Node(this->model, this->state.next(action), policy));
+                this->child_nodes.push_back(
+                    Node(this->model, next_state, policy));
             }
             return value;
         }
         else
         {
-            value -= this->next_child_node().evaluate();
+            Node next_node = next_child_node();
+            value -= next_node.evaluate();
             this->w += value;
             this->n += 1;
             return value;
