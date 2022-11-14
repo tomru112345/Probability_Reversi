@@ -16,7 +16,7 @@ from math import sqrt
 from settings import SQUARE
 import watch
 from cppState import State
-from cppMCTS import MCTS
+from cppMCTS import *
 
 # # パラメータの準備
 # PV_EVALUATE_COUNT = 50  # 1推論あたりのシミュレーション回数（本家は1600）
@@ -157,25 +157,51 @@ from cppMCTS import MCTS
 
 
 # 動作確認
+# if __name__ == '__main__':
+#     # モデルの読み込み
+#     path = sorted(Path(f'./model/{SQUARE}x{SQUARE}/').glob('*.h5'))[-1]
+#     model = load_model(str(path))
+#     # 状態の生成
+#     state = State()
+#     # モンテカルロ木探索で行動取得を行う関数の生成
+#     mcts = MCTS(model=model, state=state, temperature=1.0)
+#     # next_action = mcts.get_action()
+
+#     # ゲーム終了までループ
+#     while True:
+#         # ゲーム終了時
+#         if state.is_done():
+#             break
+#         # 行動の取得
+#         # action = next_action(state)
+#         action = mcts.get_action(state)
+#         # 次の状態の取得
+#         state = state.next(action)
+#         # 文字列表示
+#         print(state)
+
 if __name__ == '__main__':
     # モデルの読み込み
     path = sorted(Path(f'./model/{SQUARE}x{SQUARE}/').glob('*.h5'))[-1]
     model = load_model(str(path))
+
     # 状態の生成
     state = State()
+
     # モンテカルロ木探索で行動取得を行う関数の生成
-    mcts = MCTS(model=model, state=state, temperature=1.0)
-    # next_action = mcts.get_action()
+    next_action = pv_mcts_action(model, 1.0)
 
     # ゲーム終了までループ
     while True:
         # ゲーム終了時
         if state.is_done():
             break
+
         # 行動の取得
-        # action = next_action(state)
-        action = mcts.get_action(state)
+        action = next_action(state)
+
         # 次の状態の取得
         state = state.next(action)
+
         # 文字列表示
-        print(state)
+        # print(state)
