@@ -300,7 +300,7 @@ public:
         return scores;
     }
 
-    float evaluate(auto model)
+    float evaluate(pybind11::object model)
     {
         float value = 0;
         if (this->state.is_done())
@@ -350,24 +350,17 @@ public:
         vector<float> pucb_values;
         for (int i = 0; i < this->child_nodes.size(); i++)
         {
-            if (this->child_nodes.at(i).n == 0)
+            float tmp_v;
+            if (this->child_nodes.at(i).n)
             {
-                return this->child_nodes.at(i);
+                tmp_v = -this->child_nodes.at(i).w / this->child_nodes.at(i).n;
             }
             else
             {
-                float tmp_v;
-                if (this->child_nodes.at(i).n)
-                {
-                    tmp_v = -this->child_nodes.at(i).w / this->child_nodes.at(i).n;
-                }
-                else
-                {
-                    tmp_v = 0;
-                }
-                tmp_v += (C_PUCT * this->child_nodes.at(i).p * sqrt(t) / (1 + this->child_nodes.at(i).n));
-                pucb_values.push_back(tmp_v);
+                tmp_v = 0;
             }
+            tmp_v += (C_PUCT * this->child_nodes.at(i).p * sqrt(t) / (1 + this->child_nodes.at(i).n));
+            pucb_values.push_back(tmp_v);
         }
         int argmax_i = *max_element(pucb_values.begin(), pucb_values.end());
         return this->child_nodes.at(argmax_i);
