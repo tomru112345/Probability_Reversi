@@ -164,7 +164,7 @@ int pv_mcts_action(pybind11::object model, State state, float temperature)
 {
     vector<int> leg_ac = state.legal_actions();
     vector<float> scores = pv_mcts_scores(model, state, temperature);
-
+    cout << scores << endl;
     auto pypre = pybind11::module::import("py_rand_choice");
     int action = pypre.attr("choice")(leg_ac, scores).cast<int>();
     return action;
