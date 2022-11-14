@@ -155,11 +155,11 @@ vector<float> boltzman(vector<float> xs, float temperature)
     {
         new_xs[i] = xs[i] / sum_xs;
     }
-    cout << sum_xs << endl;
-    for (int i = 0; i < new_xs.size(); i++){
-        cout << new_xs.at(i) << ",";
-    }
-    cout << endl;
+    // cout << sum_xs << endl;
+    // for (int i = 0; i < new_xs.size(); i++){
+    //     cout << new_xs.at(i) << ",";
+    // }
+    // cout << endl;
     return new_xs;
 }
 
@@ -172,10 +172,10 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
     }
 
     vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
-    // for (int i = 0; i < scores.size(); i++){
-    //     cout << scores.at(i) << ",";
-    // }
-    // cout << endl;
+    for (int i = 0; i < scores.size(); i++){
+        cout << scores.at(i) << ",";
+    }
+    cout << endl;
     if (temperature == 0)
     {
         int action = *max_element(scores.begin(), scores.end());
