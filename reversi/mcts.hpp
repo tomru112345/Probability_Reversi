@@ -129,14 +129,18 @@ public:
 class MCTS
 {
 public:
-    vector<float> boltzman(vector<float> xs, float temperature)
+    MCTS(float temperature)
+    {
+        this->temperature = temperature;
+    }
+    vector<float> boltzman(vector<float> xs)
     {
         int len_xs = xs.size();
         float sum_xs = 0;
         for (int i = 0; i < len_xs; i++)
         {
             float x = xs[i];
-            xs[i] = pow(x, 1 / temperature);
+            xs[i] = pow(x, 1 / this->temperature);
             sum_xs += xs[i];
         }
         vector<float> new_xs(len_xs);
@@ -148,7 +152,7 @@ public:
         return new_xs;
     }
 
-    vector<float> pv_mcts_scores(auto model, State state, float temperature)
+    vector<float> pv_mcts_scores(auto model, State state)
     {
         Node root_node = Node(state, 0);
         for (int i = 0; i < PV_EVALUATE_COUNT; i++)
@@ -157,7 +161,7 @@ public:
         }
 
         vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
-        if (temperature == 0)
+        if (this->temperature == 0)
         {
             int action = *max_element(scores.begin(), scores.end());
             scores = vector<float>(scores.size(), 0);
@@ -165,12 +169,12 @@ public:
         }
         else
         {
-            scores = boltzman(scores, temperature);
+            scores = boltzman(scores);
         }
         return scores;
     }
 
-    int pv_mcts_action(auto model, State state, float temperature)
+    int pv_mcts_action(auto model, State state)
     {
         vector<float> scores = get_scores(model, state);
         vector<int> leg_ac = state.legal_actions();
