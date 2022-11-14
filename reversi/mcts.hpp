@@ -39,7 +39,7 @@ public:
         model = m;
         state = s;
         p = np;
-        w = 0;
+        w = 0.0;
         n = 0;
         vector<Node> child_nodes;
     }
@@ -93,11 +93,11 @@ public:
             this->n += 1;
 
             int len_policies = policies.size();
-            vector<Node> child_nodes;
             for (int i = 0; i < len_policies; i++)
             {
                 int action = this->state.legal_actions().at(i);
                 float policy = policies.at(i);
+                cout << policy << endl;
                 this->child_nodes.push_back(Node(this->model, this->state.next(action), policy));
             }
             return value;
@@ -116,7 +116,6 @@ public:
         float C_PUCT = 1.0;
         vector<float> scores = nodes_to_scores(this->child_nodes);
         float t = accumulate(scores.begin(), scores.end(), 0.0);
-        cout << t << endl;
         vector<float> pucb_values;
         int len_child_nodes = this->child_nodes.size();
         for (int i = 0; i < len_child_nodes; i++)
