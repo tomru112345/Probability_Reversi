@@ -16,7 +16,7 @@ PYBIND11_MODULE(cppMCTS, m)
 {
     pybind11::class_<MCTS>(m, "MCTS")
         .def(pybind11::init<float>())
-        .def("boltzman", &MCTS::boltzman)
-        .def("pv_mcts_scores", &MCTS::pv_mcts_scores)
-        .def("pv_mcts_action", &MCTS::pv_mcts_action);
+        .def("boltzman", &MCTS::boltzman);
+        // .def("pv_mcts_scores", &MCTS::pv_mcts_scores)
+        // .def("pv_mcts_action", &MCTS::pv_mcts_action);
 }
