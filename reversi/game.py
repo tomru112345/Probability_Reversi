@@ -260,8 +260,8 @@ def main():
         # 次の状態の取得
         state = state.next(random_action(state))
         # 文字列表示
-        print(state)
-        print()
+        # print(state)
+        # print()
 
 if __name__ == '__main__':
     main()

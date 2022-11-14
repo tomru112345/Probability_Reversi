@@ -37,8 +37,8 @@ def main():
         # 次の状態の取得
         state = state.next(random_action(state))
         # 文字列表示
-        print_reversi(state)
-        print()
+        # print_reversi(state)
+        # print()
 
 if __name__ == '__main__':
     main()
