@@ -105,11 +105,10 @@ public:
             }
             return value;
         }
-        else
+        else // 子ノードが存在する時
         {
             cout << "b" << endl;
-            Node next_node = next_child_node();
-            value -= next_node.evaluate();
+            value -= next_child_node().evaluate();
             this->w += value;
             this->n += 1;
             return value;
@@ -121,12 +120,11 @@ public:
         float C_PUCT = 1.0;
         // vector<float> scores = nodes_to_scores(this->child_nodes);
         vector<float> scores = nodes_to_scores();
-        // for (int i = 0; i < scores.size(); i++)
-        // {
-        //     cout << scores.at(i) << " ";
-        // }
-        // cout << endl;
-        float t = accumulate(scores.begin(), scores.end(), 0.0);
+        float t = 0.0;
+        for (int i = 0; i < scores.size(); i++){
+            t += scores.at(i);
+        }
+        // float t = accumulate(scores.begin(), scores.end(), 0.0);
         vector<float> pucb_values;
         int len_child_nodes = this->child_nodes.size();
         for (int i = 0; i < len_child_nodes; i++)
