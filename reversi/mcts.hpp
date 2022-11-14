@@ -38,6 +38,8 @@ public:
         model = m;
         state = s;
         p = np;
+        w = 0;
+        n = 0;
         vector<Node> child_nodes;
     }
 

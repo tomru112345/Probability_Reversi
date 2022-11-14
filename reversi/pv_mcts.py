@@ -41,6 +41,7 @@ def nodes_to_scores(nodes):
     """ノードのリストを試行回数のリストに変換"""
     scores = []
     for c in nodes:
+        print(c.n)
         scores.append(c.n)
 
     # scores = [c.n for c in nodes]
@@ -121,7 +122,6 @@ def pv_mcts_scores(model, state, temperature):
 
     # 合法手の確率分布
     scores = nodes_to_scores(root_node.child_nodes)
-    print(scores)
     if temperature == 0:  # 最大値のみ1
         action = np.argmax(scores)
         scores = np.zeros(len(scores))
