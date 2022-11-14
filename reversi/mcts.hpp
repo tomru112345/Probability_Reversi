@@ -136,6 +136,10 @@ vector<float> boltzman(vector<float> xs, float temperature)
     {
         new_xs[i] = xs[i] / sum_xs;
     }
+    for (int i = 0; i < scores.size(); i++){
+        cout << scores.at(i) << ",";
+    }
+    cout << endl;
     return new_xs;
 }
 
@@ -158,10 +162,6 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
     {
         scores = boltzman(scores, temperature);
     }
-    for (int i = 0; i < scores.size(); i++){
-        cout << scores.at(i) << ",";
-    }
-    cout << endl;
     return scores;
 }
 
