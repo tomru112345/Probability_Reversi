@@ -7,6 +7,7 @@ from game import State
 from pv_mcts import pv_mcts_action
 from keras.models import load_model
 from keras import backend as K
+import tensorflow as tf
 from pathlib import Path
 from shutil import copy
 import numpy as np

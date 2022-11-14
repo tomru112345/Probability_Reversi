@@ -3,3 +3,4 @@ ai_vs_ai/
 model/
 log/
 data/
+*.so

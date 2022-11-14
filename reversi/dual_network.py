@@ -9,6 +9,7 @@ from keras.regularizers import l2
 from keras import backend as K
 from settings import SQUARE
 import os
+import tensorflow
 
 
 # パラメータの準備
