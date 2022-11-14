@@ -266,7 +266,7 @@ public:
     }
 };
 
-tuple<vector<int>, int> predict(py::object model, State state)
+tuple<vector<int>, int> predict(pybind11::object model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
     auto res = pypre.attr("predict")(model, state);
@@ -393,7 +393,7 @@ vector<float> boltzman(vector<float> xs, float temperature)
     return new_xs;
 }
 
-vector<float> pv_mcts_scores(py::object model, State state, float temperature)
+vector<float> pv_mcts_scores(pybind11::object model, State state, float temperature)
 {
     Node root_node = Node(state, 0);
     for (int i = 0; i < PV_EVALUATE_COUNT; i++)
@@ -415,7 +415,7 @@ vector<float> pv_mcts_scores(py::object model, State state, float temperature)
     return scores;
 }
 
-int pv_mcts_action(py::object model, State state, float temperature)
+int pv_mcts_action(pybind11::object model, State state, float temperature)
 {
     vector<float> scores = pv_mcts_scores(model, state, temperature);
     vector<int> leg_ac = state.legal_actions();
