@@ -12,11 +12,10 @@ using namespace std;
 //     m.def("pv_mcts_action", &pv_mcts_action);
 // }
 
-PYBIND11_PLUGIN(cppMCTS) {
-    pybind11::module m("cppMCTS", "mylibs made by pybind11");
-    m.def("predict", &predict);
-    m.def("boltzman", &boltzman);
-    m.def("pv_mcts_scores", &pv_mcts_scores);
-    m.def("pv_mcts_action", &pv_mcts_action);
-    return m.ptr();
+PYBIND11_MODULE(cppMCTS, m)
+{
+    pybind11::class_<MCTS>(m, "MCTS")
+        .def("boltzman", &MCTS::boltzman)
+        .def("pv_mcts_scores", &MCTS::pv_mcts_scores)
+        .def("pv_mcts_action", &MCTS::pv_mcts_action);
 }

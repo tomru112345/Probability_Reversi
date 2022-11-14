@@ -126,54 +126,58 @@ public:
     }
 };
 
-vector<float> boltzman(vector<float> xs, float temperature)
+class MCTS
 {
-    int len_xs = xs.size();
-    float sum_xs = 0;
-    for (int i = 0; i < len_xs; i++)
+public:
+    vector<float> boltzman(vector<float> xs, float temperature)
     {
-        float x = xs[i];
-        xs[i] = pow(x, 1 / temperature);
-        sum_xs += xs[i];
-    }
-    vector<float> new_xs(len_xs);
-    for (int i = 0; i < len_xs; i++)
-    {
-        new_xs[i] = 0.0;
-        new_xs[i] = xs[i] / sum_xs;
-    }
-    return new_xs;
-}
-
-vector<float> pv_mcts_scores(auto model, State state, float temperature)
-{
-    Node root_node = Node(state, 0);
-    for (int i = 0; i < PV_EVALUATE_COUNT; i++)
-    {
-        root_node.evaluate(model);
+        int len_xs = xs.size();
+        float sum_xs = 0;
+        for (int i = 0; i < len_xs; i++)
+        {
+            float x = xs[i];
+            xs[i] = pow(x, 1 / temperature);
+            sum_xs += xs[i];
+        }
+        vector<float> new_xs(len_xs);
+        for (int i = 0; i < len_xs; i++)
+        {
+            new_xs[i] = 0.0;
+            new_xs[i] = xs[i] / sum_xs;
+        }
+        return new_xs;
     }
 
-    vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
-    if (temperature == 0)
+    vector<float> pv_mcts_scores(auto model, State state, float temperature)
     {
-        int action = *max_element(scores.begin(), scores.end());
-        scores = vector<float>(scores.size(), 0);
-        scores[action] = 1;
-    }
-    else
-    {
-        scores = boltzman(scores, temperature);
-    }
-    return scores;
-}
+        Node root_node = Node(state, 0);
+        for (int i = 0; i < PV_EVALUATE_COUNT; i++)
+        {
+            root_node.evaluate(model);
+        }
 
-int pv_mcts_action(auto model, State state, float temperature)
-{
-    vector<float> scores = get_scores(model, state);
-    vector<int> leg_ac = state.legal_actions();
-    auto pypre = pybind11::module::import("py_rand_choice");
-    int action = pypre.attr("choice")(leg_ac, scores).cast<int>();
-    return action;
-}
+        vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
+        if (temperature == 0)
+        {
+            int action = *max_element(scores.begin(), scores.end());
+            scores = vector<float>(scores.size(), 0);
+            scores[action] = 1;
+        }
+        else
+        {
+            scores = boltzman(scores, temperature);
+        }
+        return scores;
+    }
+
+    int pv_mcts_action(auto model, State state, float temperature)
+    {
+        vector<float> scores = get_scores(model, state);
+        vector<int> leg_ac = state.legal_actions();
+        auto pypre = pybind11::module::import("py_rand_choice");
+        int action = pypre.attr("choice")(leg_ac, scores).cast<int>();
+        return action;
+    }
+};
 
 #endif
