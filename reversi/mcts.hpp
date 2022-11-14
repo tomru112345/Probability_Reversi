@@ -51,7 +51,8 @@ public:
     int piece_count(vector<int> pieces)
     {
         int cnt = 0;
-        for (int i = 0; i < pieces.size(); i++)
+        int len_pieces = pieces.size();
+        for (int i = 0; i < len_pieces; i++)
         {
             if (pieces[i] == 1)
             {
@@ -239,6 +240,7 @@ public:
         {
             return false;
         }
+        int len_dxy = this->dxy.size();
         if (flip)
         {
             // this->pieces[x + y * 4] = 1;
@@ -249,7 +251,7 @@ public:
             else
             {
                 this->enemy_pieces[x + y * 4] = 1;
-                for (int i = 0; i < this->dxy.size(); i++)
+                for (int i = 0; i < len_dxy; i++)
                 {
                     is_legal_action_xy_dxy_penalty(x, y, this->dxy[i][0], this->dxy[i][1], flip);
                 }
@@ -257,7 +259,7 @@ public:
             }
         }
         bool flag = false;
-        for (int i = 0; i < this->dxy.size(); i++)
+        for (int i = 0; i < len_dxy; i++)
         {
             if (is_legal_action_xy_dxy(x, y, this->dxy[i][0], this->dxy[i][1], flip))
             {
@@ -295,7 +297,8 @@ public:
     vector<float> nodes_to_scores(vector<Node> nodes)
     {
         vector<float> scores;
-        for (int i = 0; i < nodes.size(); i++)
+        int len_nodes = nodes.size();
+        for (int i = 0; i < len_nodes; i++)
         {
             scores.push_back(nodes.at(i).n);
         }
@@ -328,7 +331,8 @@ public:
             this->w += value;
             this->n += 1;
 
-            for (int i = 0; i < policies.size(); i++)
+            int len_policies = policies.size();
+            for (int i = 0; i < len_policies; i++)
             {
                 this->child_nodes.push_back(Node(this->state.next(this->state.legal_actions().at(i)), policies.at(i)));
             }
@@ -350,7 +354,8 @@ public:
         float t = accumulate(scores.begin(), scores.end(), 0.0);
 
         vector<float> pucb_values;
-        for (int i = 0; i < this->child_nodes.size(); i++)
+        int len_child_nodes = this->child_nodes.size();
+        for (int i = 0; i < len_child_nodes; i++)
         {
             float tmp_v;
             if (abs(this->child_nodes.at(i).n) > 0)
