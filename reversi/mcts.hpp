@@ -50,7 +50,6 @@ public:
         int len_nodes = nodes.size();
         for (int i = 0; i < len_nodes; i++)
         {
-            cout << nodes.at(i).n << ",";
             scores.push_back(nodes.at(i).n);
         }
         return scores;
@@ -76,6 +75,7 @@ public:
 
         if (this->child_nodes.empty())
         {
+            cout << "a" << endl;
             tuple<vector<int>, int> result = predict(this->model, this->state);
             vector<int> policies = get<0>(result);
             value = get<1>(result);
