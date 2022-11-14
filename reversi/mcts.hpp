@@ -29,8 +29,8 @@ private:
 public:
     pybind11::object model;
     State state;
-    int p = 0;
-    int w = 0;
+    float p = 0;
+    float w = 0;
     int n = 0;
     vector<Node> child_nodes;
 

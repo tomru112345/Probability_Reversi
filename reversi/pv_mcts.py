@@ -44,6 +44,7 @@ def nodes_to_scores(nodes):
         print(c.n)
         scores.append(c.n)
 
+    print()
     # scores = [c.n for c in nodes]
     return scores
 
@@ -180,7 +181,7 @@ if __name__ == '__main__':
 
         # 行動の取得
         action = next_action(state)
-
+        exit()
         # 次の状態の取得
         state = state.next(action)
 
