@@ -136,8 +136,8 @@ vector<float> boltzman(vector<float> xs, float temperature)
     {
         new_xs[i] = xs[i] / sum_xs;
     }
-    for (int i = 0; i < scores.size(); i++){
-        cout << scores.at(i) << ",";
+    for (int i = 0; i < new_xs.size(); i++){
+        cout << new_xs.at(i) << ",";
     }
     cout << endl;
     return new_xs;
