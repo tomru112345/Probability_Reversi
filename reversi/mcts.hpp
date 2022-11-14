@@ -266,10 +266,10 @@ public:
     }
 };
 
-tuple<vector<int>, int> predict(auto model, State state)
+tuple<vector<int>, int> predict(KerasModel model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
-    tuple<vector<int>, int> tupleValue = tuple<vector<int>, int>(pypre.attr("predict")(model, state));
+    tuple<vector<int>, int> tupleValue = (tuple<vector<int>, int>)pypre.attr("predict")(model, state);
     return tupleValue;
 }
 
