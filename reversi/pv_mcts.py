@@ -121,6 +121,7 @@ def pv_mcts_scores(model, state, temperature):
 
     # 合法手の確率分布
     scores = nodes_to_scores(root_node.child_nodes)
+    print(scores)
     if temperature == 0:  # 最大値のみ1
         action = np.argmax(scores)
         scores = np.zeros(len(scores))
