@@ -41,10 +41,8 @@ def nodes_to_scores(nodes):
     """ノードのリストを試行回数のリストに変換"""
     scores = []
     for c in nodes:
-        print(c.n)
         scores.append(c.n)
 
-    print()
     # scores = [c.n for c in nodes]
     return scores
 
@@ -76,6 +74,7 @@ def pv_mcts_scores(model, state, temperature):
 
             # 子ノードが存在しない時
             if not self.child_nodes:
+                print("a")
                 # ニューラルネットワークの推論で方策と価値を取得
                 policies, value = predict(model, self.state)
 
@@ -92,6 +91,7 @@ def pv_mcts_scores(model, state, temperature):
 
             # 子ノードが存在する時
             else:
+                print("b")
                 # アーク評価値が最大の子ノードの評価で価値を取得
                 value = -self.next_child_node().evaluate()
 

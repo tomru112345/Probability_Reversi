@@ -44,15 +44,15 @@ public:
         vector<Node> child_nodes;
     }
 
-    Node(pybind11::object m, State s, float np, float w, int n, vector<Node> child_nodes)
-    {
-        model = m;
-        state = s;
-        p = np;
-        this->w = w;
-        this->n = n;
-        this->child_nodes = child_nodes;
-    }
+    // Node(pybind11::object m, State s, float np, float w, int n, vector<Node> child_nodes)
+    // {
+    //     model = m;
+    //     state = s;
+    //     p = np;
+    //     this->w = w;
+    //     this->n = n;
+    //     this->child_nodes = child_nodes;
+    // }
 
     vector<float> nodes_to_scores()
     {
@@ -87,6 +87,7 @@ public:
 
         if (this->child_nodes.empty())
         {
+            cout << "a" << endl;
             tuple<vector<float>, float> result = predict(this->model, this->state);
             vector<float> policies = get<0>(result);
             value = get<1>(result);
@@ -106,6 +107,7 @@ public:
         }
         else
         {
+            cout << "b" << endl;
             Node next_node = next_child_node();
             value -= next_node.evaluate();
             this->w += value;
@@ -119,11 +121,11 @@ public:
         float C_PUCT = 1.0;
         // vector<float> scores = nodes_to_scores(this->child_nodes);
         vector<float> scores = nodes_to_scores();
-        for (int i = 0; i < scores.size(); i++)
-        {
-            cout << scores.at(i) << " ";
-        }
-        cout << endl;
+        // for (int i = 0; i < scores.size(); i++)
+        // {
+        //     cout << scores.at(i) << " ";
+        // }
+        // cout << endl;
         float t = accumulate(scores.begin(), scores.end(), 0.0);
         vector<float> pucb_values;
         int len_child_nodes = this->child_nodes.size();
