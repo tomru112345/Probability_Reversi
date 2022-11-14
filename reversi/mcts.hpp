@@ -60,6 +60,7 @@ public:
         int len_nodes = nodes.size();
         for (int i = 0; i < len_nodes; i++)
         {
+            cout << nodes.at(i).n << endl;
             scores.push_back(nodes.at(i).n);
         }
         return scores;
@@ -172,10 +173,10 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
     }
 
     vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
-    for (int i = 0; i < scores.size(); i++){
-        cout << scores.at(i) << ",";
-    }
-    cout << endl;
+    // for (int i = 0; i < scores.size(); i++){
+    //     cout << scores.at(i) << ",";
+    // }
+    // cout << endl;
     if (temperature == 0)
     {
         int action = *max_element(scores.begin(), scores.end());
