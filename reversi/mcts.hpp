@@ -14,11 +14,10 @@
 using namespace std;
 int PV_EVALUATE_COUNT = 50;
 
-
 tuple<vector<int>, int> predict(auto model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
-    tuple<vector<int>, int> tupleValue = pypre.attr("predict")(model, state).cast<tuple>();
+    tuple<vector<int>, int> tupleValue = tuple<vector<int>, int>(pypre.attr("predict")(model, state));
     return tupleValue;
 }
 
