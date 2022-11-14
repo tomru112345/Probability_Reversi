@@ -108,6 +108,7 @@ public:
         else // 子ノードが存在する時
         {
             cout << "b" << endl;
+            cout << this->n << endl;
             value -= next_child_node().evaluate();
             this->w += value;
             this->n += 1;
