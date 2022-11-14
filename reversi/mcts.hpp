@@ -15,11 +15,11 @@
 using namespace std;
 int PV_EVALUATE_COUNT = 50;
 
-tuple<vector<int>, int> predict(pybind11::object model, State state)
+tuple<vector<float>, float> predict(pybind11::object model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
     auto res = pypre.attr("predict")(model, state);
-    tuple<vector<int>, int> tupleValue = res.cast<tuple<vector<int>, int>>();
+    tuple<vector<float>, float> tupleValue = res.cast<tuple<vector<float>, float>>();
     return tupleValue;
 }
 
@@ -67,7 +67,7 @@ public:
 
     float evaluate()
     {
-        int value = 0;
+        float value = 0.0;
         if (this->state.is_done())
         {
             if (this->state.is_lose())
@@ -85,8 +85,8 @@ public:
 
         if (this->child_nodes.empty())
         {
-            tuple<vector<int>, int> result = predict(this->model, this->state);
-            vector<int> policies = get<0>(result);
+            tuple<vector<float>, float> result = predict(this->model, this->state);
+            vector<float> policies = get<0>(result);
             value = get<1>(result);
             this->w += value;
             this->n += 1;
