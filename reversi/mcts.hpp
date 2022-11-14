@@ -92,7 +92,11 @@ public:
             this->n += 1;
 
             int len_policies = policies.size();
-            cout << len_policies << endl;
+            for (int i = 0; i < len_policies; i++)
+            {
+                cout << policies.at(i) << " ";
+            }
+            cout << endl;
             cout << value << endl;
             for (int i = 0; i < len_policies; i++)
             {
