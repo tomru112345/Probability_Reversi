@@ -266,7 +266,7 @@ public:
     }
 };
 
-tuple<vector<int>, int> predict(auto *model, State state)
+tuple<vector<int>, int> predict(int *model, State state)
 {
     auto pypre = pybind11::module::import("pypredict");
     tuple<vector<int>, int> tupleValue = (tuple<vector<int>, int>)pypre.attr("predict")(model, state);
@@ -392,7 +392,7 @@ vector<float> boltzman(vector<float> xs, float temperature)
     return new_xs;
 }
 
-vector<float> pv_mcts_scores(auto *model, State state, float temperature)
+vector<float> pv_mcts_scores(int *model, State state, float temperature)
 {
     Node root_node = Node(state, 0);
     for (int i = 0; i < PV_EVALUATE_COUNT; i++)
@@ -414,9 +414,9 @@ vector<float> pv_mcts_scores(auto *model, State state, float temperature)
     return scores;
 }
 
-int pv_mcts_action(auto &model, State state, float temperature)
+int pv_mcts_action(int *model, State state, float temperature)
 {
-    vector<float> scores = pv_mcts_scores(*model, state, temperature);
+    vector<float> scores = pv_mcts_scores(model, state, temperature);
     vector<int> leg_ac = state.legal_actions();
     auto pypre = pybind11::module::import("py_rand_choice");
     int action = pypre.attr("choice")(leg_ac, scores).cast<int>();
