@@ -335,7 +335,7 @@ public:
             int len_policies = policies.size();
             for (int i = 0; i < len_policies; i++)
             {
-                this->child_nodes.push_back(Node(this->state.next(this->state.legal_actions().at(i)), policies.at(i)));
+                this->child_nodes.push_back(Node(this->model, this->state.next(this->state.legal_actions().at(i)), policies.at(i)));
             }
             return value;
         }
@@ -382,7 +382,7 @@ vector<float> boltzman(vector<float> xs, float temperature)
     for (int i = 0; i < len_xs; i++)
     {
         float x = xs[i];
-        xs = pow(x, 1 / temperature);
+        xs[i] = pow(x, 1 / temperature);
         sum_xs += x;
     }
     vector<float> new_xs(len_xs, 0.0);
