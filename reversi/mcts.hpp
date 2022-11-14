@@ -60,7 +60,7 @@ public:
         int len_nodes = nodes.size();
         for (int i = 0; i < len_nodes; i++)
         {
-            cout << nodes.at(i).n << endl;
+            cout << nodes.at(i).w << endl;
             scores.push_back(nodes.at(i).n);
         }
         return scores;
