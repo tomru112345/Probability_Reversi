@@ -281,13 +281,15 @@ class Node
 {
 private:
 public:
+    pybind11::object model;
     State state;
     int p = 0;
     int w = 0;
     int n = 0;
     vector<Node> child_nodes;
-    Node(State s, int np)
+    Node(pybind11::object m, State s, int np)
     {
+        model = m;
         state = s;
         p = np;
         vector<Node> child_nodes;
@@ -304,7 +306,7 @@ public:
         return scores;
     }
 
-    float evaluate(pybind11::object model)
+    float evaluate()
     {
         float value = 0;
         if (this->state.is_done())
@@ -324,7 +326,7 @@ public:
 
         if (this->child_nodes.empty())
         {
-            tuple<vector<int>, int> result = predict(model, this->state);
+            tuple<vector<int>, int> result = predict(this->model, this->state);
             vector<int> policies = get<0>(result);
             int value = get<1>(result);
             this->w += value;
@@ -339,7 +341,7 @@ public:
         }
         else
         {
-            value -= this->next_child_node().evaluate(model);
+            value -= this->next_child_node().evaluate();
             this->w += value;
             this->n += 1;
             return value;
@@ -375,13 +377,13 @@ public:
 
 vector<float> boltzman(vector<float> xs, float temperature)
 {
-    int len_xs = xs.size();
     float sum_xs = 0;
+    int len_xs = xs.size();
     for (int i = 0; i < len_xs; i++)
     {
         float x = xs[i];
-        xs[i] = pow(x, 1 / temperature);
-        sum_xs += xs[i];
+        xs = pow(x, 1 / temperature);
+        sum_xs += x;
     }
     vector<float> new_xs(len_xs, 0.0);
     for (int i = 0; i < len_xs; i++)
@@ -393,10 +395,10 @@ vector<float> boltzman(vector<float> xs, float temperature)
 
 vector<float> pv_mcts_scores(pybind11::object model, State state, float temperature)
 {
-    Node root_node = Node(state, 0);
+    Node root_node = Node(model, state, 0);
     for (int i = 0; i < PV_EVALUATE_COUNT; i++)
     {
-        root_node.evaluate(model);
+        root_node.evaluate();
     }
 
     vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
