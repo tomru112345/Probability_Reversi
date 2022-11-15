@@ -180,15 +180,16 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
         root_node.evaluate();
     }
     scores = root_node.nodes_to_scores();
-    // scores = nodes_to_scores(root_node.child_nodes);
     if (temperature == 0.0)
     {
+        cout << "a" << endl;
         int action = *max_element(scores.begin(), scores.end());
         scores = vector<float>(scores.size(), 0.0);
         scores[action] = 1;
     }
     else
     {
+        cout << "b" << endl;
         scores = boltzman(scores, temperature);
     }
     return scores;
@@ -198,7 +199,6 @@ int pv_mcts_action(pybind11::object model, State state, float temperature)
 {
     vector<int> leg_ac = state.legal_actions();
     vector<float> scores = pv_mcts_scores(model, state, temperature);
-    return 16;
     auto pypre = pybind11::module::import("py_rand_choice");
     int action = pypre.attr("choice")(leg_ac, scores).cast<int>();
     return action;
