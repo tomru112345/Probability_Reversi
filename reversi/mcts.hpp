@@ -23,19 +23,6 @@ tuple<vector<float>, float> predict(pybind11::object model, State state)
     return tupleValue;
 }
 
-vector<float> nodes_to_scores(vector<Node> nodes)
-{
-    vector<float> scores;
-    int len_nodes = nodes.size();
-    for (int i = 0; i < len_nodes; i++)
-    {
-        cout << nodes.at(i).n << " ";
-        scores.push_back(nodes.at(i).n);
-    }
-    cout << endl;
-    return scores;
-}
-
 class Node
 {
 private:
@@ -151,6 +138,19 @@ public:
         return next_node;
     }
 };
+
+vector<float> nodes_to_scores(vector<Node> nodes)
+{
+    vector<float> scores;
+    int len_nodes = nodes.size();
+    for (int i = 0; i < len_nodes; i++)
+    {
+        cout << nodes.at(i).n << " ";
+        scores.push_back(nodes.at(i).n);
+    }
+    cout << endl;
+    return scores;
+}
 
 vector<float> boltzman(vector<float> xs, float temperature)
 {
