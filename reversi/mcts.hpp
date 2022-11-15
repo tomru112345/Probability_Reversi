@@ -50,8 +50,10 @@ public:
         int len_nodes = this->child_nodes.size();
         for (int i = 0; i < len_nodes; i++)
         {
+            cout << this->child_nodes.at(i).n << " ";
             scores.push_back(this->child_nodes.at(i).n);
         }
+        cout << endl;
         return scores;
     }
 
@@ -105,10 +107,10 @@ public:
     {
         float C_PUCT = 1.0;
         vector<float> scores = nodes_to_scores();
-        for (int i = 0; i < scores.size(); i++){
-            cout << scores.at(i) << " ";
-        }
-        cout << endl;
+        // for (int i = 0; i < scores.size(); i++){
+        //     cout << scores.at(i) << " ";
+        // }
+        // cout << endl;
         float t = 0.0;
         for (int i = 0; i < scores.size(); i++)
         {
