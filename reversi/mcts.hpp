@@ -50,10 +50,10 @@ public:
         int len_nodes = this->child_nodes.size();
         for (int i = 0; i < len_nodes; i++)
         {
-            cout << this->child_nodes.at(i).n << " ";
+            // cout << this->child_nodes.at(i).n << " ";
             scores.push_back(this->child_nodes.at(i).n);
         }
-        cout << endl;
+        // cout << endl;
         return scores;
     }
 
@@ -198,6 +198,10 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
 int pv_mcts_action(pybind11::object model, State state, float temperature)
 {
     vector<int> leg_ac = state.legal_actions();
+    for (int i = 0; i < leg_ac; i++){
+        cout << leg_ac.at(i) << " ";
+    }
+    cout << endl;
     vector<float> scores = pv_mcts_scores(model, state, temperature);
     auto pypre = pybind11::module::import("py_rand_choice");
     int action = pypre.attr("choice")(leg_ac, scores).cast<int>();
