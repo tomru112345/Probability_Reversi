@@ -114,8 +114,8 @@ public:
         int len_child_nodes = this->child_nodes.size();
         for (int i = 0; i < len_child_nodes; i++)
         {
-            float tmp_v;
-            if (this->child_nodes.at(i).n != 0)
+            float tmp_v = 0.0;
+            if (this->child_nodes.at(i).n != 0.0)
             {
                 tmp_v = -this->child_nodes.at(i).w / this->child_nodes.at(i).n;
             }
@@ -138,8 +138,9 @@ vector<float> boltzman(vector<float> xs, float temperature)
     for (int i = 0; i < len_xs; i++)
     {
         float x = xs[i];
-        xs[i] = pow(x, 1 / temperature);
-        sum_xs += x;
+        float tmp_n = 1 / temperature;
+        xs[i] = pow(x, tmp_n);
+        sum_xs += xs[i];
     }
     vector<float> new_xs(len_xs, 0.0);
     for (int i = 0; i < len_xs; i++)
