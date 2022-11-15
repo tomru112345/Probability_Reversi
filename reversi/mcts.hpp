@@ -127,7 +127,9 @@ public:
             pucb_values.push_back(tmp_v);
         }
         int argmax_i = *max_element(pucb_values.begin(), pucb_values.end());
-        return this->child_nodes.at(argmax_i);
+        Node next_node = this->child_nodes.at(argmax_i);
+        cout << next_node << endl;
+        return next_node;
     }
 };
 
@@ -153,12 +155,13 @@ vector<float> boltzman(vector<float> xs, float temperature)
 vector<float> pv_mcts_scores(pybind11::object model, State state, float temperature)
 {
     Node root_node = Node(model, state, 0);
+    vector<float> scores;
     for (int i = 0; i < PV_EVALUATE_COUNT; i++)
     {
         root_node.evaluate();
     }
-    vector<float> scores = root_node.nodes_to_scores();
-    if (temperature == 0)
+    scores = root_node.nodes_to_scores();
+    if (temperature == 0.0)
     {
         int action = *max_element(scores.begin(), scores.end());
         scores = vector<float>(scores.size(), 0.0);

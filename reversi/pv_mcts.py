@@ -135,7 +135,7 @@ def pv_mcts_action(model, temperature=0):
     # @watch.watch
     def pv_mcts_action(state):
         scores = pv_mcts_scores(model, state, temperature)
-        return np.random.choice(state.legal_actions(), p=scores)
+        return np.random.choice(a=state.legal_actions(), p=scores)
     return pv_mcts_action
 
 
@@ -183,4 +183,4 @@ if __name__ == '__main__':
         state = state.next(action)
 
         # 文字列表示
-        # print(state)
+        print(state)
