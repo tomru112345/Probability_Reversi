@@ -105,12 +105,15 @@ public:
     {
         float C_PUCT = 1.0;
         vector<float> scores = nodes_to_scores();
+        for (int i = 0; i < scores.size(); i++){
+            cout << scores.at(i) << " ";
+        }
+        cout << endl;
         float t = 0.0;
         for (int i = 0; i < scores.size(); i++)
         {
             t += scores.at(i);
         }
-        cout << t << endl;
         vector<float> pucb_values;
         int len_child_nodes = this->child_nodes.size();
         for (int i = 0; i < len_child_nodes; i++)
