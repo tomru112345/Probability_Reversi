@@ -62,7 +62,8 @@
         "xlocnum": "cpp",
         "xloctime": "cpp",
         "xmemory": "cpp",
-        "xstddef": "cpp"
+        "xstddef": "cpp",
+        "functional": "cpp"
     },
     "files.eol": "\n"
 }

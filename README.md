@@ -6,6 +6,13 @@
 
 - [AlphaZero-inspired game learning: Faster training by using MCTS only at test time](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9893320&casa_token=rf3PGP-FzYwAAAAA:r4SJO2OdFAQVhRcmg0OCg8g0tLvvak3rimdrQGD5M3aXKVbODOEVCpVIsxCM6tDgcSP7rHGofmA)
 
+
+## C++ の pybind11 用コマンド
+
+```bash
+g++ -O3 -Wall -shared -std=c++2a -fPIC `python3.10 -m pybind11 --includes` mctsbind.cpp -o cppMCTS`python3.10-config --extension-suffix` -I /usr/include/python3.10
+```
+
 ## 必要パッケージのインストール
 
 ```bash
