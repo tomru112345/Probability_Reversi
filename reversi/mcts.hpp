@@ -44,18 +44,18 @@ public:
         vector<Node> child_nodes;
     }
 
-    // vector<float> nodes_to_scores()
-    // {
-    //     vector<float> scores;
-    //     int len_nodes = this->child_nodes.size();
-    //     for (int i = 0; i < len_nodes; i++)
-    //     {
-    //         cout << this->child_nodes.at(i).n << " ";
-    //         scores.push_back(this->child_nodes.at(i).n);
-    //     }
-    //     cout << endl;
-    //     return scores;
-    // }
+    vector<float> nodes_to_scores()
+    {
+        vector<float> scores;
+        int len_nodes = this->child_nodes.size();
+        for (int i = 0; i < len_nodes; i++)
+        {
+            cout << this->child_nodes.at(i).n << " ";
+            scores.push_back(this->child_nodes.at(i).n);
+        }
+        cout << endl;
+        return scores;
+    }
 
     float evaluate()
     {
@@ -106,8 +106,8 @@ public:
     Node next_child_node()
     {
         float C_PUCT = 1.0;
-        // vector<float> scores = nodes_to_scores();
-        vector<float> scores = nodes_to_scores(this->child_nodes);
+        vector<float> scores = nodes_to_scores();
+        // vector<float> scores = nodes_to_scores(this->child_nodes);
         // for (int i = 0; i < scores.size(); i++){
         //     cout << scores.at(i) << " ";
         // }
@@ -139,18 +139,18 @@ public:
     }
 };
 
-vector<float> nodes_to_scores(vector<Node> nodes)
-{
-    vector<float> scores;
-    int len_nodes = nodes.size();
-    for (int i = 0; i < len_nodes; i++)
-    {
-        cout << nodes.at(i).n << " ";
-        scores.push_back(nodes.at(i).n);
-    }
-    cout << endl;
-    return scores;
-}
+// vector<float> nodes_to_scores(vector<Node> nodes)
+// {
+//     vector<float> scores;
+//     int len_nodes = nodes.size();
+//     for (int i = 0; i < len_nodes; i++)
+//     {
+//         cout << nodes.at(i).n << " ";
+//         scores.push_back(nodes.at(i).n);
+//     }
+//     cout << endl;
+//     return scores;
+// }
 
 vector<float> boltzman(vector<float> xs, float temperature)
 {
@@ -179,8 +179,8 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
     {
         root_node.evaluate();
     }
-    // scores = root_node.nodes_to_scores();
-    scores = nodes_to_scores(root_node.child_nodes);
+    scores = root_node.nodes_to_scores();
+    // scores = nodes_to_scores(root_node.child_nodes);
     if (temperature == 0.0)
     {
         int action = *max_element(scores.begin(), scores.end());
