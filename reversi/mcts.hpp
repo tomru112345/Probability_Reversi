@@ -44,24 +44,12 @@ public:
         vector<Node> child_nodes;
     }
 
-    // Node(pybind11::object m, State s, float np, float w, int n, vector<Node> child_nodes)
-    // {
-    //     model = m;
-    //     state = s;
-    //     p = np;
-    //     this->w = w;
-    //     this->n = n;
-    //     this->child_nodes = child_nodes;
-    // }
-
     vector<float> nodes_to_scores()
     {
-        // vector<Node> nodes
         vector<float> scores;
         int len_nodes = this->child_nodes.size();
         for (int i = 0; i < len_nodes; i++)
         {
-            // cout << nodes.at(i).w << endl;
             scores.push_back(this->child_nodes.at(i).n);
         }
         return scores;
@@ -87,7 +75,6 @@ public:
 
         if (this->child_nodes.empty())
         {
-            cout << "a" << endl;
             tuple<vector<float>, float> result = predict(this->model, this->state);
             vector<float> policies = get<0>(result);
             value = get<1>(result);
@@ -107,9 +94,7 @@ public:
         }
         else // 子ノードが存在する時
         {
-            cout << "b" << endl;
-            cout << this->n << endl;
-            value -= next_child_node().evaluate();
+            value = -(next_child_node().evaluate());
             this->w += value;
             this->n += 1;
             return value;
@@ -119,13 +104,12 @@ public:
     Node next_child_node()
     {
         float C_PUCT = 1.0;
-        // vector<float> scores = nodes_to_scores(this->child_nodes);
         vector<float> scores = nodes_to_scores();
         float t = 0.0;
-        for (int i = 0; i < scores.size(); i++){
+        for (int i = 0; i < scores.size(); i++)
+        {
             t += scores.at(i);
         }
-        // float t = accumulate(scores.begin(), scores.end(), 0.0);
         vector<float> pucb_values;
         int len_child_nodes = this->child_nodes.size();
         for (int i = 0; i < len_child_nodes; i++)
@@ -162,11 +146,6 @@ vector<float> boltzman(vector<float> xs, float temperature)
     {
         new_xs[i] = xs[i] / sum_xs;
     }
-    // cout << sum_xs << endl;
-    // for (int i = 0; i < new_xs.size(); i++){
-    //     cout << new_xs.at(i) << ",";
-    // }
-    // cout << endl;
     return new_xs;
 }
 
@@ -177,8 +156,6 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
     {
         root_node.evaluate();
     }
-
-    // vector<float> scores = root_node.nodes_to_scores(root_node.child_nodes);
     vector<float> scores = root_node.nodes_to_scores();
     if (temperature == 0)
     {

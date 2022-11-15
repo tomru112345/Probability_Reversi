@@ -97,6 +97,7 @@ class AIBattle():
                 return
             self.turn_of_ai()
             # self.create_color_map()
+        self.write_data()
 
     def turn_of_ai(self):
         """AI1のターン"""
