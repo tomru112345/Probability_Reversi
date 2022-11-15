@@ -110,6 +110,7 @@ public:
         {
             t += scores.at(i);
         }
+        cout << t << endl;
         vector<float> pucb_values;
         int len_child_nodes = this->child_nodes.size();
         for (int i = 0; i < len_child_nodes; i++)
@@ -117,7 +118,7 @@ public:
             float tmp_v = 0.0;
             if (this->child_nodes.at(i).n != 0.0)
             {
-                tmp_v = -this->child_nodes.at(i).w / this->child_nodes.at(i).n;
+                tmp_v = -(this->child_nodes.at(i).w / this->child_nodes.at(i).n);
             }
             else
             {
@@ -128,8 +129,6 @@ public:
         }
         int argmax_i = *max_element(pucb_values.begin(), pucb_values.end());
         Node next_node = this->child_nodes.at(argmax_i);
-        cout << argmax_i << endl;
-        cout << next_node.p << endl;
         return next_node;
     }
 };
