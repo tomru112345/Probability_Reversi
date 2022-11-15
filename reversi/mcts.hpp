@@ -198,7 +198,7 @@ vector<float> pv_mcts_scores(pybind11::object model, State state, float temperat
 int pv_mcts_action(pybind11::object model, State state, float temperature)
 {
     vector<int> leg_ac = state.legal_actions();
-    for (int i = 0; i < leg_ac; i++){
+    for (int i = 0; i < leg_ac.size(); i++){
         cout << leg_ac.at(i) << " ";
     }
     cout << endl;
