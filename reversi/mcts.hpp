@@ -128,7 +128,7 @@ public:
         }
         int argmax_i = *max_element(pucb_values.begin(), pucb_values.end());
         Node next_node = this->child_nodes.at(argmax_i);
-        cout << next_node << endl;
+        cout << next_node.n << endl;
         return next_node;
     }
 };
