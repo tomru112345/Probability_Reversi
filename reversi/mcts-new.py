@@ -17,6 +17,23 @@ import watch
 from cppState import State
 from cppMCTS import *
 
+
+def print_reversi(state):
+    """文字列表示"""
+    ox = ('o', 'x') if state.is_first_player() else ('x', 'o')
+    str = ''
+    for i in range(SQUARE * SQUARE):
+        if state.pieces[i] == 1:
+            str += ox[0]
+        elif state.enemy_pieces[i] == 1:
+            str += ox[1]
+        else:
+            str += '-'
+        if i % SQUARE == (SQUARE - 1):
+            str += '\n'
+    print(str)
+
+
 if __name__ == '__main__':
     # モデルの読み込み
     path = sorted(Path(f'./model/{SQUARE}x{SQUARE}/').glob('*.h5'))[-1]
@@ -41,4 +58,5 @@ if __name__ == '__main__':
         state = state.next(action)
 
         # 文字列表示
+        print_reversi(state)
         # print(state)
