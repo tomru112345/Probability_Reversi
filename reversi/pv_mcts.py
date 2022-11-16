@@ -13,7 +13,8 @@ from settings import SQUARE
 import watch
 
 # パラメータの準備
-PV_EVALUATE_COUNT = 50  # 1推論あたりのシミュレーション回数（本家は1600）
+# PV_EVALUATE_COUNT = 50  # 1推論あたりのシミュレーション回数（本家は1600）
+PV_EVALUATE_COUNT = 12
 
 
 def predict(model, state: State):
