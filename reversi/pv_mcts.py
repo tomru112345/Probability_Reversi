@@ -21,7 +21,8 @@ def predict(model, state: State):
     # 推論のための入力データのシェイプの変換
     a, b, c = DN_INPUT_SHAPE
 
-    x: np.ndarray = np.array([state.pieces, state.enemy_pieces, state.ratio_box])
+    x: np.ndarray = np.array(
+        [state.pieces, state.enemy_pieces, state.ratio_box])
     x = x.reshape(c, a, b).transpose(1, 2, 0).reshape(1, a, b, c)
 
     # 推論
@@ -103,7 +104,6 @@ def pv_mcts_scores(model, state, temperature):
             # アーク評価値の計算
             C_PUCT = 1.0
             t = sum(nodes_to_scores(self.child_nodes))
-            print(t)
             pucb_values = []
             for child_node in self.child_nodes:
                 pucb_values.append((-child_node.w / child_node.n if child_node.n else 0.0) +
@@ -179,7 +179,6 @@ if __name__ == '__main__':
 
         # 行動の取得
         action = next_action(state)
-        exit()
         # 次の状態の取得
         state = state.next(action)
 
