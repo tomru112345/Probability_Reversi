@@ -6,6 +6,12 @@
 
 - [AlphaZero-inspired game learning: Faster training by using MCTS only at test time](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9893320&casa_token=rf3PGP-FzYwAAAAA:r4SJO2OdFAQVhRcmg0OCg8g0tLvvak3rimdrQGD5M3aXKVbODOEVCpVIsxCM6tDgcSP7rHGofmA)
 
+## Dockerfile
+
+```bash
+docker build -t reversi-env:latest .
+docker run --gpus=all --name reversi-container -it reversi-env:latest /bin/bash
+```
 
 ## C++ の pybind11 用コマンド
 

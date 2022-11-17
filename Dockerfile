@@ -29,6 +29,7 @@ RUN python3.10 -m pip --version
 
 RUN python3.10 -m pip install -U pip wheel setuptools 
 RUN python3.10 -m pip install tensorflow==2.8
+RUN python3.10 -m pip install protobuf==3.20
 RUN python3.10 -m pip install tensorboard==2.8
 RUN python3.10 -m pip install tensorflow-gpu==2.8
 RUN python3.10 -m pip install keras==2.8
