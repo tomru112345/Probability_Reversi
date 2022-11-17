@@ -16,7 +16,7 @@ ENV LANG C.UTF-8
 
 RUN apt-get update -y
 RUN apt-get install python3.10 -y
-RUN apt-get install python3.10-devel -y
+RUN apt-get install python3.10-dev -y
 RUN apt-get install g++ -y
 RUN apt-get install vim -y
 
