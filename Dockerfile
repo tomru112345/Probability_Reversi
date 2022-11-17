@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.6.1-runtime-ubuntu20.04
+FROM tensorflow/tensorflow:latest-gpu
 RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get dist-upgrade -y
