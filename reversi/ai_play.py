@@ -7,7 +7,7 @@ from cppState import State
 from pv_mcts import pv_mcts_action_policy
 from datetime import datetime
 import settings
-from settings import SQUARE
+from settings import SQUARE, default_ratio_box
 import os
 import numpy as np
 from keras.models import load_model
@@ -31,7 +31,7 @@ class AIBattle():
         """初期化"""
 
         # ゲーム状態の生成
-        self.state = State()
+        self.state = State(default_ratio_box)
 
         # PV MCTSで行動選択を行う関数の生成
         self.next_action = pv_mcts_action_policy(model_1, EN_TEMPERATURE) if self.state.is_first_player(

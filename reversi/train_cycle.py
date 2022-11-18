@@ -15,7 +15,7 @@ os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 # デュアルネットワークの作成
 dual_network()
 
-for i in range(10):
+for i in range(30):
     print('Train', i, '====================')
 
     # セルフプレイ部

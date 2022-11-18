@@ -9,6 +9,7 @@ from pv_mcts import pv_mcts_action
 from keras.models import load_model
 from keras import backend as K
 from shutil import copy
+from settings import default_ratio_box
 
 
 # パラメータの準備
@@ -27,7 +28,7 @@ def first_player_point(ended_state: State):
 def play(next_actions):
     """1ゲームの実行"""
     # 状態の生成
-    state = State()
+    state = State(default_ratio_box)
 
     # ゲーム終了までループ
     while True:

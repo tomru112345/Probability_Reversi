@@ -11,6 +11,7 @@ from keras.models import load_model
 from pathlib import Path
 import numpy as np
 import watch
+from settings import default_ratio_box
 
 # パラメータの準備
 # PV_EVALUATE_COUNT = 50  # 1推論あたりのシミュレーション回数（本家は1600）
@@ -167,7 +168,7 @@ if __name__ == '__main__':
     model = load_model(str(path))
 
     # 状態の生成
-    state = State()
+    state = State(default_ratio_box)
 
     # モンテカルロ木探索で行動取得を行う関数の生成
     next_action = pv_mcts_action(model, 1.0)

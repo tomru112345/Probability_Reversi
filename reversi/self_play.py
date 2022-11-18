@@ -13,6 +13,7 @@ from keras import backend as K
 import numpy as np
 import pickle
 import os
+from settings import default_ratio_box
 
 # パラメータの準備
 # SP_GAME_COUNT = 500  # セルフプレイを行うゲーム数（本家は25000）
@@ -44,7 +45,7 @@ def play(model):
     history = []
 
     # 状態の生成
-    state = State()
+    state = State(default_ratio_box)
 
     while True:
         # ゲーム終了時

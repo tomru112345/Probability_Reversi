@@ -10,7 +10,7 @@ from keras.models import load_model
 from pathlib import Path
 from threading import Thread
 import tkinter as tk
-from settings import SQUARE
+from settings import SQUARE, default_ratio_box
 
 # ベストプレイヤーのモデルの読み込み
 model = load_model(f'./model/best.h5')
@@ -25,7 +25,7 @@ class GameUI(tk.Frame):
         self.master.title('確率リバーシ')
 
         # ゲーム状態の生成
-        self.state = State()
+        self.state = State(default_ratio_box)
 
         # PV MCTSで行動選択を行う関数の生成
         self.next_action = pv_mcts_action(model, 0.0)
