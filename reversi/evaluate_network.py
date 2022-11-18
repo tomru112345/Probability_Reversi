@@ -3,15 +3,12 @@
 # ====================
 
 # パッケージのインポート
-from game import State
+# from game import State
+from cppState import State
 from pv_mcts import pv_mcts_action
 from keras.models import load_model
 from keras import backend as K
-import tensorflow as tf
-from pathlib import Path
 from shutil import copy
-import numpy as np
-from settings import SQUARE
 
 
 # パラメータの準備
@@ -42,7 +39,7 @@ def play(next_actions):
         next_action = next_actions[0] if state.is_first_player(
         ) else next_actions[1]
         action = next_action(state)
-        
+
         # 次の状態の取得
         state = state.next(action)
 
@@ -52,18 +49,18 @@ def play(next_actions):
 
 def update_best_player():
     """ベストプレイヤーの交代"""
-    copy(f'./model/{SQUARE}x{SQUARE}/latest.h5',
-         f'./model/{SQUARE}x{SQUARE}/best.h5')
+    copy(f'./model/latest.h5',
+         f'./model/best.h5')
     print('Change BestPlayer')
 
 
 def evaluate_network():
     """ネットワークの評価"""
     # 最新プレイヤーのモデルの読み込み
-    model0 = load_model(f'./model/{SQUARE}x{SQUARE}/latest.h5')
+    model0 = load_model(f'./model/latest.h5')
 
     # ベストプレイヤーのモデルの読み込み
-    model1 = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
+    model1 = load_model(f'./model/best.h5')
 
     # PV MCTSで行動選択を行う関数の生成
     next_action0 = pv_mcts_action(model0, EN_TEMPERATURE)

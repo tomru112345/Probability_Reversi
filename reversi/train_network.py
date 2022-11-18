@@ -11,7 +11,6 @@ from datetime import datetime
 from pathlib import Path
 import numpy as np
 import pickle
-from settings import SQUARE
 
 # パラメータの準備
 RN_EPOCHS = 100  # 学習回数
@@ -20,7 +19,7 @@ RN_EPOCHS = 100  # 学習回数
 def load_data():
     """学習データの読み込み"""
     history_path = sorted(
-        Path(f'./data/{SQUARE}x{SQUARE}/').glob('*.history'))[-1]
+        Path(f'./data/').glob('*.history'))[-1]
     with history_path.open(mode='rb') as f:
         return pickle.load(f)
 
@@ -39,7 +38,7 @@ def train_network():
     y_values = np.array(y_values)
 
     # ベストプレイヤーのモデルの読み込み
-    model = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
+    model = load_model(f'./model/best.h5')
 
     # モデルのコンパイル
     model.compile(loss=['categorical_crossentropy', 'mse'],
@@ -71,7 +70,7 @@ def train_network():
     print('')
 
     # 最新プレイヤーのモデルの保存
-    model.save(f'./model/{SQUARE}x{SQUARE}/latest.h5')
+    model.save(f'./model/latest.h5')
 
     # モデルの破棄
     K.clear_session()

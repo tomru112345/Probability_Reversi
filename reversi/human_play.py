@@ -3,7 +3,8 @@
 # ====================
 
 # パッケージのインポート
-from game import State
+# from game import State
+from cppState import State
 from pv_mcts import pv_mcts_action
 from keras.models import load_model
 from pathlib import Path
@@ -12,7 +13,7 @@ import tkinter as tk
 from settings import SQUARE
 
 # ベストプレイヤーのモデルの読み込み
-model = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
+model = load_model(f'./model/best.h5')
 
 
 class GameUI(tk.Frame):

@@ -2,8 +2,9 @@
 # AIとAIの対戦
 # ====================
 # パッケージのインポート
-from game import State
-from pv_mcts import pv_mcts_action, pv_mcts_action_policy
+# from game import State
+from cppState import State
+from pv_mcts import pv_mcts_action_policy
 from datetime import datetime
 import settings
 from settings import SQUARE

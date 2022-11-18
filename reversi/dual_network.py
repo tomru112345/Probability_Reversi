@@ -9,7 +9,6 @@ from keras.regularizers import l2
 from keras import backend as K
 from settings import SQUARE
 import os
-import tensorflow
 
 
 # パラメータの準備
@@ -44,7 +43,7 @@ def residual_block():
 def dual_network():
     """デュアルネットワークの作成"""
     # モデル作成済みの場合は無処理
-    if os.path.exists(f'./model/{SQUARE}x{SQUARE}/best.h5'):
+    if os.path.exists(f'./model/best.h5'):
         return
 
     # 入力層
@@ -74,8 +73,8 @@ def dual_network():
     model = Model(inputs=input, outputs=[p, v])
 
     # モデルの保存
-    os.makedirs(f'./model/{SQUARE}x{SQUARE}/', exist_ok=True)  # フォルダがない時は生成
-    model.save(f'./model/{SQUARE}x{SQUARE}/best.h5')  # ベストプレイヤーのモデル
+    os.makedirs(f'./model/', exist_ok=True)  # フォルダがない時は生成
+    model.save(f'./model/best.h5')  # ベストプレイヤーのモデル
 
     # モデルの破棄
     K.clear_session()

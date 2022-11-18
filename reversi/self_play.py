@@ -3,17 +3,16 @@
 # ====================
 
 # パッケージのインポート
-from game import State
+# from game import State
+from cppState import State
 from pv_mcts import pv_mcts_scores
 from dual_network import DN_OUTPUT_SIZE
 from datetime import datetime
 from keras.models import load_model
 from keras import backend as K
-from pathlib import Path
 import numpy as np
 import pickle
 import os
-from settings import SQUARE
 
 # パラメータの準備
 # SP_GAME_COUNT = 500  # セルフプレイを行うゲーム数（本家は25000）
@@ -26,29 +25,15 @@ def first_player_value(ended_state):
     # 1:先手勝利, -1:先手敗北, 0:引き分け
     if ended_state.is_lose():
         return -1 if ended_state.is_first_player() else 1
-        # 3:先手勝利, -3:先手敗北, 0:引き分け
-        # return -10 if ended_state.is_first_player() else 10
-        # return -100 if ended_state.is_first_player() else 100
     return 0
-
-
-def ratio_value(state: State, turn_cnt: int = 1) -> int:
-    """行動に対する確率を引いたかどうか"""
-    # tmp_value = (SQUARE * SQUARE) // 2 - turn_cnt // 2
-    if state.ratio_flg:
-        return 1
-        # return 1 * tmp_value
-    else:
-        return -1
-        # return -1 * tmp_value
 
 
 def write_data(history):
     """学習データの保存"""
     now = datetime.now()
-    os.makedirs(f'./data/{SQUARE}x{SQUARE}/', exist_ok=True)  # フォルダがない時は生成
-    path = './data/{}x{}/{:04}{:02}{:02}{:02}{:02}{:02}.history'.format(
-        SQUARE, SQUARE, now.year, now.month, now.day, now.hour, now.minute, now.second)
+    os.makedirs(f'./data/', exist_ok=True)  # フォルダがない時は生成
+    path = './data/{:04}{:02}{:02}{:02}{:02}{:02}.history'.format(
+        now.year, now.month, now.day, now.hour, now.minute, now.second)
     with open(path, mode='wb') as f:
         pickle.dump(history, f)
 
@@ -60,7 +45,6 @@ def play(model):
 
     # 状態の生成
     state = State()
-    turn_cnt = 0
 
     while True:
         # ゲーム終了時
@@ -83,11 +67,6 @@ def play(model):
         # 次の状態の取得
         state = state.next(action)
 
-        # TODO 報酬の与え方を毎ターン毎に変化させる必要がある
-        # 確率 p を取得したかどうか
-        turn_cnt += 1
-        # history[-1][2] += ratio_value(state, turn_cnt)
-
     # 学習データに価値を追加
     value = first_player_value(state)
     for i in range(len(history)):
@@ -102,7 +81,7 @@ def self_play():
     history = []
 
     # ベストプレイヤーのモデルの読み込み
-    model = load_model(f'./model/{SQUARE}x{SQUARE}/best.h5')
+    model = load_model(f'./model/best.h5')
 
     # 複数回のゲームの実行
     for i in range(SP_GAME_COUNT):

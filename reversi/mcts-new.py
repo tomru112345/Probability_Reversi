@@ -36,7 +36,7 @@ def print_reversi(state):
 
 if __name__ == '__main__':
     # モデルの読み込み
-    path = sorted(Path(f'./model/{SQUARE}x{SQUARE}/').glob('*.h5'))[-1]
+    path = sorted(Path(f'./model/').glob('*.h5'))[-1]
     model = load_model(str(path))
 
     # 状態の生成

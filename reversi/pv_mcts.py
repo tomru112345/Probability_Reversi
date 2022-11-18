@@ -3,13 +3,13 @@
 # ====================
 
 # パッケージのインポート
-from game import State
+# from game import State
+from cppState import State
 from dual_network import DN_INPUT_SHAPE, DN_OUTPUT_SIZE
 from math import sqrt
 from keras.models import load_model
 from pathlib import Path
 import numpy as np
-from settings import SQUARE
 import watch
 
 # パラメータの準備
@@ -163,7 +163,7 @@ def boltzman(xs, temperature):
 # 動作確認
 if __name__ == '__main__':
     # モデルの読み込み
-    path = sorted(Path(f'./model/{SQUARE}x{SQUARE}/').glob('*.h5'))[-1]
+    path = sorted(Path(f'./model/').glob('*.h5'))[-1]
     model = load_model(str(path))
 
     # 状態の生成
