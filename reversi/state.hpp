@@ -12,18 +12,20 @@ private:
 public:
     vector<int> pieces = vector<int>(16, 0);
     vector<int> enemy_pieces = vector<int>(16, 0);
-    vector<int> ratio_box = vector<int>(16, 100);
+    vector<int> ratio_box;
 
     int depth = 0;
     vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     bool pass_end = false;
+    bool ratio_flg = false;
 
-    State()
+    State(vector<int> r)
     {
         this->pieces[center_idx - balance_idx - 1] = 1;
         this->pieces[center_idx + balance_idx] = 1;
         this->enemy_pieces[center_idx - balance_idx] = 1;
         this->enemy_pieces[center_idx + balance_idx - 1] = 1;
+        this->ratio_box = r;
     }
 
     State(vector<int> p, vector<int> ep, vector<int> r, int d)
@@ -32,6 +34,11 @@ public:
         this->enemy_pieces = ep;
         this->ratio_box = r;
         this->depth = d;
+    }
+
+    void set_ratio(vector<int> r)
+    {
+        this->ratio_box = r;
     }
 
     int piece_count(vector<int> pieces)
@@ -90,12 +97,16 @@ public:
 
     State next(int action)
     {
-        State state = State(this->pieces, this->enemy_pieces, this->ratio_box, depth + 1);
+        State state = static_cast<State>(State(this->pieces, this->enemy_pieces, this->ratio_box, depth + 1));
         if (action != 16)
         {
             int ac_x = action % 4;
             int ac_y = action / 4;
             state.is_legal_action_xy(ac_x, ac_y, true);
+        }
+        else
+        {
+            this->ratio_flg = false;
         }
 
         vector<int> w = state.pieces;
@@ -199,7 +210,7 @@ public:
             {
                 return false;
             }
-            if (this->pieces[x + y * 4] == 1)
+            if (this->enemy_pieces[x + y * 4] == 1)
             {
                 if (flip)
                 {
@@ -207,12 +218,12 @@ public:
                     {
                         x -= dx;
                         y -= dy;
-                        if (this->pieces[x + y * 4] == 1)
+                        if (this->enemy_pieces[x + y * 4] == 1)
                         {
                             return true;
                         }
-                        this->pieces[x + y * 4] = 1;
-                        this->enemy_pieces[x + y * 4] = 0;
+                        this->enemy_pieces[x + y * 4] = 1;
+                        this->pieces[x + y * 4] = 0;
                     }
                 }
                 return true;
