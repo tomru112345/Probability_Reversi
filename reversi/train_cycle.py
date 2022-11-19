@@ -9,6 +9,8 @@ from train_network import train_network
 from evaluate_network import evaluate_network
 import os
 
+# tensorflow の warning の設定
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 # GPU メモリを徐々に取得するように設定
 os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 

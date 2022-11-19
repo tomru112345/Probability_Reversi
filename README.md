@@ -15,8 +15,17 @@ docker run --gpus=all --name reversi-container -it reversi-env:latest /bin/bash
 
 ## C++ の pybind11 用コマンド
 
+### コードを Python 用にビルド
+
 ```bash
 g++ -O3 -Wall -shared -std=c++2a -fPIC `python3.10 -m pybind11 --includes` mctsbind.cpp -o cppMCTS`python3.10-config --extension-suffix` -I /usr/include/python3.10
+```
+
+### pip 用パッケージとしてインストール
+
+```bash
+cd ./reversi/mypackage/cppState
+python setup.py install
 ```
 
 ## 必要パッケージのインストール
