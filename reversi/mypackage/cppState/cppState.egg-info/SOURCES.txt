@@ -1,8 +1,0 @@
-setup.py
-statebind.cpp
-cppState.egg-info/PKG-INFO
-cppState.egg-info/SOURCES.txt
-cppState.egg-info/dependency_links.txt
-cppState.egg-info/not-zip-safe
-cppState.egg-info/requires.txt
-cppState.egg-info/top_level.txt
