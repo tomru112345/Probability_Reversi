@@ -91,7 +91,7 @@ class AIBattle():
         while self.game_fin == False:
             # ゲーム終了時
             if self.state.is_done():
-                self.state = State()
+                self.state = State(default_ratio_box)
                 self.preview_result()
                 self.calculate_status()
                 self.game_fin = True
