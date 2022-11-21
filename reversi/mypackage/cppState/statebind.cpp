@@ -2,13 +2,11 @@
 #include <pybind11/stl.h>
 #include "state.hpp"
 
-using namespace std;
-
 PYBIND11_MODULE(cppState, m)
 {
     pybind11::class_<State>(m, "State")
-        .def(pybind11::init<vector<int>>())
-        .def(pybind11::init<vector<int>, vector<int>, vector<int>, int>())
+        .def(pybind11::init<std::vector<int>>())
+        .def(pybind11::init<std::vector<int>, std::vector<int>, std::vector<int>, int>())
         .def_readwrite("pieces", &State::pieces)
         .def_readwrite("enemy_pieces", &State::enemy_pieces)
         .def_readwrite("ratio_box", &State::ratio_box)

@@ -1,7 +1,6 @@
 #ifndef STATE_HPP
 #define STATE_HPP
 #include <vector>
-using namespace std;
 
 class State
 {
@@ -10,16 +9,16 @@ private:
     static const int balance_idx = 2;
 
 public:
-    vector<int> pieces = vector<int>(16, 0);
-    vector<int> enemy_pieces = vector<int>(16, 0);
-    vector<int> ratio_box;
+    std::vector<int> pieces = std::vector<int>(16, 0);
+    std::vector<int> enemy_pieces = std::vector<int>(16, 0);
+    std::vector<int> ratio_box;
 
     int depth = 0;
-    vector<vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
+    std::vector<std::vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     bool pass_end = false;
     bool ratio_flg = false;
 
-    State(vector<int> r)
+    State(std::vector<int> r)
     {
         this->pieces[center_idx - balance_idx - 1] = 1;
         this->pieces[center_idx + balance_idx] = 1;
@@ -28,7 +27,7 @@ public:
         this->ratio_box = r;
     }
 
-    State(vector<int> p, vector<int> ep, vector<int> r, int d)
+    State(std::vector<int> p, std::vector<int> ep, std::vector<int> r, int d)
     {
         this->pieces = p;
         this->enemy_pieces = ep;
@@ -36,12 +35,12 @@ public:
         this->depth = d;
     }
 
-    void set_ratio(vector<int> r)
+    void set_ratio(std::vector<int> r)
     {
         this->ratio_box = r;
     }
 
-    int piece_count(vector<int> pieces)
+    int piece_count(std::vector<int> pieces)
     {
         int cnt = 0;
         for (int i = 0; i < pieces.size(); i++)
@@ -97,7 +96,7 @@ public:
 
     State next(int action)
     {
-        State state = static_cast<State>(State(this->pieces, this->enemy_pieces, this->ratio_box, depth + 1));
+        State state = State(this->pieces, this->enemy_pieces, this->ratio_box, depth + 1);
         if (action != 16)
         {
             int ac_x = action % 4;
@@ -109,12 +108,12 @@ public:
             this->ratio_flg = false;
         }
 
-        vector<int> w = state.pieces;
+        std::vector<int> w = state.pieces;
         state.pieces = state.enemy_pieces;
         state.enemy_pieces = w;
 
-        vector<int> pass_vec = {16};
-        vector<int> leg_vec = state.legal_actions();
+        std::vector<int> pass_vec = {16};
+        std::vector<int> leg_vec = state.legal_actions();
         if (action == 16 && leg_vec == pass_vec)
         {
             state.pass_end = true;
@@ -127,9 +126,9 @@ public:
     // bool is_legal_action_xy_dxy_penalty(int x, int y, int dx, int dy, bool flip = false);
     // bool is_legal_action_xy(int x, int y, bool flip = false);
 
-    vector<int> legal_actions()
+    std::vector<int> legal_actions()
     {
-        vector<int> actions;
+        std::vector<int> actions;
         for (int j = 0; j < 4; j++)
         {
             for (int i = 0; i < 4; i++)
@@ -243,7 +242,6 @@ public:
         }
         if (flip)
         {
-            // this->pieces[x + y * 4] = 1;
             if (rand() % 101 <= this->ratio_box[x + y * 4])
             {
                 this->pieces[x + y * 4] = 1;
