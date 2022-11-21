@@ -13,7 +13,7 @@
 #include <algorithm>
 
 using namespace std;
-int PV_EVALUATE_COUNT = 50;
+int PV_EVALUATE_COUNT = 12;
 
 tuple<vector<float>, float> predict(pybind11::object model, State state)
 {
