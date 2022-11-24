@@ -62,7 +62,7 @@ class GameUI(tk.Frame):
         """人間のターン"""
         # ゲーム終了時
         if self.state.is_done():
-            self.state = State()
+            self.state = State(default_ratio_box)
             self.reset()
             self.on_draw()
             return
@@ -131,7 +131,7 @@ class GameUI(tk.Frame):
         x = (index % SQUARE)*40+20
         y = int(index/SQUARE)*40+20
         self.c.create_text(
-            x, y, text=str(self.state.ratio_box[index]), fill="#FF0461", font=('Yu Gothic UI', 18), anchor="center")
+            x, y, text=str(self.state.get_ratio_box()[index]), fill="#FF0461", font=('Yu Gothic UI', 18), anchor="center")
 
     def draw_legal_action(self):
         """合法手を表示"""
@@ -148,15 +148,15 @@ class GameUI(tk.Frame):
         x = int((SQUARE * 40) / 2)
         y = SQUARE * 40+20
         if self.state.is_first_player():
-            black_pieces = self.state.piece_count(self.state.pieces)
-            white_pieces = self.state.piece_count(self.state.enemy_pieces)
+            black_pieces = self.state.piece_count(self.state.get_pieces())
+            white_pieces = self.state.piece_count(self.state.get_enemy_pieces())
             self.c.create_rectangle(
                 0, SQUARE * 40, SQUARE * 40, (SQUARE + 1) * 40, fill='#222222')
             self.c.create_text(
                 x, y, text=f'{black_pieces} vs {white_pieces}', fill="#FFFFFF", font=('Yu Gothic UI', 18), anchor="center")
         else:
-            black_pieces = self.state.piece_count(self.state.enemy_pieces)
-            white_pieces = self.state.piece_count(self.state.pieces)
+            black_pieces = self.state.piece_count(self.state.get_enemy_pieces())
+            white_pieces = self.state.piece_count(self.state.get_pieces())
             self.c.create_rectangle(
                 0, SQUARE * 40, SQUARE * 40, (SQUARE + 1) * 40, fill='#FFFFFF')
             self.c.create_text(
@@ -184,9 +184,9 @@ class GameUI(tk.Frame):
             self.c.create_line(i*40, 0, i*40, SQUARE * 40,
                                width=1.0, fill='#000000')
         for i in range(SQUARE * SQUARE):
-            if self.state.pieces[i] == 1:
+            if self.state.get_pieces()[i] == 1:
                 self.draw_piece(i, self.state.is_first_player())
-            if self.state.enemy_pieces[i] == 1:
+            if self.state.get_enemy_pieces()[i] == 1:
                 self.draw_piece(i, not self.state.is_first_player())
 
             self.draw_ratio(i)

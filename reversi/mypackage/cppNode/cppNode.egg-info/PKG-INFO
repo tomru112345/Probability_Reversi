@@ -1,0 +1,6 @@
+Metadata-Version: 2.1
+Name: cppNode
+Version: 0.0.1
+Summary: node written by cpp
+Author: tamura kazuma
+Requires-Python: >=3.7

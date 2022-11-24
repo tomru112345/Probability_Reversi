@@ -61,7 +61,7 @@ def play(model):
             policies[action] = policy
         # history.append([[state.pieces, state.enemy_pieces], policies, None])
         history.append(
-            [[state.pieces, state.enemy_pieces, state.ratio_box], policies, 0])
+            [[state.get_pieces(), state.get_enemy_pieces(), state.get_ratio_box()], policies, 0])
 
         # 行動の取得
         action = np.random.choice(state.legal_actions(), p=scores)

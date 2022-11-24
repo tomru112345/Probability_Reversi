@@ -24,7 +24,7 @@ def predict(model, state: State):
     a, b, c = DN_INPUT_SHAPE
 
     x: np.ndarray = np.array(
-        [state.pieces, state.enemy_pieces, state.ratio_box])
+        [state.get_pieces(), state.get_enemy_pieces(), state.get_ratio_box()])
     x = x.reshape(c, a, b).transpose(1, 2, 0).reshape(1, a, b, c)
 
     # 推論

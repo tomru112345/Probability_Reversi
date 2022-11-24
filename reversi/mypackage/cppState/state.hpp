@@ -7,45 +7,92 @@ class State
 private:
     static const int center_idx = 8;
     static const int balance_idx = 2;
-
-public:
     std::vector<int> pieces = std::vector<int>(16, 0);
     std::vector<int> enemy_pieces = std::vector<int>(16, 0);
     std::vector<int> ratio_box;
-
     int depth = 0;
     std::vector<std::vector<int>> dxy = {{1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}};
     bool pass_end = false;
-    bool ratio_flg = false;
 
+public:
     State(std::vector<int> r)
     {
-        this->pieces[center_idx - balance_idx - 1] = 1;
-        this->pieces[center_idx + balance_idx] = 1;
-        this->enemy_pieces[center_idx - balance_idx] = 1;
-        this->enemy_pieces[center_idx + balance_idx - 1] = 1;
-        this->ratio_box = r;
+        pieces[center_idx - balance_idx - 1] = 1;
+        pieces[center_idx + balance_idx] = 1;
+        enemy_pieces[center_idx - balance_idx] = 1;
+        enemy_pieces[center_idx + balance_idx - 1] = 1;
+        ratio_box = r;
     }
 
     State(std::vector<int> p, std::vector<int> ep, std::vector<int> r, int d)
     {
-        this->pieces = p;
-        this->enemy_pieces = ep;
-        this->ratio_box = r;
-        this->depth = d;
+        pieces = p;
+        enemy_pieces = ep;
+        ratio_box = r;
+        depth = d;
     }
 
-    void set_ratio(std::vector<int> r)
+    void set_pieces(std::vector<int> p)
     {
-        this->ratio_box = r;
+        pieces = p;
     }
 
-    int piece_count(std::vector<int> pieces)
+    void set_enemy_pieces(std::vector<int> ep)
+    {
+        enemy_pieces = ep;
+    }
+
+    void set_ratio_box(std::vector<int> r)
+    {
+        ratio_box = r;
+    }
+
+    void set_depth(int d)
+    {
+        depth = d;
+    }
+
+    void set_pass_end(bool pe)
+    {
+        pass_end = pe;
+    }
+
+    std::vector<int> get_pieces()
+    {
+        return pieces;
+    }
+
+    std::vector<int> get_enemy_pieces()
+    {
+        return enemy_pieces;
+    }
+
+    std::vector<int> get_ratio_box()
+    {
+        return ratio_box;
+    }
+
+    int get_depth()
+    {
+        return depth;
+    }
+
+    bool get_pass_end()
+    {
+        return pass_end;
+    }
+
+    std::vector<std::vector<int>> get_dxy()
+    {
+        return dxy;
+    }
+
+    int piece_count(std::vector<int> p)
     {
         int cnt = 0;
-        for (int i = 0; i < pieces.size(); i++)
+        for (int i = 0; i < p.size(); i++)
         {
-            if (pieces[i] == 1)
+            if (p[i] == 1)
             {
                 cnt++;
             }
@@ -55,7 +102,7 @@ public:
 
     bool is_done()
     {
-        if ((piece_count(this->pieces) + piece_count(this->enemy_pieces) == 16) || this->pass_end)
+        if ((piece_count(get_pieces()) + piece_count(get_enemy_pieces()) == 16) || get_pass_end())
         {
             return true;
         }
@@ -67,7 +114,7 @@ public:
 
     bool is_lose()
     {
-        if (is_done() && (piece_count(this->pieces) < piece_count(this->enemy_pieces)))
+        if (is_done() && (piece_count(get_pieces()) < piece_count(get_enemy_pieces())))
         {
             return true;
         }
@@ -79,7 +126,7 @@ public:
 
     bool is_draw()
     {
-        if (is_done() && (piece_count(this->pieces) == piece_count(this->enemy_pieces)))
+        if (is_done() && (piece_count(get_pieces()) == piece_count(get_enemy_pieces())))
         {
             return true;
         }
@@ -91,32 +138,28 @@ public:
 
     bool is_first_player()
     {
-        return (this->depth % 2 == 0);
+        return (get_depth() % 2 == 0);
     }
 
     State next(int action)
     {
-        State state = State(this->pieces, this->enemy_pieces, this->ratio_box, depth + 1);
+        State state = State(get_pieces(), get_enemy_pieces(), get_ratio_box(), get_depth() + 1);
         if (action != 16)
         {
             int ac_x = action % 4;
             int ac_y = action / 4;
             state.is_legal_action_xy(ac_x, ac_y, true);
         }
-        else
-        {
-            this->ratio_flg = false;
-        }
 
-        std::vector<int> w = state.pieces;
-        state.pieces = state.enemy_pieces;
-        state.enemy_pieces = w;
+        std::vector<int> w = state.get_pieces();
+        state.set_pieces(state.get_enemy_pieces());
+        state.set_enemy_pieces(w);
 
         std::vector<int> pass_vec = {16};
         std::vector<int> leg_vec = state.legal_actions();
         if (action == 16 && leg_vec == pass_vec)
         {
-            state.pass_end = true;
+            state.set_pass_end(true);
         }
         return state;
     }
@@ -156,7 +199,7 @@ public:
         {
             return false;
         }
-        else if (this->enemy_pieces[new_x + new_y * 4] != 1)
+        else if (get_enemy_pieces()[new_x + new_y * 4] != 1)
         {
             return false;
         }
@@ -167,11 +210,11 @@ public:
             {
                 return false;
             }
-            else if (this->enemy_pieces[new_x + new_y * 4] == 0 && this->pieces[new_x + new_y * 4] == 0)
+            else if (get_enemy_pieces()[new_x + new_y * 4] == 0 && get_pieces()[new_x + new_y * 4] == 0)
             {
                 return false;
             }
-            if (this->pieces[new_x + new_y * 4] == 1)
+            if (get_pieces()[new_x + new_y * 4] == 1)
             {
                 if (flip)
                 {
@@ -179,12 +222,16 @@ public:
                     {
                         new_x -= dx;
                         new_y -= dy;
-                        if (this->pieces[new_x + new_y * 4] == 1)
+                        if (get_pieces()[new_x + new_y * 4] == 1)
                         {
                             return true;
                         }
-                        this->pieces[new_x + new_y * 4] = 1;
-                        this->enemy_pieces[new_x + new_y * 4] = 0;
+                        std::vector<int> tmp_p = get_pieces();
+                        tmp_p[new_x + new_y * 4] = 1;
+                        set_pieces(tmp_p);
+                        std::vector<int> tmp_ep = get_enemy_pieces();
+                        tmp_ep[new_x + new_y * 4] = 0;
+                        set_enemy_pieces(tmp_ep);
                     }
                 }
                 return true;
@@ -199,18 +246,18 @@ public:
     {
         x += dx;
         y += dy;
-        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (this->enemy_pieces[x + y * 4] != 1))
+        if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || (get_enemy_pieces()[x + y * 4] != 1))
         {
             return false;
         }
 
         for (int j = 0; j < 4; j++)
         {
-            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((this->enemy_pieces[x + y * 4] == 0) && (this->pieces[x + y * 4] == 0)))
+            if ((y < 0) || (3 < y) || (x < 0) || (3 < x) || ((get_enemy_pieces()[x + y * 4] == 0) && (get_pieces()[x + y * 4] == 0)))
             {
                 return false;
             }
-            if (this->enemy_pieces[x + y * 4] == 1)
+            if (get_enemy_pieces()[x + y * 4] == 1)
             {
                 if (flip)
                 {
@@ -218,12 +265,16 @@ public:
                     {
                         x -= dx;
                         y -= dy;
-                        if (this->enemy_pieces[x + y * 4] == 1)
+                        if (get_enemy_pieces()[x + y * 4] == 1)
                         {
                             return true;
                         }
-                        this->enemy_pieces[x + y * 4] = 1;
-                        this->pieces[x + y * 4] = 0;
+                        std::vector<int> tmp_ep = get_enemy_pieces();
+                        tmp_ep[x + y * 4] = 1;
+                        set_enemy_pieces(tmp_ep);
+                        std::vector<int> tmp_p = get_pieces();
+                        tmp_p[x + y * 4] = 0;
+                        set_pieces(tmp_p);
                     }
                 }
                 return true;
@@ -236,30 +287,34 @@ public:
 
     bool is_legal_action_xy(int x, int y, bool flip = false)
     {
-        if (this->enemy_pieces[x + y * 4] == 1 || this->pieces[x + y * 4] == 1)
+        if (get_enemy_pieces()[x + y * 4] == 1 || get_pieces()[x + y * 4] == 1)
         {
             return false;
         }
         if (flip)
         {
-            if (rand() % 101 <= this->ratio_box[x + y * 4])
+            if (rand() % 101 <= get_ratio_box()[x + y * 4])
             {
-                this->pieces[x + y * 4] = 1;
+                std::vector<int> tmp_p = get_pieces();
+                tmp_p[x + y * 4] = 1;
+                set_pieces(tmp_p);
             }
             else
             {
-                this->enemy_pieces[x + y * 4] = 1;
-                for (int i = 0; i < this->dxy.size(); i++)
+                std::vector<int> tmp_ep = get_enemy_pieces();
+                tmp_ep[x + y * 4] = 1;
+                set_enemy_pieces(tmp_ep);
+                for (int i = 0; i < get_dxy().size(); i++)
                 {
-                    is_legal_action_xy_dxy_penalty(x, y, this->dxy[i][0], this->dxy[i][1], flip);
+                    is_legal_action_xy_dxy_penalty(x, y, get_dxy()[i][0], get_dxy()[i][1], flip);
                 }
                 return false;
             }
         }
         bool flag = false;
-        for (int i = 0; i < this->dxy.size(); i++)
+        for (int i = 0; i < get_dxy().size(); i++)
         {
-            if (is_legal_action_xy_dxy(x, y, this->dxy[i][0], this->dxy[i][1], flip))
+            if (is_legal_action_xy_dxy(x, y, get_dxy()[i][0], get_dxy()[i][1], flip))
             {
                 flag = true;
             }

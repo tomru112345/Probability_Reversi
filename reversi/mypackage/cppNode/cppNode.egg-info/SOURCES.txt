@@ -1,0 +1,7 @@
+nodebind.cpp
+setup.py
+cppNode.egg-info/PKG-INFO
+cppNode.egg-info/SOURCES.txt
+cppNode.egg-info/dependency_links.txt
+cppNode.egg-info/not-zip-safe
+cppNode.egg-info/top_level.txt
