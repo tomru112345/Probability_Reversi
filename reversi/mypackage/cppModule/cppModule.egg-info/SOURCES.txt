@@ -1,7 +1,0 @@
-bind.cpp
-setup.py
-cppModule.egg-info/PKG-INFO
-cppModule.egg-info/SOURCES.txt
-cppModule.egg-info/dependency_links.txt
-cppModule.egg-info/not-zip-safe
-cppModule.egg-info/top_level.txt

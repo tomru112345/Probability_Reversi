@@ -1,7 +1,0 @@
-mctsbind.cpp
-setup.py
-cppMCTS.egg-info/PKG-INFO
-cppMCTS.egg-info/SOURCES.txt
-cppMCTS.egg-info/dependency_links.txt
-cppMCTS.egg-info/not-zip-safe
-cppMCTS.egg-info/top_level.txt

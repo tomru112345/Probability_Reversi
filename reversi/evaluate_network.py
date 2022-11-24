@@ -5,7 +5,8 @@
 # パッケージのインポート
 # from game import State
 from cppState import State
-from pv_mcts import pv_mcts_action
+# from pv_mcts import pv_mcts_action
+from cppNode import pv_mcts_action
 from keras.models import load_model
 from keras import backend as K
 from shutil import copy
@@ -25,7 +26,29 @@ def first_player_point(ended_state: State):
     return 0.5
 
 
-def play(next_actions):
+# def play(next_actions):
+#     """1ゲームの実行"""
+#     # 状態の生成
+#     state = State(default_ratio_box)
+
+#     # ゲーム終了までループ
+#     while True:
+#         # ゲーム終了時
+#         if state.is_done():
+#             break
+
+#         # 行動の取得
+#         next_action = next_actions[0] if state.is_first_player(
+#         ) else next_actions[1]
+#         action = next_action(state)
+
+#         # 次の状態の取得
+#         state = state.next(action)
+
+#     # 先手プレイヤーのポイントを返す
+#     return first_player_point(state)
+
+def play(model0, model1, EN_TEMPERATURE):
     """1ゲームの実行"""
     # 状態の生成
     state = State(default_ratio_box)
@@ -37,9 +60,10 @@ def play(next_actions):
             break
 
         # 行動の取得
-        next_action = next_actions[0] if state.is_first_player(
-        ) else next_actions[1]
-        action = next_action(state)
+        if state.is_first_player():
+            action = pv_mcts_action(model0, state, EN_TEMPERATURE)
+        else:
+            action = pv_mcts_action(model1, state, EN_TEMPERATURE)
 
         # 次の状態の取得
         state = state.next(action)
@@ -64,18 +88,23 @@ def evaluate_network():
     model1 = load_model(f'./model/best.h5')
 
     # PV MCTSで行動選択を行う関数の生成
-    next_action0 = pv_mcts_action(model0, EN_TEMPERATURE)
-    next_action1 = pv_mcts_action(model1, EN_TEMPERATURE)
-    next_actions = (next_action0, next_action1)
+    # next_action0 = pv_mcts_action(model0, EN_TEMPERATURE)
+    # next_action1 = pv_mcts_action(model1, EN_TEMPERATURE)
+    # next_actions = (next_action0, next_action1)
 
     # 複数回の対戦を繰り返す
     total_point = 0
     for i in range(EN_GAME_COUNT):
         # 1ゲームの実行
+        # if i % 2 == 0:
+        #     total_point += play(next_actions)
+        # else:
+        #     total_point += 1 - play(list(reversed(next_actions)))
+
         if i % 2 == 0:
-            total_point += play(next_actions)
+            total_point += play(model0, model1, EN_TEMPERATURE)
         else:
-            total_point += 1 - play(list(reversed(next_actions)))
+            total_point += 1 - play(model1, model0, EN_TEMPERATURE)
 
         # 出力
         print('\rEvaluate {}/{}'.format(i + 1, EN_GAME_COUNT), end='')
