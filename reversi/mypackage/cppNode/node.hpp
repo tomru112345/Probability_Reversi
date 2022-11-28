@@ -546,9 +546,9 @@ class Node
 private:
     pybind11::object model;
     State state;
-    double w = 0.0F;
-    double n = 0.0F;
-    double p = 0.0F;
+    double w = 0.0;
+    double n = 0.0;
+    double p = 0.0;
 
 public:
     std::vector<Node> child_nodes;
@@ -557,9 +557,9 @@ public:
     {
         pybind11::object model;
         State state;
-        double w = 0.0F;
-        double n = 0.0F;
-        double p = 0.0F;
+        double w = 0.0;
+        double n = 0.0;
+        double p = 0.0;
         std::vector<Node> child_nodes;
     }
 
@@ -568,8 +568,8 @@ public:
         model = m;
         state = s;
         p = np;
-        w = 0.0F;
-        n = 0.0F;
+        w = 0.0;
+        n = 0.0;
     }
 
     void set_state(State s)
@@ -631,7 +631,7 @@ public:
 
     double evaluate() // 局面の価値の計算
     {
-        double value = 0.0F;
+        double value = 0.0;
 
         // ゲーム終了時
         if (get_state().is_done())
@@ -639,16 +639,16 @@ public:
             // 勝敗結果で価値を取得
             if (get_state().is_lose())
             {
-                value = -1.0F;
+                value = -1.0;
             }
             else
             {
-                value = 0.0F;
+                value = 0.0;
             }
 
             // 累計価値と試行回数の更新
             set_w(get_w() + value);
-            set_n(get_n() + 1.0F);
+            set_n(get_n() + 1.0);
             return value;
         }
 
@@ -661,7 +661,7 @@ public:
 
             // 累計価値と試行回数の更新
             set_w(get_w() + value);
-            set_n(get_n() + 1.0F);
+            set_n(get_n() + 1.0);
 
             // 子ノードの展開
             int len_policies = (int)policies.size();
@@ -682,7 +682,7 @@ public:
 
             // 累計価値と試行回数の更新
             set_w(get_w() + value);
-            set_n(get_n() + 1.0F);
+            set_n(get_n() + 1.0);
             return value;
         }
     }
@@ -690,9 +690,9 @@ public:
     int next_child_node_index()
     {
         // アーク評価値の計算
-        double C_PUCT = 1.0F;
+        double C_PUCT = 1.0;
         std::vector<double> scores = nodes_to_scores();
-        double t = 0.0F;
+        double t = 0.0;
         for (int i = 0; i < scores.size(); i++)
         {
             t += scores.at(i);
@@ -702,14 +702,14 @@ public:
         int len_child_nodes = (int)this->child_nodes.size();
         for (int i = 0; i < len_child_nodes; i++)
         {
-            double tmp_v = 0.0F;
+            double tmp_v = 0.0;
             if (this->child_nodes.at(i).get_n() != 0.0)
             {
                 tmp_v = -(this->child_nodes.at(i).get_w() / this->child_nodes.at(i).get_n());
             }
             else
             {
-                tmp_v = 0.0F;
+                tmp_v = 0.0;
             }
             tmp_v += (C_PUCT * this->child_nodes.at(i).get_p() * (double)sqrt(t) / (1.0F + this->child_nodes.at(i).get_n()));
             pucb_values.push_back(tmp_v);
@@ -750,10 +750,10 @@ std::vector<double> pv_mcts_scores(pybind11::object model, State state, double t
     }
 
     scores = root_node.nodes_to_scores();
-    if (temperature == 0.0F)
+    if (temperature == 0.0)
     {
         int action = (int)std::distance(scores.begin(), std::max_element(scores.begin(), scores.end()));
-        scores = std::vector<double>(scores.size(), 0.0F);
+        scores = std::vector<double>(scores.size(), 0.0);
         scores[action] = 1;
     }
     else
@@ -769,13 +769,8 @@ int pv_mcts_action(pybind11::object model, State state, double temperature)
     std::mt19937 engine(seed_gen());
     std::vector<int> leg_ac = state.legal_actions();
     std::vector<double> scores = pv_mcts_scores(model, state, temperature);
-    // for (int i = 0; i < scores.size(); i++){
-    //     std::cout << scores.at(i) << ", ";
-    // }
-    // std::cout << std::endl;
     std::discrete_distribution<std::size_t> dist(scores.begin(), scores.end());
     int result_index = (int)dist(engine);
-    // std::cout << result_index << std::endl;
     int action = leg_ac.at(result_index);
     return action;
 }
