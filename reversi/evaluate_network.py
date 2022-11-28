@@ -14,7 +14,8 @@ from settings import default_ratio_box
 
 
 # パラメータの準備
-EN_GAME_COUNT = 10  # 1評価あたりのゲーム数（本家は400）
+# EN_GAME_COUNT = 10  # 1評価あたりのゲーム数（本家は400）
+EN_GAME_COUNT = 50
 EN_TEMPERATURE = 1.0  # ボルツマン分布の温度
 
 

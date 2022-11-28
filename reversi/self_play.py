@@ -18,7 +18,8 @@ from settings import default_ratio_box
 
 # パラメータの準備
 # SP_GAME_COUNT = 500  # セルフプレイを行うゲーム数（本家は25000）
-SP_GAME_COUNT = 1000
+# SP_GAME_COUNT = 1000
+SP_GAME_COUNT = 300
 SP_TEMPERATURE = 1.0  # ボルツマン分布の温度パラメータ
 
 
