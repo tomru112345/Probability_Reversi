@@ -36,7 +36,7 @@ for board in all_board:
 def first_player_value(state: State, next_state: State):
     """先手プレイヤーの価値"""
     # 1:先手勝利, -1:先手敗北, 0:引き分け
-    if not state.is_lose():
+    if not state.is_done():
         if next_state.is_lose():
             return -1.0 if next_state.is_first_player() else 1.0
     return 0.0
