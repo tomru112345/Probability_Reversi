@@ -1,5 +1,5 @@
-# from game import State
-from cppState import State
+from game import State
+# from cppState import State
 from collections import defaultdict
 from settings import SQUARE, default_ratio_box
 import numpy as np
@@ -75,13 +75,14 @@ def eval_onestep(pi: defaultdict, V: defaultdict, gamma: float, flg: bool = True
 
         action_probs: defaultdict = pi[state]
         new_V = 0
-        for action, action_prob in action_probs.items():
+        for action in state.legal_actions():
+            # for action, action_prob in action_probs.items():
             next_state: State = state.next(action)
             if flg:
                 reward = first_player_value(state, next_state)
             else:
                 reward = - (first_player_value(state, next_state))
-            new_V += action_prob * (reward + gamma * V[next_state])
+            new_V += action_probs[action] * (reward + gamma * V[next_state])
         V[state] = new_V
         del action_probs, state, next_state
     print("b")
@@ -103,6 +104,7 @@ def policy_eval(pi: defaultdict, V: defaultdict, gamma: float, threshold: float 
         # 値と比較
         if delta < threshold:
             break
+        print("c")
     return V
 
 
@@ -180,7 +182,6 @@ def main():
     #             l_d.append(b)
     #         state = state.next(np.random.choice(l_i, p=l_d))
     #         # print(state)
-
 
     # 動作確認
     # if __name__ == '__main__':
