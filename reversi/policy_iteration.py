@@ -1,10 +1,8 @@
 from game import State
 # from cppState import State
 from collections import defaultdict
-from settings import SQUARE, default_ratio_box
-import numpy as np
+from settings import default_ratio_box
 from typing import List
-import random
 import sys
 import itertools
 
@@ -25,11 +23,10 @@ for board in all_board:
             pieces[i] = 1
         elif board[i] == -1:
             enemy_pieces[i] = -1
-    state = State(pieces=pieces, enemy_pieces=enemy_pieces,
-                  ratio_box=default_ratio_box, depth=0)
+    state = State(pieces, enemy_pieces, default_ratio_box, 0)
     states.append(state)
-    del state, pieces, enemy_pieces
-
+    del state, pieces, enemy_pieces, board
+del all_board, n_0, n_1
 # print(len(states))
 
 
@@ -84,7 +81,7 @@ def eval_onestep(pi: defaultdict, V: defaultdict, gamma: float, flg: bool = True
                 reward = - (first_player_value(state, next_state))
             new_V += action_probs[action] * (reward + gamma * V[next_state])
         V[state] = new_V
-        del action_probs, state, next_state
+        del action_probs, state, next_state, new_V, reward
     print("b")
     return V
 
@@ -100,7 +97,7 @@ def policy_eval(pi: defaultdict, V: defaultdict, gamma: float, threshold: float 
             t = abs(V[state] - old_V[state])
             if delta < t:
                 delta = t
-
+            del state
         # 値と比較
         if delta < threshold:
             break
