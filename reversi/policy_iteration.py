@@ -35,12 +35,6 @@ def load_data():
 gamma = 0.9
 
 
-class Board:
-    def __init__(self, board, flg) -> None:
-        self.board = board
-        self.flg = flg
-
-
 def set_state(board, flg):
     board = list(board)
     pieces = [0] * 16
@@ -86,17 +80,23 @@ def init_pi_v():
         for flg in bool_flg_l:
             obj_board = (board, flg)
             state = set_state(list(board), flg)
-            tmp_d = {}
+            # tmp_d = {}
+            tmp_l = [0.0] * 17
             legal_action_list = state.legal_actions()
             action_num = len(legal_action_list)
-            for i in range(0, 17):
+            for i in range(17):
                 if i in legal_action_list:
-                    tmp_d[i] = 1.0 / float(action_num)
+                    # tmp_d[i] = 1.0 / float(action_num)
+                    tmp_l[i] = 1.0 / float(action_num)
                 else:
-                    tmp_d[i] = 0.0
-            pi[obj_board] = tmp_d
+                    # tmp_d[i] = 0.0
+                    tmp_l[i] = 0.0
+            # pi[obj_board] = tmp_d
+            pi[obj_board] = tmp_l
             V[obj_board] = 0
-            del state, obj_board, action_num, legal_action_list, tmp_d
+            del state, obj_board, action_num, legal_action_list
+            # del tmp_d
+            del tmp_l
         del board
         print('\rinit_pi_v {}/{}'.format(cnt + 1, 8503056), end='')
         if cnt % 100000 == 0:
@@ -108,6 +108,7 @@ def init_pi_v():
     write_data(history)
     del history
     gc.collect()
+
 
 # init_pi_v()
 history = load_data()
@@ -133,62 +134,38 @@ def eval_onestep(pi: dict, V: dict, gamma: float, flg: bool = True):
     all_board = itertools.product(n_0, n_0, n_0, n_0, n_0, n_1,
                                   n_1, n_0, n_0, n_1, n_1, n_0, n_0, n_0, n_0, n_0)
     cnt = 0
-    print("eval_onestep start")
+    bool_flg_l = [True, False]
     for board in all_board:
-        # state が先行の場合
-        flg = True
-        obj_board = (board, flg)
-        state = set_state(list(board), flg)
-        if state.is_done():
-            V[obj_board] = 0  # 終了したときの価値関数は常に 0
-            continue
+        for flg in bool_flg_l:
+            # obj_board = (board, flg)
+            state = set_state(list(board), flg)
+            if state.is_done():
+                V[(board, flg)] = 0  # 終了したときの価値関数は常に 0
+                continue
 
-        action_probs: dict = pi[obj_board]
-        new_V = 0
-        for action in state.legal_actions():
-            next_state: State = state.next(action)
-            if flg:
-                reward = first_player_value(state, next_state)
-            else:
-                reward = - (first_player_value(state, next_state))
-            next_board, next_flg = set_board(next_state)
-            next_obj_board = (next_board, next_flg)
-            new_V += action_probs[action] * \
-                (reward + gamma * V[next_obj_board])
-        V[obj_board] = new_V
-        del action_probs, state, next_state, new_V, reward, obj_board, flg, next_board, next_flg, next_obj_board
-
-        # state が後攻の場合
-        flg = False
-        obj_board = (board, flg)
-        state = set_state(list(board), flg)
-        if state.is_done():
-            V[obj_board] = 0  # 終了したときの価値関数は常に 0
-            continue
-
-        action_probs: dict = pi[obj_board]
-        new_V = 0
-        for action in state.legal_actions():
-            next_state: State = state.next(action)
-            if flg:
-                reward = first_player_value(state, next_state)
-            else:
-                reward = - (first_player_value(state, next_state))
-            next_board, next_flg = set_board(next_state)
-            next_obj_board = (next_board, next_flg)
-            new_V += action_probs[action] * \
-                (reward + gamma * V[next_obj_board])
-        V[obj_board] = new_V
-        del action_probs, state, next_state, new_V, reward, obj_board, flg, next_board, next_flg, next_obj_board
-        del board
+            # action_probs: dict = pi[(board, flg)]
+            action_probs_l: dict = pi[(board, flg)]
+            new_V = 0
+            for action in state.legal_actions():
+                next_state: State = state.next(action)
+                if flg:
+                    reward = first_player_value(state, next_state)
+                else:
+                    reward = - (first_player_value(state, next_state))
+                next_board, next_flg = set_board(next_state)
+                next_obj_board = (next_board, next_flg)
+                # new_V += action_probs[action] * \
+                #     (reward + gamma * V[next_obj_board])
+                new_V += action_probs_l[action] * \
+                    (reward + gamma * V[next_obj_board])
+            V[(board, flg)] = new_V
+            del action_probs_l, state, next_state, new_V, reward, next_board, next_flg, next_obj_board
 
         print('\reval_onestep {}/{}'.format(cnt + 1, 8503056), end='')
         if cnt % 100000 == 0:
             gc.collect()
         cnt += 1
-    print()
-    print("eval_onestep finish")
-    del all_board, n_0, n_1, cnt
+    del all_board, n_0, n_1, cnt, bool_flg_l
     gc.collect()
     return V
 
@@ -233,12 +210,10 @@ def greedy_policy(V: defaultdict, gamma: float, flg: bool = True):
                                   n_1, n_0, n_0, n_1, n_1, n_0, n_0, n_0, n_0, n_0)
 
     bool_flg_l = [True, False]
-
-    print("greedy_policy start")
     pi = {}
+    cnt = 0
     for board in all_board:
         for flg in bool_flg_l:
-            obj_board = (board, flg)
             state = set_state(list(board), flg)
             action_values = {}
 
@@ -253,17 +228,21 @@ def greedy_policy(V: defaultdict, gamma: float, flg: bool = True):
                 value = reward + gamma * V[next_obj_board]
                 action_values[action] = value
             max_action = argmax(action_values)
-            action_probs = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0,
-                            8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0}
-            action_probs[max_action] = 1.0
-            pi[obj_board] = action_probs
-            del action_probs, flg, max_action, reward, obj_board, state, action_values, next_board, next_flg, next_obj_board
+            # action_probs = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0,
+            #                 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0}
+            action_probs_l = [0.0] * 17
+            # action_probs[max_action] = 1.0
+            action_probs_l[max_action] = 1.0
+            # pi[(board, flg)] = action_probs
+            pi[(board, flg)] = action_probs_l
+            del action_probs_l, flg, max_action, reward, state, action_values, next_board, next_flg, next_obj_board
+        print('\rgreedy_policy {}/{}'.format(cnt + 1, 8503056), end='')
+        if cnt % 100000 == 0:
             gc.collect()
-        del board
+        cnt += 1
         gc.collect()
     del all_board, bool_flg_l, n_0, n_1
     gc.collect()
-    print("greedy_policy finish")
     return pi
 
 
