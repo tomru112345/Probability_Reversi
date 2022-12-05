@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 import sys
 import pickle
-import os
+import gc
 import itertools
 
 
@@ -18,7 +18,18 @@ import itertools
 #     with history_path.open(mode='rb') as f:
 #         return pickle.load(f)
 
+# history = load_data()
+# pi: dict = history[0]
+# V: dict = history[1]
+# del history
+# gc.collect()
 
-# data = load_data()
-# print(data)
-b = [i for i in range(100000000)]
+n_0 = [-1, 0, 1]
+n_1 = [-1, 1]
+all_board = itertools.product(n_0, n_0, n_0, n_0, n_0, n_1,
+                              n_1, n_0, n_0, n_1, n_1, n_0, n_0, n_0, n_0, n_0)
+
+cnt = 0
+for board in all_board:
+    print('\reval_onestep {}/{}'.format(cnt + 1, 8503056), end='')
+    cnt += 1

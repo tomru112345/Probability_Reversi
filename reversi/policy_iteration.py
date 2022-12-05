@@ -79,34 +79,35 @@ def init_pi_v():
                                   n_1, n_0, n_0, n_1, n_1, n_0, n_0, n_0, n_0, n_0)
 
     bool_flg_l = [True, False]
-    pi = defaultdict(lambda: {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0,
-                              7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0})
-    V = defaultdict(lambda: 0)
+    pi = {}
+    V = {}
+    cnt = 0
     for board in all_board:
         for flg in bool_flg_l:
             obj_board = (board, flg)
             state = set_state(list(board), flg)
-            if pi[obj_board] == {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0, 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0}:
-                tmp_d = {}
-                legal_action_list = state.legal_actions()
-                action_num = len(legal_action_list)
-                for i in range(0, 17):
-                    if i in legal_action_list:
-                        tmp_d[i] = 1.0 / float(action_num)
-                    else:
-                        tmp_d[i] = 0.0
-                pi[obj_board] = tmp_d
+            tmp_d = {}
+            legal_action_list = state.legal_actions()
+            action_num = len(legal_action_list)
+            for i in range(0, 17):
+                if i in legal_action_list:
+                    tmp_d[i] = 1.0 / float(action_num)
+                else:
+                    tmp_d[i] = 0.0
+            pi[obj_board] = tmp_d
             V[obj_board] = 0
-            del state
+            del state, obj_board, action_num, legal_action_list, tmp_d
         del board
+        print('\rinit_pi_v {}/{}'.format(cnt + 1, 8503056), end='')
+        if cnt % 100000 == 0:
+            gc.collect()
+        cnt += 1
     del all_board, bool_flg_l
-    pi = dict(pi)
-    V = dict(V)
-
+    gc.collect()
     history = [pi, V]
     write_data(history)
     del history
-
+    gc.collect()
 
 # init_pi_v()
 history = load_data()
@@ -156,7 +157,6 @@ def eval_onestep(pi: dict, V: dict, gamma: float, flg: bool = True):
                 (reward + gamma * V[next_obj_board])
         V[obj_board] = new_V
         del action_probs, state, next_state, new_V, reward, obj_board, flg, next_board, next_flg, next_obj_board
-        gc.collect()
 
         # state が後攻の場合
         flg = False
@@ -181,10 +181,12 @@ def eval_onestep(pi: dict, V: dict, gamma: float, flg: bool = True):
         V[obj_board] = new_V
         del action_probs, state, next_state, new_V, reward, obj_board, flg, next_board, next_flg, next_obj_board
         del board
-        gc.collect()
 
         print('\reval_onestep {}/{}'.format(cnt + 1, 8503056), end='')
+        if cnt % 100000 == 0:
+            gc.collect()
         cnt += 1
+    print()
     print("eval_onestep finish")
     del all_board, n_0, n_1, cnt
     gc.collect()
@@ -204,7 +206,6 @@ def policy_eval(pi: dict, V: dict, gamma: float, threshold: float = 0.001, flg: 
             if delta < t:
                 delta = t
             del obj_board, t
-            gc.collect()
         # 値と比較
         if delta < threshold:
             break
@@ -228,8 +229,8 @@ def greedy_policy(V: defaultdict, gamma: float, flg: bool = True):
     """greedy 方策"""
     n_0 = [-1, 0, 1]
     n_1 = [-1, 1]
-    all_board = list(itertools.product(n_0, n_0, n_0, n_0, n_0, n_1,
-                                       n_1, n_0, n_0, n_1, n_1, n_0, n_0, n_0, n_0, n_0))
+    all_board = itertools.product(n_0, n_0, n_0, n_0, n_0, n_1,
+                                  n_1, n_0, n_0, n_1, n_1, n_0, n_0, n_0, n_0, n_0)
 
     bool_flg_l = [True, False]
 
@@ -274,8 +275,6 @@ def policy_iter(pi: defaultdict, V: defaultdict, gamma: float, threshold: float 
         if new_pi == pi:
             break
         pi = new_pi
-        pi = dict(pi)
-        V = dict(V)
         history = [pi, V]
         write_data(history)
         del history
@@ -288,4 +287,4 @@ def main(pi, V, gamma, flg):
     new_pi, new_V = policy_iter(pi=pi, V=V, gamma=gamma, flg=flg)
 
 
-main(pi, V, gamma, True)
+# main(pi, V, gamma, True)
