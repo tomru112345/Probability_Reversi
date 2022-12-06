@@ -100,7 +100,7 @@ def init_pi_v():
     gc.collect()
 
 
-# init_pi_v()
+init_pi_v()
 history = load_data()
 pi: dict = history[0]
 V: dict = history[1]
@@ -149,7 +149,7 @@ def eval_onestep(pi: dict, V: dict, gamma: float, flg: bool = True):
         if cnt % 100000 == 0:
             gc.collect()
         cnt += 1
-        print('\rinit_pi_v {:,} / {:,}'.format(cnt, 17006112), end='')
+        print('\reval_onestep {:,} / {:,}'.format(cnt, 17006112), end='')
 
     print()
     del all_board, cnt
@@ -193,42 +193,35 @@ def greedy_policy(V: defaultdict, gamma: float, flg: bool = True):
     """greedy 方策"""
     n_0 = [-1, 0, 1]
     n_1 = [-1, 1]
-    all_board = itertools.product(n_0, n_0, n_0, n_0, n_0, n_1,
-                                  n_1, n_0, n_0, n_1, n_1, n_0, n_0, n_0, n_0, n_0)
-
     bool_flg_l = [True, False]
+    all_board = itertools.product(n_0, n_0, n_0, n_0, n_0, n_1,
+                                  n_1, n_0, n_0, n_1, n_1, n_0, n_0, n_0, n_0, n_0, bool_flg_l)
+    del bool_flg_l, n_0, n_1
     pi = {}
     cnt = 0
     for board in all_board:
-        for flg in bool_flg_l:
-            state = set_state(list(board), flg)
-            action_values = {}
+        state = set_state(list(board[:16]), board[16:])
+        action_values = {}
+        for action in state.legal_actions():
+            next_state = state.next(action)
+            if state.is_first_player() == flg:
+                reward = first_player_value(state, next_state)
+            else:
+                reward = - (first_player_value(state, next_state))
+            next_board = set_board(next_state)
+            value = reward + gamma * V[next_board]
+            action_values[action] = value
+        max_action = argmax(action_values)
+        action_probs_l = [0.0] * 17
+        action_probs_l[max_action] = 1.0
+        pi[(board, flg)] = action_probs_l
+        del action_probs_l, flg, max_action, reward, state, action_values, next_board
 
-            for action in state.legal_actions():
-                next_state = state.next(action)
-                if state.is_first_player() == flg:
-                    reward = first_player_value(state, next_state)
-                else:
-                    reward = - (first_player_value(state, next_state))
-                next_board, next_flg = set_board(next_state)
-                next_obj_board = (next_board, next_flg)
-                value = reward + gamma * V[next_obj_board]
-                action_values[action] = value
-            max_action = argmax(action_values)
-            # action_probs = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7: 0.0,
-            #                 8: 0.0, 9: 0.0, 10: 0.0, 11: 0.0, 12: 0.0, 13: 0.0, 14: 0.0, 15: 0.0, 16: 0.0}
-            action_probs_l = [0.0] * 17
-            # action_probs[max_action] = 1.0
-            action_probs_l[max_action] = 1.0
-            # pi[(board, flg)] = action_probs
-            pi[(board, flg)] = action_probs_l
-            del action_probs_l, flg, max_action, reward, state, action_values, next_board, next_flg, next_obj_board
-        print('\rgreedy_policy {}/{}'.format(cnt + 1, 8503056), end='')
+        print('\rgreedy_policy {:,} / {:,}'.format(cnt, 17006112), end='')
         if cnt % 100000 == 0:
             gc.collect()
         cnt += 1
-        gc.collect()
-    del all_board, bool_flg_l, n_0, n_1
+    del all_board
     gc.collect()
     return pi
 
