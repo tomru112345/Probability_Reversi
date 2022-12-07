@@ -1,8 +1,6 @@
 from game import State
 # from cppState import State
-from collections import defaultdict
 from settings import default_ratio_box
-from typing import List
 from datetime import datetime
 from pathlib import Path
 import sys
@@ -52,17 +50,17 @@ def set_state(board, flg):
 
 
 def set_board(state: State):
-    board = [0] * 16
+    board = [0] * 17
     for i in range(16):
         if state.pieces[i] == 1:
             board[i] = 1
         elif state.enemy_pieces[i] == 1:
             board[i] = -1
     if state.is_first_player():
-        flg = True
+        board[16] = True
     else:
-        flg = False
-    board = tuple(board, flg)
+        board[16] = False
+    board = tuple(board)
     return board
 
 
@@ -100,7 +98,7 @@ def init_pi_v():
     gc.collect()
 
 
-init_pi_v()
+# init_pi_v()
 history = load_data()
 pi: dict = history[0]
 V: dict = history[1]
@@ -127,6 +125,7 @@ def eval_onestep(pi: dict, V: dict, gamma: float, flg: bool = True):
     del n_0, n_1, bool_flg_l
     cnt = 0
     for board in all_board:
+        print('\reval_onestep {:,} / {:,}'.format(cnt, 17006112), end='')
         state = set_state(list(board[:16]), board[16:])
         if state.is_done():
             V[board] = 0  # 終了したときの価値関数は常に 0
@@ -149,7 +148,6 @@ def eval_onestep(pi: dict, V: dict, gamma: float, flg: bool = True):
         if cnt % 100000 == 0:
             gc.collect()
         cnt += 1
-        print('\reval_onestep {:,} / {:,}'.format(cnt, 17006112), end='')
 
     print()
     del all_board, cnt
@@ -189,7 +187,7 @@ def argmax(d: dict):
     return max_key
 
 
-def greedy_policy(V: defaultdict, gamma: float, flg: bool = True):
+def greedy_policy(V: dict, gamma: float, flg: bool = True):
     """greedy 方策"""
     n_0 = [-1, 0, 1]
     n_1 = [-1, 1]
@@ -226,7 +224,7 @@ def greedy_policy(V: defaultdict, gamma: float, flg: bool = True):
     return pi
 
 
-def policy_iter(pi: defaultdict, V: defaultdict, gamma: float, threshold: float = 0.001, flg: bool = True):
+def policy_iter(pi: dict, V: dict, gamma: float, threshold: float = 0.001, flg: bool = True):
     """方策反復法"""
     while True:
         V = policy_eval(pi, V, gamma=gamma, threshold=threshold, flg=flg)
@@ -246,4 +244,4 @@ def main(pi, V, gamma, flg):
     new_pi, new_V = policy_iter(pi=pi, V=V, gamma=gamma, flg=flg)
 
 
-# main(pi, V, gamma, True)
+main(pi, V, gamma, True)

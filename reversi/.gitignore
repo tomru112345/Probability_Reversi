@@ -5,4 +5,5 @@ data/
 model/
 *.so
 policy_iteration_data/
+value_iteration_data/
 .vscode/
