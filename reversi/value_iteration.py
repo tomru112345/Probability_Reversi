@@ -93,7 +93,7 @@ def init():
     adress_15 = []
     adress_16 = []
     for board in all_board:
-        print('\reval_onestep {:,} / {:,}'.format(cnt, 17006112), end='')
+        print('\rinit {:,} / {:,}'.format(cnt + 1, 17006112), end='')
         state = set_state(board)
         piece_cnt = state.piece_count(state.pieces) + \
             state.piece_count(state.enemy_pieces)
@@ -129,9 +129,9 @@ def init():
             gc.collect()
         cnt += 1
     print()
-    print(len(adress_16))
-    print(len(adress_15))
-    print(len(adress_14))
+    # print(len(adress_16))
+    # print(len(adress_15))
+    # print(len(adress_14))
     address = [
         adress_16,
         adress_15,
@@ -162,7 +162,7 @@ def value_iter_onestep(address: list):
     for i in range(13):
         for a in address[i]:
             print(
-                '\rvalue_iter_onestep {:,} / {:,}'.format(cnt, 17006112), end='')
+                '\rvalue_iter_onestep {:,} / {:,}'.format(cnt + 1, 17006112), end='')
             if i == 0:
                 V[a] = 0
             elif i == 1:
@@ -192,9 +192,7 @@ def value_iter_onestep(address: list):
                         next_state = state.next(action)
                         next_board = set_board(next_state)
                         na = all_board.index(next_board)
-                        if na == 17006067:
-                            print(all_board[a])
-                            print(next_board)
+
                         if action == 16 and next_state.legal_actions() == [16]:
                             V[na] = 0
                         elif action == 16:
@@ -208,7 +206,7 @@ def value_iter_onestep(address: list):
                                 nv = nr + V[nna]
                                 next_action_values.append(nv)
                             V[na] = max(next_action_values)
-                            del next_action_values
+                            del next_action_values, nnext_state, nna, nv
                         r = first_player_value(state, next_state)
                         v = r + V[na]
                         action_values.append(v)
@@ -224,7 +222,7 @@ def main():
     # write_data([address])
     # history = load_data()
     # address = history[0]
-    print(sys.getsizeof(address))
+    # print(sys.getsizeof(address))
     V = value_iter_onestep(address=address)
     # print(sys.getsizeof(V))
 
