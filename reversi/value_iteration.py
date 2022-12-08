@@ -71,6 +71,23 @@ def first_player_value(state: State, next_state: State):
     return 0.0
 
 
+def check_fin(state: State):
+    if state.piece_count(state.pieces) + state.piece_count(state.enemy_pieces) == 16:
+        return True
+    elif state.piece_count(state.pieces) == 0:
+        return True
+    elif state.piece_count(state.enemy_pieces) == 0:
+        return True
+    elif state.legal_actions() == [16]:
+        next_state = state.next(16)
+        if next_state.legal_actions() == [16]:
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
 def init():
     n_0 = [-1, 0, 1]
     n_1 = [-1, 1]
@@ -124,14 +141,10 @@ def init():
         if piece_cnt == 16:
             adress_16.append(cnt)
         del state, board, piece_cnt
-        # del action_num, legal_action_list, tmp_l
         if cnt % 100000 == 0:
             gc.collect()
         cnt += 1
     print()
-    # print(len(adress_16))
-    # print(len(adress_15))
-    # print(len(adress_14))
     address = [
         adress_16,
         adress_15,
@@ -158,62 +171,69 @@ def value_iter_onestep(address: list):
                                        n_1, n_0, n_0, n_1, n_1, n_0, n_0, n_0, n_0, n_0, bool_flg_l))
     del n_0, n_1, bool_flg_l
     cnt = 0
-    V = {}
+    stage = 16
+    # V = {}
+    V = [0] * 17006112
+    fin_flg_l = [False] * 17006112
     for i in range(13):
         for a in address[i]:
             print(
-                '\rvalue_iter_onestep {:,} / {:,}'.format(cnt + 1, 17006112), end='')
+                '\rvalue_iter_onestep {:,} / {:,}: stage: {}'.format(cnt + 1, 17006112, stage), end='')
             if i == 0:
-                V[a] = 0
+                fin_flg_l[a] = True
+                cnt += 1
+                continue
             elif i == 1:
                 state = set_state(all_board[a])
-                if (state.piece_count(state.pieces) == 0) or (state.piece_count(state.enemy_pieces) == 0):
-                    V[a] = 0
-                elif state.is_done():
-                    V[a] = 0
-                else:
-                    action_values = []
-                    for action in state.legal_actions():
-                        next_state = state.next(action)
-                        v = first_player_value(state, next_state)
-                        action_values.append(v)
-                    V[a] = max(action_values)
-                    del next_state, action_values
-                del state
-            else:
-                state = set_state(all_board[a])
-                if (state.piece_count(state.pieces) == 0) or (state.piece_count(state.enemy_pieces) == 0):
-                    V[a] = 0
-                elif state.is_done():
-                    V[a] = 0
+                if check_fin(state):
+                    fin_flg_l[a] = True
+                    cnt += 1
+                    continue
                 else:
                     action_values = []
                     for action in state.legal_actions():
                         next_state = state.next(action)
                         next_board = set_board(next_state)
                         na = all_board.index(next_board)
-
-                        if action == 16 and next_state.legal_actions() == [16]:
-                            V[na] = 0
-                        elif action == 16:
-                            next_action_values = []
-                            for next_action in next_state.legal_actions():
-                                nnext_state = next_state.next(next_action)
-                                nnext_board = set_board(nnext_state)
-                                nna = all_board.index(nnext_board)
-                                nr = first_player_value(
-                                    next_state, nnext_state)
-                                nv = nr + V[nna]
-                                next_action_values.append(nv)
-                            V[na] = max(next_action_values)
-                            del next_action_values, nnext_state, nna, nv
-                        r = first_player_value(state, next_state)
-                        v = r + V[na]
+                        r = 0
+                        if fin_flg_l[na]:
+                            if state.piece_count(state.pieces) == state.piece_count(state.enemy_pieces):
+                                r = 0
+                            elif state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
+                                r = 1
+                            else:
+                                r = -1
+                        action_values.append(r)
+                    V[a] = max(action_values)
+                    del next_state, action_values
+                del state
+            else:
+                state = set_state(all_board[a])
+                if check_fin(state):
+                    fin_flg_l[a] = True
+                    cnt += 1
+                    continue
+                else:
+                    action_values = []
+                    for action in state.legal_actions():
+                        next_state = state.next(action)
+                        next_board = set_board(next_state)
+                        na = all_board.index(next_board)
+                        r = 0
+                        if fin_flg_l[na]:
+                            if state.piece_count(state.pieces) == state.piece_count(state.enemy_pieces):
+                                r = 0
+                            elif state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
+                                r = 1
+                            else:
+                                r = -1
+                        v = r + (-1) * V[na]
                         action_values.append(v)
                     V[a] = max(action_values)
                     del next_state, action_values
                 del state
             cnt += 1
+        stage -= 1
     return V
 
 
