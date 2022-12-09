@@ -2,6 +2,7 @@ from game import State
 # from cppState import State
 from settings import default_ratio_box
 import sys
+import numpy as np
 
 sys.setrecursionlimit(10 ** 9)
 
@@ -9,7 +10,7 @@ sys.setrecursionlimit(10 ** 9)
 def reward(state: State):
     if state.piece_count(state.pieces) == state.piece_count(state.enemy_pieces):
         return 0
-    elif state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
+    elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
         return 1
     else:
         return -1
@@ -177,16 +178,16 @@ def greedy_policy(V):
     global all_board, all_board_d
     pi = [0] * 63665
     # # 価値関数の設定
-    cnt = 0
     for i in range(63665):
         print(
-            '\rgreedy_policy {:,} / {:,}'.format(cnt + 1, 63665), end='')
+            '\rgreedy_policy {:,} / {:,}'.format(i + 1, 63665), end='')
         pieces, enemy_pieces, depth = all_board[i]
         state: State = State(pieces, enemy_pieces,
                              default_ratio_box, depth % 2)
-        action_probs = [0] * len(state.legal_actions())
+        len_tmp = len(state.legal_actions())
+        action_probs = [0.0] * len_tmp
         if state.is_done():
-            action_probs = [1]
+            action_probs = [1.0]
         else:
             action_values = {}
             for action in state.legal_actions():
@@ -200,14 +201,33 @@ def greedy_policy(V):
                 action_values[action] = v
             max_action = argmax(action_values)
             action_probs[state.legal_actions().index(max_action)] = 1.0
-        pi[cnt] = action_probs
-        cnt += 1
-    return V
+        pi[i] = action_probs
+    print()
+    return pi
 
 
 def main():
+    global all_board_d
     V = value_iter_onestep()
     pi = greedy_policy(V)
+    state = State()
+    # ゲーム終了までループ
+    while True:
+        # ゲーム終了時
+        if state.is_done():
+            break
+
+        # 行動の取得
+        index_state = all_board_d[(tuple(state.pieces), tuple(
+            state.enemy_pieces), state.depth % 2)]
+        action_probs = list(pi[index_state])
+        action = np.random.choice(state.legal_actions(), p=action_probs)
+        # 次の状態の取得
+        state = state.next(action)
+
+        # 文字列表示
+        print(state)
+
 
     # 動作確認
 if __name__ == '__main__':
