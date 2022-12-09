@@ -1,48 +1,6 @@
 from game import State
 # from cppState import State
-from collections import defaultdict
 from settings import default_ratio_box
-import itertools
-import watch
-
-
-def set_state(board):
-    turn = board[16:]
-    board = list(board[:16])
-    pieces = [0] * 16
-    enemy_pieces = [0] * 16
-    for i in range(16):
-        if board[i] == 1:
-            pieces[i] = 1
-        elif board[i] == -1:
-            enemy_pieces[i] = 1
-    state = State(pieces, enemy_pieces, default_ratio_box, turn)
-    return state
-
-def set_nstate(state):
-    turn = board[16:]
-    board = list(board[:16])
-    pieces = [0] * 16
-    enemy_pieces = [0] * 16
-    for i in range(16):
-        if board[i] == 1:
-            pieces[i] = 1
-        elif board[i] == -1:
-            enemy_pieces[i] = 1
-    state = State(pieces, enemy_pieces, default_ratio_box, turn + 1)
-    return state
-
-
-def set_board(state: State, turn):
-    board = [0] * 17
-    for i in range(16):
-        if state.pieces[i] == 1:
-            board[i] = 1
-        elif state.enemy_pieces[i] == 1:
-            board[i] = -1
-    board[16] = turn
-    board = tuple(board)
-    return board
 
 
 def reward(state: State):
@@ -94,7 +52,7 @@ def search(state: State, turn: int):
     print('\rinit {:,} / {:,}'.format(cnt + 1, 231301), end='')
     all_board[cnt] = (state.pieces, state.enemy_pieces, state.depth)
     piece_cnt = state.piece_count(state.pieces) + \
-            state.piece_count(state.enemy_pieces)
+        state.piece_count(state.enemy_pieces)
     if piece_cnt == 4:
         adress_4.append(cnt)
     elif piece_cnt == 5:
@@ -150,7 +108,7 @@ def main():
     ]
     del state
     del adress_15, adress_14, adress_13, adress_12, adress_11, adress_10, adress_9, adress_8, adress_7, adress_6, adress_5, adress_4
-    
+
     # 価値関数の設定
     cnt = 0
     stage = 15
@@ -164,10 +122,12 @@ def main():
             else:
                 action_values = []
                 pieces, enemy_pieces, depth = all_board[a]
-                state: State = State(pieces, enemy_pieces, default_ratio_box, depth)
+                state: State = State(pieces, enemy_pieces,
+                                     default_ratio_box, depth)
                 for action in state.legal_actions():
                     next_state = state.next(action)
-                    na = all_board.index((next_state.pieces, next_state.enemy_pieces, next_state.depth))
+                    na = all_board.index(
+                        (next_state.pieces, next_state.enemy_pieces, next_state.depth))
                     r = 0
                     if fin_flg_l[na]:
                         r = reward(state)
@@ -177,5 +137,6 @@ def main():
                 del action_values, state
         stage -= 1
     return V
+
 
 main()
