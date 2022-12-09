@@ -34,18 +34,18 @@ def check_fin(state: State):
 
 cnt = -1
 
-adress_4 = []
-adress_5 = []
-adress_6 = []
-adress_7 = []
-adress_8 = []
-adress_9 = []
-adress_10 = []
-adress_11 = []
-adress_12 = []
-adress_13 = []
-adress_14 = []
-adress_15 = []
+state_4 = []
+state_5 = []
+state_6 = []
+state_7 = []
+state_8 = []
+state_9 = []
+state_10 = []
+state_11 = []
+state_12 = []
+state_13 = []
+state_14 = []
+state_15 = []
 
 all_board = [None] * 63665
 fin_flg_l = [False] * 63665
@@ -53,7 +53,7 @@ all_board_d = {}
 
 
 def search(state: State, turn: int):
-    global all_board_d, cnt, fin_flg_l, adress_15, adress_14, adress_13, adress_12, adress_11, adress_10, adress_9, adress_8, adress_7, adress_6, adress_5, adress_4
+    global all_board, all_board_d, cnt, fin_flg_l, state_15, state_14, state_13, state_12, state_11, state_10, state_9, state_8, state_7, state_6, state_5, state_4
     if not (tuple(state.pieces), tuple(
             state.enemy_pieces), state.depth % 2) in all_board_d:
         cnt += 1
@@ -64,41 +64,42 @@ def search(state: State, turn: int):
         piece_cnt = state.piece_count(state.pieces) + \
             state.piece_count(state.enemy_pieces)
         if piece_cnt == 4:
-            adress_4.append((tuple(state.pieces), tuple(
+            state_4.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 5:
-            adress_5.append((tuple(state.pieces), tuple(
+            state_5.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 6:
-            adress_6.append((tuple(state.pieces), tuple(
+            state_6.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 7:
-            adress_7.append((tuple(state.pieces), tuple(
+            state_7.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 8:
-            adress_8.append((tuple(state.pieces), tuple(
+            state_8.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 9:
-            adress_9.append((tuple(state.pieces), tuple(
+            state_9.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 10:
-            adress_10.append((tuple(state.pieces), tuple(
+            state_10.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 11:
-            adress_11.append((tuple(state.pieces), tuple(
+            state_11.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 12:
-            adress_12.append((tuple(state.pieces), tuple(
+            state_12.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 13:
-            adress_13.append((tuple(state.pieces), tuple(
+            state_13.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 14:
-            adress_14.append((tuple(state.pieces), tuple(
+            state_14.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
         elif piece_cnt == 15:
-            adress_15.append((tuple(state.pieces), tuple(
+            state_15.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
+
         if state.is_done():
             fin_flg_l[cnt] = True
             return
@@ -109,41 +110,41 @@ def search(state: State, turn: int):
 
 
 def value_iter_onestep():
-    global all_board_d, cnt, fin_flg_l, adress_15, adress_14, adress_13, adress_12, adress_11, adress_10, adress_9, adress_8, adress_7, adress_6, adress_5, adress_4
+    global all_board_d, cnt, fin_flg_l, state_15, state_14, state_13, state_12, state_11, state_10, state_9, state_8, state_7, state_6, state_5, state_4
     V = [0] * 63665
     state = State()
     search(state=state, turn=0)
     print()
-    address = [
-        tuple(adress_15),
-        tuple(adress_14),
-        tuple(adress_13),
-        tuple(adress_12),
-        tuple(adress_11),
-        tuple(adress_10),
-        tuple(adress_9),
-        tuple(adress_8),
-        tuple(adress_7),
-        tuple(adress_6),
-        tuple(adress_5),
-        tuple(adress_4),
+    states_num_l = [
+        tuple(state_15),
+        tuple(state_14),
+        tuple(state_13),
+        tuple(state_12),
+        tuple(state_11),
+        tuple(state_10),
+        tuple(state_9),
+        tuple(state_8),
+        tuple(state_7),
+        tuple(state_6),
+        tuple(state_5),
+        tuple(state_4),
     ]
     del state
-    del adress_15, adress_14, adress_13, adress_12, adress_11, adress_10, adress_9, adress_8, adress_7, adress_6, adress_5, adress_4
+    del state_15, state_14, state_13, state_12, state_11, state_10, state_9, state_8, state_7, state_6, state_5, state_4
 
     # # 価値関数の設定
     cnt = 0
     stage = 15
     for i in range(12):
-        for a in address[i]:
+        for states_num in states_num_l[i]:
             print(
-                '\rvalue_iter_onestep {:,} / {:,}: stage: {}'.format(cnt + 1, 58613, stage), end='')
+                '\rvalue_iter_onestep {:,} / {:,}'.format(cnt + 1, 58613), end='')
             cnt += 1
-            if fin_flg_l[all_board_d[a]]:
+            if fin_flg_l[all_board_d[states_num]]:
                 continue
             else:
                 action_values = []
-                pieces, enemy_pieces, depth = all_board[all_board_d[a]]
+                pieces, enemy_pieces, depth = all_board[all_board_d[states_num]]
                 state: State = State(pieces, enemy_pieces,
                                      default_ratio_box, depth % 2)
                 for action in state.legal_actions():
@@ -155,18 +156,58 @@ def value_iter_onestep():
                         r = reward(state)
                     v = r + (-1) * V[na]
                     action_values.append(v)
-                V[all_board_d[a]] = max(action_values)
+                V[all_board_d[states_num]] = max(action_values)
                 del action_values, state
         stage -= 1
+    print()
     return V
 
 
+def argmax(d: dict):
+    """argmax 関数"""
+    max_value = max(d.values())
+    max_key = 0
+    for key, value in d.items():
+        if value == max_value:
+            max_key = key
+    return max_key
+
+
 def greedy_policy(V):
-    pi = [0] * 231301
+    global all_board, all_board_d
+    pi = [0] * 63665
+    # # 価値関数の設定
+    cnt = 0
+    for i in range(63665):
+        print(
+            '\rgreedy_policy {:,} / {:,}'.format(cnt + 1, 63665), end='')
+        pieces, enemy_pieces, depth = all_board[i]
+        state: State = State(pieces, enemy_pieces,
+                             default_ratio_box, depth % 2)
+        action_probs = [0] * len(state.legal_actions())
+        if state.is_done():
+            action_probs = [1]
+        else:
+            action_values = {}
+            for action in state.legal_actions():
+                next_state = state.next(action)
+                na = all_board_d[(tuple(next_state.pieces), tuple(
+                    next_state.enemy_pieces), next_state.depth % 2)]
+                r = 0
+                if fin_flg_l[na]:
+                    r = reward(state)
+                v = r + (-1) * V[na]
+                action_values[action] = v
+            max_action = argmax(action_values)
+            action_probs[state.legal_actions().index(max_action)] = 1.0
+        pi[cnt] = action_probs
+        cnt += 1
+    return V
 
 
 def main():
     V = value_iter_onestep()
+    pi = greedy_policy(V)
 
     # 動作確認
 if __name__ == '__main__':
