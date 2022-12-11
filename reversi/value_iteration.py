@@ -30,44 +30,42 @@ def search(state: State):
     if not (tuple(state.pieces), tuple(
             state.enemy_pieces), state.depth % 2) in board_idx_dict:
         cnt += 1
-        print('\rinit {:,} / {:,}'.format(cnt + 1, 63665), end='')
+        print(
+            '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 63665), end='')
         board_idx_dict[(tuple(state.pieces), tuple(
             state.enemy_pieces), state.depth % 2)] = cnt
         all_board[cnt] = (state.pieces, state.enemy_pieces, state.depth % 2)
         piece_cnt = state.piece_count(state.pieces) + \
             state.piece_count(state.enemy_pieces)
 
+        # 辞書に盤面の石の数ごとに登録
         if piece_cnt in state_d:
             tmp_l = state_d[piece_cnt]
             tmp_l.append((tuple(state.pieces), tuple(
                 state.enemy_pieces), state.depth % 2))
             state_d[piece_cnt] = tmp_l
 
+        # 状態の終了した場合
         if state.is_done():
             fin_flgs[cnt] = True
             return
         else:
+            # 再帰処理で次のアクションに遷移
             for action in state.legal_actions():
                 next_state = state.next(action=action)
                 search(next_state)
 
 
-def value_iter_onestep():
+def value_iter_onestep(V):
     global board_idx_dict, cnt, fin_flgs
-    V = [0] * 63665
-    state = State()
-    search(state=state)
-    print()
-    del state
-
     # # 価値関数の設定
     cnt = 0
-    stage = 15
     for i in reversed(range(4, 16)):
         for state_idx in state_d[i]:
             print(
-                '\rvalue_iter_onestep {:,} / {:,}'.format(cnt + 1, 58613), end='')
+                '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 58613), end='')
             cnt += 1
+            # 終了している場合の価値関数は 0 のまま
             if fin_flgs[board_idx_dict[state_idx]]:
                 continue
             else:
@@ -75,6 +73,7 @@ def value_iter_onestep():
                 pieces, enemy_pieces, depth = all_board[board_idx_dict[state_idx]]
                 state = State(pieces, enemy_pieces,
                               default_ratio_box, depth % 2)
+                # アクションごとの価値関数
                 for action in state.legal_actions():
                     next_state = state.next(action)
                     na = board_idx_dict[(tuple(next_state.pieces), tuple(
@@ -86,10 +85,21 @@ def value_iter_onestep():
                     action_values.append(v)
                 V[board_idx_dict[state_idx]] = max(action_values)
                 del action_values, state
-        stage -= 1
     print()
     return V
 
+def value_iter(V, threshold=0.001):
+    while True:
+        old_V = V.copy()
+        V = value_iter_onestep(V)
+        delta = 0
+        for i in range(63665):
+            t = abs(V[i] - old_V[i])
+            if delta < t:
+                delta = t
+        if delta < threshold:
+            break
+    return V
 
 def argmax(d: dict):
     """argmax 関数"""
@@ -107,12 +117,14 @@ def greedy_policy(V):
     # # 価値関数の設定
     for i in range(63665):
         print(
-            '\rgreedy_policy {:,} / {:,}'.format(i + 1, 63665), end='')
+            '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, i + 1, 63665), end='')
         pieces, enemy_pieces, depth = all_board[i]
         state = State(pieces, enemy_pieces,
                       default_ratio_box, depth % 2)
         len_tmp = len(state.legal_actions())
         action_probs = [0.0] * len_tmp
+
+        # 終了している場合の方策はパス
         if state.is_done():
             action_probs = [1.0]
         else:
@@ -135,7 +147,12 @@ def greedy_policy(V):
 
 def guess():
     global board_idx_dict
-    V = value_iter_onestep()
+    V = [0] * 63665
+    state = State()
+    search(state=state)
+    print()
+    del state
+    V = value_iter(V)
     pi = greedy_policy(V)
     return pi
 
@@ -172,11 +189,11 @@ def play(pi, n):
             state = state.next(action)
 
             # 文字列表示
-            print(state)
+            # print(state)
 
     print(f"{black_win} vs {white_win}")
 
     # 動作確認
 if __name__ == '__main__':
     pi = guess()
-    # play(pi, 100)
+    play(pi, 100)
