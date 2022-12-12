@@ -29,7 +29,7 @@ class State:
         self.ratio_box = ratio_box
 
         # 確率 p を引いたかどうか
-        self.ratio_flg = False
+        self.ratio_flg = True
 
         # 石の初期配置
         if pieces == None or enemy_pieces == None:
@@ -67,16 +67,20 @@ class State:
         """ゲーム終了かどうか"""
         return self.piece_count(self.pieces) + self.piece_count(self.enemy_pieces) == (SQUARE * SQUARE) or self.pass_end
 
-    def next(self, action):
+    def next(self, action, set_ratio = 1):
         """次の状態の取得"""
         state = State(self.pieces.copy(),
                       self.enemy_pieces.copy(), self.ratio_box.copy(), self.depth+1)
 
         if action != (SQUARE * SQUARE):  # パスを選択していないとき
+            # if (random.random() * 100) <= self.ratio_box[action % SQUARE+int(action/SQUARE)*SQUARE]:
+            if (set_ratio * 100) <= self.ratio_box[action % SQUARE+int(action/SQUARE)*SQUARE]:
+                self.ratio_flg = True
+            else:
+                self.ratio_flg = False
+
             state.is_legal_action_xy(action % SQUARE, int(action/SQUARE), True)
-        else:
-            # パス = 確率 1 - p を引いたことを保持する
-            self.ratio_flg = False
+
         w = state.pieces
         state.pieces = state.enemy_pieces
         state.enemy_pieces = w
@@ -90,6 +94,7 @@ class State:
     def legal_actions(self):
         """合法手のリストの取得"""
         actions = []
+        self.ratio_flg = True
         for j in range(0, SQUARE):
             for i in range(0, SQUARE):
                 if self.is_legal_action_xy(i, j):
@@ -167,16 +172,13 @@ class State:
         # 石を置く
         if flip:
             # 確率で石が置けるかどうか
-            if (random.random() * 100) <= self.ratio_box[x+y*SQUARE]:
-                # 確率 p を引いたことを保持する
-                self.ratio_flg = True
-
+            if self.ratio_flg:
+                # 確率 p
                 self.pieces[x+y*SQUARE] = 1
             else:
-                # 確率 1 - p を引いたことを保持する
-                self.ratio_flg = False
-
+                # 確率 1 - p
                 self.enemy_pieces[x+y*SQUARE] = 1
+
                 for dx, dy in self.dxy:
                     is_legal_action_xy_dxy_penalty(x, y, dx, dy)
                 return False
@@ -185,7 +187,6 @@ class State:
         flag = False
         for dx, dy in self.dxy:
             if is_legal_action_xy_dxy(x, y, dx, dy):
-                # if self.is_legal_action_xy_dxy(x, y, dx, dy, flip):
                 flag = True
         return flag
 
@@ -209,7 +210,7 @@ class State:
         return str
 
 
-def random_action(state):
+def random_action(state: State):
     """ランダムで行動選択"""
     legal_actions = state.legal_actions()
     return legal_actions[random.randint(0, len(legal_actions)-1)]
@@ -228,9 +229,9 @@ def main():
             break
 
         # 次の状態の取得
-        state = state.next(random_action(state))
+        state = state.next(random_action(state), random.random())
         # 文字列表示
-        # print(state)
+        print(state)
         # print()
 
 
