@@ -67,7 +67,7 @@ class State:
         """ゲーム終了かどうか"""
         return self.piece_count(self.pieces) + self.piece_count(self.enemy_pieces) == (SQUARE * SQUARE) or self.pass_end
 
-    def next(self, action, set_ratio = 1):
+    def next(self, action, set_ratio = random.random()):
         """次の状態の取得"""
         state = State(self.pieces.copy(),
                       self.enemy_pieces.copy(), self.ratio_box.copy(), self.depth+1)
