@@ -12,7 +12,10 @@ from pathlib import Path
 from threading import Thread
 import tkinter as tk
 from settings import SQUARE, default_ratio_box
+import os
 
+# tensorflow の warning の設定
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # ベストプレイヤーのモデルの読み込み
 model = load_model(f'./model/best.h5')
 
@@ -151,13 +154,15 @@ class GameUI(tk.Frame):
         y = SQUARE * 40+20
         if self.state.is_first_player():
             black_pieces = self.state.piece_count(self.state.get_pieces())
-            white_pieces = self.state.piece_count(self.state.get_enemy_pieces())
+            white_pieces = self.state.piece_count(
+                self.state.get_enemy_pieces())
             self.c.create_rectangle(
                 0, SQUARE * 40, SQUARE * 40, (SQUARE + 1) * 40, fill='#222222')
             self.c.create_text(
                 x, y, text=f'{black_pieces} vs {white_pieces}', fill="#FFFFFF", font=('Yu Gothic UI', 18), anchor="center")
         else:
-            black_pieces = self.state.piece_count(self.state.get_enemy_pieces())
+            black_pieces = self.state.piece_count(
+                self.state.get_enemy_pieces())
             white_pieces = self.state.piece_count(self.state.get_pieces())
             self.c.create_rectangle(
                 0, SQUARE * 40, SQUARE * 40, (SQUARE + 1) * 40, fill='#FFFFFF')
