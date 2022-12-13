@@ -88,6 +88,7 @@ def value_iter_onestep(V):
     print()
     return V
 
+
 def value_iter(V, threshold=0.001):
     while True:
         old_V = V.copy()
@@ -100,6 +101,7 @@ def value_iter(V, threshold=0.001):
         if delta < threshold:
             break
     return V
+
 
 def argmax(d: dict):
     """argmax 関数"""
@@ -192,6 +194,7 @@ def play(pi, n):
             # print(state)
 
     print(f"{black_win} vs {white_win}")
+
 
     # 動作確認
 if __name__ == '__main__':
