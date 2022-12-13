@@ -6,12 +6,17 @@ import numpy as np
 sys.setrecursionlimit(10 ** 9)
 
 
-def reward(state: State):
-    if state.is_done():
-        if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
-            return 1
-        elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
-            return -1
+def reward(state: State, next_state: State):
+    if not state.is_done():
+        if next_state.is_done():
+            if next_state.piece_count(next_state.pieces) > next_state.piece_count(next_state.enemy_pieces):
+                return -1
+            elif next_state.piece_count(next_state.pieces) < next_state.piece_count(next_state.enemy_pieces):
+                return 1
+            else:
+                return 0
+        else:
+            return 0
     else:
         return 0
 
@@ -80,7 +85,8 @@ def value_iter_onestep(V):
                         next_state.enemy_pieces), next_state.depth % 2)]
                     r = 0
                     if fin_flgs[na]:
-                        r = reward(state)
+                        # r = reward(state)
+                        r = reward(state, next_state)
                     v = r + (-1) * V[na]
                     action_values.append(v)
                 V[board_idx_dict[state_idx]] = max(action_values)
@@ -89,17 +95,18 @@ def value_iter_onestep(V):
     return V
 
 def value_iter(V, threshold=0.001):
-    while True:
-        old_V = V.copy()
-        V = value_iter_onestep(V)
-        delta = 0
-        for i in range(63665):
-            t = abs(V[i] - old_V[i])
-            if delta < t:
-                delta = t
-        if delta < threshold:
-            break
-    return V
+    return value_iter_onestep(V)
+    # while True:
+    #     old_V = V.copy()
+    #     V = value_iter_onestep(V)
+    #     delta = 0
+    #     for i in range(63665):
+    #         t = abs(V[i] - old_V[i])
+    #         if delta < t:
+    #             delta = t
+    #     if delta < threshold:
+    #         break
+    # return V
 
 def argmax(d: dict):
     """argmax 関数"""
@@ -135,7 +142,8 @@ def greedy_policy(V):
                     next_state.enemy_pieces), next_state.depth % 2)]
                 r = 0
                 if fin_flgs[na]:
-                    r = reward(state)
+                    # r = reward(state)
+                    r = reward(state, next_state)
                 v = r + (-1) * V[na]
                 action_values[action] = v
             max_action = argmax(action_values)
@@ -158,40 +166,40 @@ def guess():
 
 
 def play(pi, n):
-    black_win = 0
-    white_win = 0
+    for _ in range(10):
+        black_win = 0
+        white_win = 0
+        for _ in range(n):
+            state = State()
+            # ゲーム終了までループ
+            while True:
+                # ゲーム終了時
+                if state.is_done():
+                    if state.is_first_player():
+                        if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
+                            black_win += 1
+                        elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
+                            white_win += 1
+                    else:
+                        if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
+                            white_win += 1
+                        elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
+                            black_win += 1
+                    break
 
-    for _ in range(n):
-        state = State()
-        # ゲーム終了までループ
-        while True:
-            # ゲーム終了時
-            if state.is_done():
+                # 行動の取得
                 if state.is_first_player():
-                    if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
-                        black_win += 1
-                    elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
-                        white_win += 1
+                    action = np.random.choice(state.legal_actions(), p=list(pi[board_idx_dict[(tuple(state.pieces), tuple(
+                        state.enemy_pieces), state.depth % 2)]]))
                 else:
-                    if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
-                        white_win += 1
-                    elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
-                        black_win += 1
-                break
+                    action = random_action(state)
+                # 次の状態の取得
+                state = state.next(action)
 
-            # 行動の取得
-            if not state.is_first_player():
-                action = np.random.choice(state.legal_actions(), p=list(pi[board_idx_dict[(tuple(state.pieces), tuple(
-                    state.enemy_pieces), state.depth % 2)]]))
-            else:
-                action = random_action(state)
-            # 次の状態の取得
-            state = state.next(action)
+                # 文字列表示
+                # print(state)
 
-            # 文字列表示
-            # print(state)
-
-    print(f"{black_win} vs {white_win}")
+        print(f"{black_win} vs {white_win}")
 
     # 動作確認
 if __name__ == '__main__':
