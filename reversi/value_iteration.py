@@ -85,7 +85,6 @@ def value_iter_onestep(V):
                         next_state.enemy_pieces), next_state.depth % 2)]
                     r = 0
                     if fin_flgs[na]:
-                        # r = reward(state)
                         r = reward(state, next_state)
                     v = r + (-1) * V[na]
                     action_values.append(v)
@@ -144,7 +143,6 @@ def greedy_policy(V):
                     next_state.enemy_pieces), next_state.depth % 2)]
                 r = 0
                 if fin_flgs[na]:
-                    # r = reward(state)
                     r = reward(state, next_state)
                 v = r + (-1) * V[na]
                 action_values[action] = v
@@ -164,10 +162,10 @@ def guess():
     del state
     V = value_iter(V)
     pi = greedy_policy(V)
-    return pi
+    return V, pi
 
 
-def play(pi, n):
+def play(V, pi, n):
     for _ in range(10):
         black_win = 0
         white_win = 0
@@ -176,6 +174,12 @@ def play(pi, n):
             # ゲーム終了までループ
             while True:
                 # ゲーム終了時
+
+                # 文字列表示
+                # print(state)
+                # print(V[board_idx_dict[(tuple(state.pieces), tuple(
+                #         state.enemy_pieces), state.depth % 2)]])
+
                 if state.is_done():
                     if state.is_first_player():
                         if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
@@ -190,7 +194,7 @@ def play(pi, n):
                     break
 
                 # 行動の取得
-                if state.is_first_player():
+                if not state.is_first_player():
                     action = np.random.choice(state.legal_actions(), p=list(pi[board_idx_dict[(tuple(state.pieces), tuple(
                         state.enemy_pieces), state.depth % 2)]]))
                 else:
@@ -198,13 +202,10 @@ def play(pi, n):
                 # 次の状態の取得
                 state = state.next(action)
 
-                # 文字列表示
-                # print(state)
-
         print(f"{black_win} vs {white_win}")
 
 
     # 動作確認
 if __name__ == '__main__':
-    pi = guess()
-    play(pi, 100)
+    V, pi = guess()
+    play(V, pi, 100)

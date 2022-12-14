@@ -31,11 +31,9 @@ class GameUI(tk.Frame):
         # ゲーム状態の生成
         self.state = State(default_ratio_box)
 
-        # PV MCTSで行動選択を行う関数の生成
-        # self.next_action = pv_mcts_action(model, 0.0)
-
         # 一つ前の行動選択が何かを保持する
         self.before_action = None
+        self.model = model
 
         # キャンバスの生成
         self.c = tk.Canvas(self, width=SQUARE * 40,
@@ -110,7 +108,7 @@ class GameUI(tk.Frame):
 
         # 行動の取得
         # action = self.next_action(self.state)
-        action = pv_mcts_action(model, self.state, 0.0)
+        action = pv_mcts_action(self.model, self.state, 0.0)
 
         # 次の状態の取得
         self.state = self.state.next(action)
@@ -136,7 +134,7 @@ class GameUI(tk.Frame):
         x = (index % SQUARE)*40+20
         y = int(index/SQUARE)*40+20
         self.c.create_text(
-            x, y, text=str(self.state.get_ratio_box()[index]), fill="#FF0461", font=('Yu Gothic UI', 18), anchor="center")
+            x, y, text=str(self.state.get_ratio_box()[index]), fill="#FF0461", font=('Yu Gothic UI', 15), anchor="center")
 
     def draw_legal_action(self):
         """合法手を表示"""
@@ -159,7 +157,7 @@ class GameUI(tk.Frame):
             self.c.create_rectangle(
                 0, SQUARE * 40, SQUARE * 40, (SQUARE + 1) * 40, fill='#222222')
             self.c.create_text(
-                x, y, text=f'{black_pieces} vs {white_pieces}', fill="#FFFFFF", font=('Yu Gothic UI', 18), anchor="center")
+                x, y, text=f'{black_pieces} : {white_pieces}', fill="#FFFFFF", font=('Yu Gothic UI', 18), anchor="center")
         else:
             black_pieces = self.state.piece_count(
                 self.state.get_enemy_pieces())
@@ -167,7 +165,7 @@ class GameUI(tk.Frame):
             self.c.create_rectangle(
                 0, SQUARE * 40, SQUARE * 40, (SQUARE + 1) * 40, fill='#FFFFFF')
             self.c.create_text(
-                x, y, text=f'{black_pieces} vs {white_pieces}', fill="#222222", font=('Yu Gothic UI', 18), anchor="center")
+                x, y, text=f'{black_pieces} : {white_pieces}', fill="#222222", font=('Yu Gothic UI', 18), anchor="center")
 
     def draw_select_icon(self, index):
         """どこを選択したか表示"""
@@ -208,6 +206,6 @@ class GameUI(tk.Frame):
 # 動作確認
 if __name__ == '__main__':
     # ゲームUIの実行
-    f = GameUI(model=model, first_ai=True)
+    f = GameUI(model=model)
     f.pack()
     f.mainloop()
