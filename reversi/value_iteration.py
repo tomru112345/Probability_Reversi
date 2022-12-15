@@ -80,7 +80,7 @@ def search(state: State):
                 search(next_state)
 
 
-def value_iter_onestep(V, gamma, first_player):
+def value_iter_onestep(V, first_player):
     global board_idx_dict, cnt
     # # 価値関数の設定
     cnt = 0
@@ -102,7 +102,7 @@ def value_iter_onestep(V, gamma, first_player):
                     na = board_idx_dict[(tuple(next_state.pieces), tuple(
                         next_state.enemy_pieces), next_state.depth % 2)]
                     r = reward(state, next_state)
-                    v = r + (-1) * gamma * V[na]
+                    v = r + (-1) * V[na]
                     action_values.append(v)
                 if 4 <= i <= 9:
                     print(action_values)
@@ -122,11 +122,11 @@ def value_iter_onestep(V, gamma, first_player):
     return V
 
 
-def value_iter(V, gamma, first_player, threshold=0.001):
-    return value_iter_onestep(V, gamma, first_player)
+def value_iter(V, first_player, threshold=0.001):
+    return value_iter_onestep(V, first_player)
     # while True:
     #     old_V = V.copy()
-    #     V = value_iter_onestep(V, gamma)
+    #     V = value_iter_onestep(V)
     #     delta = 0
     #     for i in range(63665):
     #         t = abs(V[i] - old_V[i])
@@ -157,7 +157,7 @@ def argmin(d: dict):
     return min_key
 
 
-def greedy_policy(V, gamma, first_player):
+def greedy_policy(V, first_player):
     global all_board, board_idx_dict
     pi = [0] * 63665
     # # 価値関数の設定
@@ -180,7 +180,7 @@ def greedy_policy(V, gamma, first_player):
                 na = board_idx_dict[(tuple(next_state.pieces), tuple(
                     next_state.enemy_pieces), next_state.depth % 2)]
                 r = reward(state, next_state)
-                v = r + (-1) * gamma * V[na]
+                v = r + (-1) * V[na]
                 action_values[action] = v
             # max_action = argmax(action_values)
 
@@ -202,9 +202,9 @@ def greedy_policy(V, gamma, first_player):
     return pi
 
 
-def guess(V, gamma, first_player=True):
-    V = value_iter(V, gamma, first_player)
-    pi = greedy_policy(V, gamma, first_player)
+def guess(V, first_player=True):
+    V = value_iter(V, first_player)
+    pi = greedy_policy(V, first_player)
     return V, pi
 
 
@@ -264,9 +264,9 @@ if __name__ == '__main__':
     print()
     del state
     # V = [0] * 63665
-    # V_1, pi_1 = guess(V, gamma=1, first_player=True)
+    # V_1, pi_1 = guess(V, first_player=True)
     V = [0] * 63665
-    V_2, pi_2 = guess(V, gamma=1, first_player=False)
+    V_2, pi_2 = guess(V, first_player=False)
     # write_data([V_2, pi_2, board_idx_dict])
     # history = load_data()
     # V_2 = history[0]
