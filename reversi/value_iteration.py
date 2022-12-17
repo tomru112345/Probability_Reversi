@@ -31,7 +31,10 @@ def load_data():
 def reward(state: State, next_state: State):
     if not state.is_done():
         if next_state.is_done():
-            return next_state.piece_count(next_state.enemy_pieces) - next_state.piece_count(next_state.pieces)
+            if not state.is_first_player():
+                return next_state.piece_count(next_state.enemy_pieces) - next_state.piece_count(next_state.pieces)
+            else:
+                return - (next_state.piece_count(next_state.enemy_pieces) - next_state.piece_count(next_state.pieces))
             # if next_state.is_lose():
             #     return 1
             # elif next_state.is_draw():
@@ -87,7 +90,7 @@ def value_iter_onestep(V, first_player):
     for i in reversed(range(4, 16)):
         for state_idx in state_d[i]:
             print(
-                '\r{} {:,} / {:,}, {}'.format(sys._getframe().f_code.co_name, cnt + 1, 58613, i), end='')
+                '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 58613), end='')
             cnt += 1
             action_values = []
             pieces, enemy_pieces, depth = all_board[board_idx_dict[state_idx]]
@@ -106,16 +109,17 @@ def value_iter_onestep(V, first_player):
                     action_values.append(v)
                 if 4 <= i <= 9:
                     print(action_values)
-                if first_player:
-                    if state.is_first_player():
-                        V[board_idx_dict[state_idx]] = max(action_values)
-                    else:
-                        V[board_idx_dict[state_idx]] = min(action_values)
+
+                if state.is_first_player():
+                    V[board_idx_dict[state_idx]] = min(action_values)
                 else:
-                    if state.is_first_player():
-                        V[board_idx_dict[state_idx]] = min(action_values)
-                    else:
-                        V[board_idx_dict[state_idx]] = max(action_values)
+                    V[board_idx_dict[state_idx]] = max(action_values)
+                # if first_player:
+                # else:
+                #     if state.is_first_player():
+                #         V[board_idx_dict[state_idx]] = min(action_values)
+                #     else:
+                #         V[board_idx_dict[state_idx]] = max(action_values)
 
             del action_values, state
     print()
@@ -182,20 +186,25 @@ def greedy_policy(V, first_player):
                 r = reward(state, next_state)
                 v = r + (-1) * V[na]
                 action_values[action] = v
-            # max_action = argmax(action_values)
 
-            if first_player:
+            if not state.is_first_player():
                 max_action = argmax(action_values)
-                # if state.is_first_player():
-                #     max_action = argmax(action_values)
-                # else:
-                #     max_action = argmin(action_values)
+
             else:
-                max_action = argmax(action_values)
-                # if state.is_first_player():
-                #     max_action = argmin(action_values)
-                # else:
-                #     max_action = argmax(action_values)
+                max_action = argmin(action_values)
+
+            # if first_player:
+            #     max_action = argmax(action_values)
+            # if state.is_first_player():
+            #     max_action = argmax(action_values)
+            # else:
+            #     max_action = argmin(action_values)
+            # else:
+            #     max_action = argmax(action_values)
+            # if state.is_first_player():
+            #     max_action = argmin(action_values)
+            # else:
+            #     max_action = argmax(action_values)
             action_probs[state.legal_actions().index(max_action)] = 1.0
         pi[i] = action_probs
     print()
