@@ -8,6 +8,7 @@ import pickle
 import os
 
 sys.setrecursionlimit(10 ** 9)
+gamma = 0.5525
 
 
 def write_data(history):
@@ -32,15 +33,24 @@ def reward(state: State, next_state: State):
     if not state.is_done():
         if next_state.is_done():
             if not state.is_first_player():
-                return next_state.piece_count(next_state.enemy_pieces) - next_state.piece_count(next_state.pieces)
+                return 100 * next_state.piece_count(next_state.enemy_pieces) - next_state.piece_count(next_state.pieces)
             else:
-                return - (next_state.piece_count(next_state.enemy_pieces) - next_state.piece_count(next_state.pieces))
-            # if next_state.is_lose():
-            #     return 1
-            # elif next_state.is_draw():
-            #     return 0
+                return -100 * (next_state.piece_count(next_state.enemy_pieces) - next_state.piece_count(next_state.pieces))
+
+            # if not state.is_first_player():
+            #     if next_state.is_lose():
+            #         return 1
+            #     elif next_state.is_draw():
+            #         return 0
+            #     else:
+            #         return -1
             # else:
-            #     return -1
+            #     if next_state.is_lose():
+            #         return -1
+            #     elif next_state.is_draw():
+            #         return 0
+            #     else:
+            #         return 1
         else:
             return 0
     else:
@@ -60,8 +70,8 @@ def search(state: State):
     if not (tuple(state.pieces), tuple(
             state.enemy_pieces), state.depth % 2) in board_idx_dict:
         cnt += 1
-        print(
-            '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 63665), end='')
+        # print(
+        #     '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 63665), end='')
         board_idx_dict[(tuple(state.pieces), tuple(
             state.enemy_pieces), state.depth % 2)] = cnt
         all_board[cnt] = (state.pieces, state.enemy_pieces, state.depth % 2)
@@ -89,8 +99,8 @@ def value_iter_onestep(V, first_player):
     cnt = 0
     for i in reversed(range(4, 16)):
         for state_idx in state_d[i]:
-            print(
-                '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 58613), end='')
+            # print(
+            #     '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 58613), end='')
             cnt += 1
             action_values = []
             pieces, enemy_pieces, depth = all_board[board_idx_dict[state_idx]]
@@ -99,27 +109,29 @@ def value_iter_onestep(V, first_player):
             if state.is_done():
                 V[board_idx_dict[state_idx]] = 0
             else:
+                rever_cnt = 0
                 # アクションごとの価値関数
                 for action in state.legal_actions():
                     next_state = state.next(action)
                     na = board_idx_dict[(tuple(next_state.pieces), tuple(
                         next_state.enemy_pieces), next_state.depth % 2)]
                     r = reward(state, next_state)
-                    v = r + (-1) * V[na]
+                    v = r + (-1) * gamma * V[na]
+                    if state.is_first_player() and v > 0:
+                        rever_cnt += 1
+                    elif not state.is_first_player() and v < 0:
+                        rever_cnt += 1
                     action_values.append(v)
 
-                if max(action_values) == min(action_values):
-                    if state.is_first_player():
-                        V[board_idx_dict[state_idx]] = max(action_values)
-                    else:
-                        V[board_idx_dict[state_idx]] = min(action_values)
+                if state.is_first_player():
+                    V[board_idx_dict[state_idx]] = min(action_values)
                 else:
-                    if state.is_first_player():
-                        V[board_idx_dict[state_idx]] = min(action_values)
-                    else:
-                        V[board_idx_dict[state_idx]] = max(action_values)
-                if i == 8:
-                    print(action_values)
+                    # (len(
+                    #     state.legal_actions()) - rever_cnt) / len(
+                    #     state.legal_actions()) *
+                    V[board_idx_dict[state_idx]] = max(action_values)
+
+                # print(action_values)
 
             del action_values, state
     print()
@@ -130,7 +142,7 @@ def value_iter(V, first_player, threshold=0.001):
     return value_iter_onestep(V, first_player)
     # while True:
     #     old_V = V.copy()
-    #     V = value_iter_onestep(V)
+    #     V = value_iter_onestep(V, first_player)
     #     delta = 0
     #     for i in range(63665):
     #         t = abs(V[i] - old_V[i])
@@ -173,8 +185,8 @@ def greedy_policy(V, first_player):
     # 価値関数の設定
     for i in range(4, 17):
         for state_idx in state_d[i]:
-            print(
-                '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 63665), end='')
+            # print(
+            #     '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 63665), end='')
             action_values = []
             pieces, enemy_pieces, depth = all_board[board_idx_dict[state_idx]]
             state = State(pieces, enemy_pieces,
@@ -192,7 +204,7 @@ def greedy_policy(V, first_player):
                     na = board_idx_dict[(tuple(next_state.pieces), tuple(
                         next_state.enemy_pieces), next_state.depth % 2)]
                     r = reward(state, next_state)
-                    v = r + (-1) * V[na]
+                    v = r + (-1) * gamma * V[na]
                     action_values[action] = v
 
                 if equal_all(action_values):
