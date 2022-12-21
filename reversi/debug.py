@@ -30,6 +30,10 @@ def load_data():
     # return V
 
 
-l = load_data()
-print(l[0])
-print(l[1])
+print(u'\u25CF')
+first_stone = u'\u25CF'
+
+
+# l = load_data()
+# print(l[0])
+# print(l[1])

@@ -119,13 +119,6 @@ def value_iter_onestep(V):
                     r = reward(state, next_state)
                     # v = r + (-1) * gamma * V[na]
                     v = r + gamma * V[na]
-                    if abs(v) > 16:
-                        print(state)
-                        print(next_state)
-                        print(r)
-                        print(V[na])
-                        print(v)
-                        exit()
                     action_values.append(v)
 
                 if state.is_first_player():
@@ -133,8 +126,10 @@ def value_iter_onestep(V):
                 else:
                     V[board_idx_dict[state_idx]] = max(action_values)
 
-                print("{} {}".format(i, action_values))
-
+                # print("{} {}".format(i, action_values))
+                if i == 4:
+                    print("{} {}".format(i, action_values))
+                    print(state)
             del action_values, state
     print()
     return V

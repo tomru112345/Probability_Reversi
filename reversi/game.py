@@ -67,7 +67,7 @@ class State:
         """ゲーム終了かどうか"""
         return self.piece_count(self.pieces) + self.piece_count(self.enemy_pieces) == (SQUARE * SQUARE) or self.pass_end
 
-    def next(self, action, set_ratio = random.random()):
+    def next(self, action, set_ratio=random.random()):
         """次の状態の取得"""
         state = State(self.pieces.copy(),
                       self.enemy_pieces.copy(), self.ratio_box.copy(), self.depth+1)
@@ -196,7 +196,10 @@ class State:
 
     def __str__(self):
         """文字列表示"""
-        ox = ('o', 'x') if self.is_first_player() else ('x', 'o')
+        # ox = ('o', 'x') if self.is_first_player() else ('x', 'o')
+        #  25CF(•) →25CB(∘)
+        ox = (u'\u25CF', u'\u25CB') if self.is_first_player() else (
+            u'\u25CB', u'\u25CF')
         str = ''
         for i in range(SQUARE * SQUARE):
             if self.pieces[i] == 1:
@@ -217,7 +220,7 @@ def random_action(state: State):
 
 
 # 動作確認
-@watch.watch
+@ watch.watch
 def main():
     # 状態の生成
     state = State()
@@ -232,7 +235,7 @@ def main():
         state = state.next(random_action(state), random.random())
         # 文字列表示
         print(state)
-        # print()
+        print()
 
 
 if __name__ == '__main__':
