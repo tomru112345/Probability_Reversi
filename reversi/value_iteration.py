@@ -33,7 +33,7 @@ def reward(state: State, next_state: State):
     if not state.is_done():
         if next_state.is_done():
             if not state.is_first_player():
-                return 100 * next_state.piece_count(next_state.enemy_pieces) - next_state.piece_count(next_state.pieces)
+                return 100 * (next_state.piece_count(next_state.enemy_pieces) - next_state.piece_count(next_state.pieces))
             else:
                 return -100 * (next_state.piece_count(next_state.enemy_pieces) - next_state.piece_count(next_state.pieces))
 
