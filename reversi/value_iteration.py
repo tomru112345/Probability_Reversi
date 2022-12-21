@@ -8,7 +8,7 @@ import pickle
 import os
 
 sys.setrecursionlimit(10 ** 9)
-gamma = 0.5525
+gamma = 0.5
 
 
 def write_data(history):
@@ -158,6 +158,16 @@ def equal_all(d: dict):
     return all(val == value_l[0] for val in value_l)
 
 
+def equal_max(d: dict):
+    value_l = list(d.values())
+    return value_l.count(max(d.values()))
+
+
+def equal_min(d: dict):
+    value_l = list(d.values())
+    return value_l.count(min(d.values()))
+
+
 def argmax(d: dict):
     """argmax 関数"""
     max_value = max(d.values())
@@ -168,6 +178,17 @@ def argmax(d: dict):
     return max_key
 
 
+def set_argmax(d: dict, action_probs: list, state: State):
+    """argmax 関数"""
+    max_value = max(d.values())
+    value_l = list(d.values())
+    n = value_l.count(max_value)
+    for key, value in d.items():
+        if value == max_value:
+            action_probs[state.legal_actions().index(key)] = 1 / n
+    return action_probs
+
+
 def argmin(d: dict):
     """argmin 関数"""
     min_value = min(d.values())
@@ -176,6 +197,17 @@ def argmin(d: dict):
         if value == min_value:
             min_key = key
     return min_key
+
+
+def set_argmin(d: dict, action_probs: list, state: State):
+    """argmax 関数"""
+    min_value = min(d.values())
+    value_l = list(d.values())
+    n = value_l.count(min_value)
+    for key, value in d.items():
+        if value == min_value:
+            action_probs[state.legal_actions().index(key)] = 1 / n
+    return action_probs
 
 
 def greedy_policy(V, first_player):
@@ -207,17 +239,20 @@ def greedy_policy(V, first_player):
                     v = r + (-1) * gamma * V[na]
                     action_values[action] = v
 
-                if equal_all(action_values):
-                    action_probs = [1 / len_tmp] * len_tmp
-                else:
-                    if not state.is_first_player():
-                        max_action = argmax(action_values)
+                # if equal_all(action_values):
+                #     action_probs = [1 / len_tmp] * len_tmp
+                # else:
+                if not state.is_first_player():
+                    # max_action = argmax(action_values)
+                    action_probs = set_argmax(
+                        action_values, action_probs, state)
 
-                    else:
-                        max_action = argmin(action_values)
-                    action_probs[state.legal_actions().index(max_action)] = 1.0
+                else:
+                    action_probs = set_argmin(
+                        action_values, action_probs, state)
+                    # action_probs[state.legal_actions().index(max_action)] = 1.0
                 # if 11 <= i < 12:
-                #     print(action_probs)
+            print(action_probs)
             pi[board_idx_dict[state_idx]] = action_probs
             cnt += 1
     print()
