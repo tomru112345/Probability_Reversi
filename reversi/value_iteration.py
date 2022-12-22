@@ -1,5 +1,5 @@
 from game import State, random_action
-from settings import default_ratio_box
+from settings import default_ratio_box, p
 import numpy as np
 from datetime import datetime
 from pathlib import Path
@@ -8,7 +8,6 @@ import pickle
 import os
 
 sys.setrecursionlimit(10 ** 9)
-gamma = 1.0
 
 
 def write_data(history):
@@ -59,7 +58,8 @@ def reward(state: State, next_state: State):
 
 cnt = -1
 
-all_board = [None] * 63905
+# all_board = [None] * 63905
+all_board = []
 board_idx_dict = {}
 state_d = {4: [], 5: [], 6: [], 7: [], 8: [], 9: [],
            10: [], 11: [], 12: [], 13: [], 14: [], 15: [], 16: []}
@@ -70,12 +70,14 @@ def search(state: State):
     if not (tuple(state.pieces), tuple(
             state.enemy_pieces), state.depth % 2, state.pass_end) in board_idx_dict:
         cnt += 1
-        # print(
-        #     '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 63905), end='')
+        print(
+            '\r{} {:,}'.format(sys._getframe().f_code.co_name, cnt + 1), end='')
         board_idx_dict[(tuple(state.pieces), tuple(
             state.enemy_pieces), state.depth % 2, state.pass_end)] = cnt
-        all_board[cnt] = (state.pieces, state.enemy_pieces,
-                          state.depth % 2, state.pass_end)
+        # all_board[cnt] = (state.pieces, state.enemy_pieces,
+        #                   state.depth % 2, state.pass_end)
+        all_board.append((state.pieces, state.enemy_pieces,
+                         state.depth % 2, state.pass_end))
 
         piece_cnt = state.piece_count(state.pieces) + \
             state.piece_count(state.enemy_pieces)
@@ -90,20 +92,23 @@ def search(state: State):
         if not state.is_done():
             # 再帰処理で次のアクションに遷移
             for action in state.legal_actions():
-                next_state = state.next(action=action)
-                # if next_state.legal_actions() == [16]:
-                #     next_state = next_state.next(action=16)
-                search(next_state)
+                next_success_state = state.next(action=action, set_ratio=0)
+                search(next_success_state)
+                if p != 0:
+                    next_failure_state = state.next(action=action, set_ratio=1)
+                    search(next_failure_state)
 
 
-def value_iter_onestep(V):
-    global board_idx_dict, cnt
+def value_iter_onestep():
+    global all_board, board_idx_dict, cnt
     # # 価値関数の設定
+
+    V = [0] * len(all_board)
     cnt = 0
     for i in reversed(range(4, 16)):
         for state_idx in state_d[i]:
-            # print(
-            #     '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 58613), end='')
+            print(
+                '\r{} {:,}'.format(sys._getframe().f_code.co_name, cnt + 1), end='')
             cnt += 1
             action_values = []
             pieces, enemy_pieces, depth, pass_end = all_board[board_idx_dict[state_idx]]
@@ -115,20 +120,43 @@ def value_iter_onestep(V):
             else:
                 # アクションごとの価値関数
                 for action in state.legal_actions():
-                    next_state = state.next(action=action)
-                    na = board_idx_dict[(tuple(next_state.pieces), tuple(
-                        next_state.enemy_pieces), next_state.depth % 2, next_state.pass_end)]
-                    if next_state.legal_actions() == [16] and not next_state.is_done():
-                        pass_next_state = next_state.next(action=16)
-                        # print(next_state)
-                        # print(pass_next_state)
+                    next_success_state = state.next(action=action, set_ratio=0)
+                    success_na = board_idx_dict[(tuple(next_success_state.pieces), tuple(
+                        next_success_state.enemy_pieces), next_success_state.depth % 2, next_success_state.pass_end)]
+
+                    if next_success_state.legal_actions() == [16] and not next_success_state.is_done():
+                        pass_next_state = next_success_state.next(
+                            action=16, set_ratio=0)
                         pass_na = board_idx_dict[(tuple(pass_next_state.pieces), tuple(
                             pass_next_state.enemy_pieces), pass_next_state.depth % 2, pass_next_state.pass_end)]
-                        r = reward(next_state, pass_next_state)
-                        V[na] = r + V[pass_na]
-                    r = reward(state, next_state)
-                    # v = r + (-1) * gamma * V[na]
-                    v = r + gamma * V[na]
+                        r = reward(next_success_state, pass_next_state)
+                        V[success_na] = r + V[pass_na]
+
+                    success_r = reward(state, next_success_state)
+                    success_v = success_r + V[success_na]
+
+                    if p != 0:
+                        next_failure_state = state.next(
+                            action=action, set_ratio=1)
+                        failure_na = board_idx_dict[(tuple(next_failure_state.pieces), tuple(
+                            next_failure_state.enemy_pieces), next_failure_state.depth % 2, next_failure_state.pass_end)]
+                        if next_failure_state.legal_actions() == [16] and not next_failure_state.is_done():
+                            pass_next_state = next_failure_state.next(
+                                action=16, set_ratio=0)
+                            pass_na = board_idx_dict[(tuple(pass_next_state.pieces), tuple(
+                                pass_next_state.enemy_pieces), pass_next_state.depth % 2, pass_next_state.pass_end)]
+                            r = reward(next_failure_state, pass_next_state)
+                            V[failure_na] = r + V[pass_na]
+                        failure_r = reward(state, next_failure_state)
+                        failure_v = failure_r + V[failure_na]
+                    else:
+                        failure_v = 0
+
+                    if action != 16:
+                        v = (default_ratio_box[action] / 100) * success_v + \
+                            (1 - default_ratio_box[action] / 100) * failure_v
+                    else:
+                        v = success_v
                     action_values.append(v)
 
                 if state.is_first_player():
@@ -136,15 +164,13 @@ def value_iter_onestep(V):
                 else:
                     V[board_idx_dict[state_idx]] = max(action_values)
 
-                print("{} {}".format(i, action_values))
-
             del action_values, state
     print()
     return V
 
 
-def value_iter(V, threshold=0.001):
-    return value_iter_onestep(V)
+def value_iter():
+    return value_iter_onestep()
 
 
 def equal_all(d: dict):
@@ -206,13 +232,13 @@ def set_argmin(d: dict, action_probs: list, state: State):
 
 def greedy_policy(V):
     global all_board, board_idx_dict
-    pi = [0] * 63905
+    pi = [0] * len(all_board)
     cnt = 0
     # 価値関数の設定
     for i in range(4, 17):
         for state_idx in state_d[i]:
-            # print(
-            #     '\r{} {:,} / {:,}'.format(sys._getframe().f_code.co_name, cnt + 1, 63665), end='')
+            print(
+                '\r{} {:,}'.format(sys._getframe().f_code.co_name, cnt + 1), end='')
             action_values = []
             pieces, enemy_pieces, depth, pass_end = all_board[board_idx_dict[state_idx]]
             state = State(pieces, enemy_pieces,
@@ -227,32 +253,28 @@ def greedy_policy(V):
             else:
                 action_values = {}
                 for action in state.legal_actions():
-                    next_state = state.next(action)
+                    next_state = state.next(action=action, set_ratio=0)
                     na = board_idx_dict[(tuple(next_state.pieces), tuple(
                         next_state.enemy_pieces), next_state.depth % 2, next_state.pass_end)]
                     r = reward(state, next_state)
-                    # v = r + (-1) * gamma * V[na]
-                    v = r + gamma * V[na]
+                    v = r + V[na]
                     action_values[action] = v
 
                 if not state.is_first_player():
-                    # max_action = argmax(action_values)
                     action_probs = set_argmax(
                         action_values, action_probs, state)
                 else:
                     action_probs = set_argmin(
                         action_values, action_probs, state)
                     # action_probs[state.legal_actions().index(max_action)] = 1.0
-                # if 11 <= i < 12:
-            # print(action_probs)
             pi[board_idx_dict[state_idx]] = action_probs
             cnt += 1
     print()
     return pi
 
 
-def guess(V):
-    V = value_iter(V)
+def guess():
+    V = value_iter()
     pi = greedy_policy(V)
     return V, pi
 
@@ -299,7 +321,7 @@ def play(V=None, pi=None, n=100, bisible=False):
                 # 次の状態の取得
                 state = state.next(action)
 
-        print(f"randam {black_win} : {white_win}")
+        print(f"[optimal policy vs randam] {black_win} : {white_win}")
 
         black_win = 0
         white_win = 0
@@ -331,8 +353,47 @@ def play(V=None, pi=None, n=100, bisible=False):
                             black_win += 1
                     break
 
-                # action = np.random.choice(state.legal_actions(), p=pi[board_idx_dict[(tuple(state.pieces), tuple(
-                #     state.enemy_pieces), state.depth % 2)]])
+                # 行動の取得
+                if not state.is_first_player():
+                    action = np.random.choice(state.legal_actions(), p=pi[board_idx_dict[(tuple(state.pieces), tuple(
+                        state.enemy_pieces), state.depth % 2, state.pass_end)]])
+                else:
+                    action = random_action(state)
+
+                # 次の状態の取得
+                state = state.next(action)
+
+        print(f"[randam vs optimal policy] {black_win} : {white_win}")
+
+        black_win = 0
+        white_win = 0
+        for _ in range(n):
+            state = State()
+            # ゲーム終了までループ
+            while True:
+                # ゲーム終了時
+
+                # 文字列表示
+                if bisible:
+                    print(V[board_idx_dict[(tuple(state.pieces), tuple(
+                        state.enemy_pieces), state.depth % 2, state.pass_end)]])
+                    print(state.legal_actions())
+                    print(pi[board_idx_dict[(tuple(state.pieces), tuple(
+                        state.enemy_pieces), state.depth % 2, state.pass_end)]])
+                    print(state)
+
+                if state.is_done():
+                    if state.is_first_player():
+                        if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
+                            black_win += 1
+                        elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
+                            white_win += 1
+                    else:
+                        if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
+                            white_win += 1
+                        elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
+                            black_win += 1
+                    break
                 # 行動の取得
                 if not state.is_first_player():
                     action = np.random.choice(state.legal_actions(), p=pi[board_idx_dict[(tuple(state.pieces), tuple(
@@ -345,7 +406,7 @@ def play(V=None, pi=None, n=100, bisible=False):
                 # 次の状態の取得
                 state = state.next(action)
 
-        print(f"cul {black_win} : {white_win}")
+        print(f"[optimal policy vs optimal policy] {black_win} : {white_win}")
 
 
 # 動作確認
@@ -354,12 +415,11 @@ if __name__ == '__main__':
     search(state=state)
     print()
     del state
-    V = [0] * 63905
-    V, pi = guess(V)
+    V, pi = guess()
     # write_data([V_2, pi_2, board_idx_dict])
     # history = load_data()
     # V_2 = history[0]
     # pi_2 = history[1]
     # board_idx_dict = history[2]
 
-    play(V=V, pi=pi, n=1000, bisible=False)
+    play(V=V, pi=pi, n=10000, bisible=False)

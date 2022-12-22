@@ -2,7 +2,7 @@ import random
 # 4 以上の 2 の倍数
 SQUARE = 4
 
-default_ratio_box = [10] * SQUARE * SQUARE
+default_ratio_box = [100] * (SQUARE * SQUARE)
 
 
 def create_ratiobox_set_value(p: int = 10):
@@ -16,7 +16,9 @@ def create_ratiobox_set_value(p: int = 10):
             ratio_num += 1
 
 
-create_ratiobox_set_value(3)
+p = 1
+
+create_ratiobox_set_value(p)
 
 
 def create_ratiobox(p: int = 10):
@@ -25,7 +27,7 @@ def create_ratiobox(p: int = 10):
 
 
 # 普通のオセロの条件
-default_ratio_box = [100] * SQUARE * SQUARE
+# default_ratio_box = [100] * SQUARE * SQUARE
 
 # ai 同士の対戦用ファイルパス
 file1 = f'./model/best.h5'

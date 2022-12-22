@@ -73,13 +73,16 @@ class State:
                       self.enemy_pieces.copy(), self.ratio_box.copy(), self.depth+1)
 
         if action != (SQUARE * SQUARE):  # パスを選択していないとき
-            # if (random.random() * 100) <= self.ratio_box[action % SQUARE+int(action/SQUARE)*SQUARE]:
             if (set_ratio * 100) <= self.ratio_box[action % SQUARE+int(action/SQUARE)*SQUARE]:
-                self.ratio_flg = True
+                # self.ratio_flg = True
+                state.is_legal_action_xy(
+                    action % SQUARE, int(action/SQUARE), True, True)
             else:
-                self.ratio_flg = False
-
-            state.is_legal_action_xy(action % SQUARE, int(action/SQUARE), True)
+                # print("失敗した")
+                # self.ratio_flg = False
+                state.is_legal_action_xy(
+                    action % SQUARE, int(action/SQUARE), True, False)
+            # state.is_legal_action_xy(action % SQUARE, int(action/SQUARE), True, )
 
         w = state.pieces
         state.pieces = state.enemy_pieces
@@ -88,13 +91,12 @@ class State:
         # 2回連続パス判定
         if action == (SQUARE * SQUARE) and state.legal_actions() == [SQUARE * SQUARE]:
             state.pass_end = True
-
+        # print(state)
         return state
 
     def legal_actions(self):
         """合法手のリストの取得"""
         actions = []
-        self.ratio_flg = True
         for j in range(0, SQUARE):
             for i in range(0, SQUARE):
                 if self.is_legal_action_xy(i, j):
@@ -103,7 +105,7 @@ class State:
             actions.append(SQUARE * SQUARE)  # パス
         return actions
 
-    def is_legal_action_xy(self, x, y, flip=False):
+    def is_legal_action_xy(self, x, y, flip=False, success_flg=True):
         """任意のマスが合法手かどうか"""
         def is_legal_action_xy_dxy(x, y, dx, dy):
             """任意のマスの任意の方向が合法手かどうか"""
@@ -172,7 +174,7 @@ class State:
         # 石を置く
         if flip:
             # 確率で石が置けるかどうか
-            if self.ratio_flg:
+            if success_flg:
                 # 確率 p
                 self.pieces[x+y*SQUARE] = 1
             else:
@@ -197,7 +199,6 @@ class State:
     def __str__(self):
         """文字列表示"""
         # ox = ('o', 'x') if self.is_first_player() else ('x', 'o')
-        #  25CF(•) →25CB(∘)
         ox = (u'\u25CF', u'\u25CB') if self.is_first_player() else (
             u'\u25CB', u'\u25CF')
         str = ''
