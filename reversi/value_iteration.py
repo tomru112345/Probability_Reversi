@@ -58,7 +58,6 @@ def reward(state: State, next_state: State):
 
 cnt = -1
 
-# all_board = [None] * 63905
 all_board = []
 board_idx_dict = {}
 state_d = {4: [], 5: [], 6: [], 7: [], 8: [], 9: [],
@@ -74,8 +73,6 @@ def search(state: State):
             '\r{} {:,}'.format(sys._getframe().f_code.co_name, cnt + 1), end='')
         board_idx_dict[(tuple(state.pieces), tuple(
             state.enemy_pieces), state.depth % 2, state.pass_end)] = cnt
-        # all_board[cnt] = (state.pieces, state.enemy_pieces,
-        #                   state.depth % 2, state.pass_end)
         all_board.append((state.pieces, state.enemy_pieces,
                          state.depth % 2, state.pass_end))
 
@@ -140,6 +137,7 @@ def value_iter_onestep():
                             action=action, set_ratio=1)
                         failure_na = board_idx_dict[(tuple(next_failure_state.pieces), tuple(
                             next_failure_state.enemy_pieces), next_failure_state.depth % 2, next_failure_state.pass_end)]
+
                         if next_failure_state.legal_actions() == [16] and not next_failure_state.is_done():
                             pass_next_state = next_failure_state.next(
                                 action=16, set_ratio=0)
@@ -147,8 +145,10 @@ def value_iter_onestep():
                                 pass_next_state.enemy_pieces), pass_next_state.depth % 2, pass_next_state.pass_end)]
                             r = reward(next_failure_state, pass_next_state)
                             V[failure_na] = r + V[pass_na]
+
                         failure_r = reward(state, next_failure_state)
                         failure_v = failure_r + V[failure_na]
+
                     else:
                         failure_v = 0
 
@@ -266,7 +266,6 @@ def greedy_policy(V):
                 else:
                     action_probs = set_argmin(
                         action_values, action_probs, state)
-                    # action_probs[state.legal_actions().index(max_action)] = 1.0
             pi[board_idx_dict[state_idx]] = action_probs
             cnt += 1
     print()
@@ -321,7 +320,7 @@ def play(V=None, pi=None, n=100, bisible=False):
                 # 次の状態の取得
                 state = state.next(action)
 
-        print(f"[optimal policy vs randam] {black_win} : {white_win}")
+        print(f"[optimal vs randam] {black_win} : {white_win}")
 
         black_win = 0
         white_win = 0
@@ -363,7 +362,7 @@ def play(V=None, pi=None, n=100, bisible=False):
                 # 次の状態の取得
                 state = state.next(action)
 
-        print(f"[randam vs optimal policy] {black_win} : {white_win}")
+        print(f"[randam vs optimal] {black_win} : {white_win}")
 
         black_win = 0
         white_win = 0
@@ -406,7 +405,7 @@ def play(V=None, pi=None, n=100, bisible=False):
                 # 次の状態の取得
                 state = state.next(action)
 
-        print(f"[optimal policy vs optimal policy] {black_win} : {white_win}")
+        print(f"[optimal vs optimal] {black_win} : {white_win}")
 
 
 # 動作確認
