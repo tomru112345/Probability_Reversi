@@ -3,9 +3,9 @@
 # ====================
 
 # パッケージのインポート
-import random
 from settings import SQUARE, default_ratio_box
 import watch
+import numpy as np
 
 
 class State:
@@ -27,9 +27,6 @@ class State:
 
         # 確率用のリスト
         self.ratio_box = ratio_box
-
-        # 確率 p を引いたかどうか
-        self.ratio_flg = True
 
         # 石の初期配置
         if pieces == None or enemy_pieces == None:
@@ -67,22 +64,18 @@ class State:
         """ゲーム終了かどうか"""
         return self.piece_count(self.pieces) + self.piece_count(self.enemy_pieces) == (SQUARE * SQUARE) or self.pass_end
 
-    def next(self, action, set_ratio=random.random()):
+    def next(self, action, set_ratio=np.random.rand()):
         """次の状態の取得"""
         state = State(self.pieces.copy(),
                       self.enemy_pieces.copy(), self.ratio_box.copy(), self.depth+1)
 
         if action != (SQUARE * SQUARE):  # パスを選択していないとき
-            if (set_ratio * 100) <= self.ratio_box[action % SQUARE+int(action/SQUARE)*SQUARE]:
-                # self.ratio_flg = True
+            if (set_ratio * 100) < self.ratio_box[action % SQUARE+int(action/SQUARE)*SQUARE]:
                 state.is_legal_action_xy(
                     action % SQUARE, int(action/SQUARE), True, True)
             else:
-                # print("失敗した")
-                # self.ratio_flg = False
                 state.is_legal_action_xy(
                     action % SQUARE, int(action/SQUARE), True, False)
-            # state.is_legal_action_xy(action % SQUARE, int(action/SQUARE), True, )
 
         w = state.pieces
         state.pieces = state.enemy_pieces
@@ -198,7 +191,6 @@ class State:
 
     def __str__(self):
         """文字列表示"""
-        # ox = ('o', 'x') if self.is_first_player() else ('x', 'o')
         ox = (u'\u25CF', u'\u25CB') if self.is_first_player() else (
             u'\u25CB', u'\u25CF')
         str = ''
@@ -217,7 +209,7 @@ class State:
 def random_action(state: State):
     """ランダムで行動選択"""
     legal_actions = state.legal_actions()
-    return legal_actions[random.randint(0, len(legal_actions)-1)]
+    return legal_actions[np.random.randint(0, len(legal_actions))]
 
 
 # 動作確認
@@ -233,7 +225,7 @@ def main():
             break
 
         # 次の状態の取得
-        state = state.next(random_action(state), random.random())
+        state = state.next(random_action(state), np.random.rand())
         # 文字列表示
         print(state)
         print()
