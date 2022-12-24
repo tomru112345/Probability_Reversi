@@ -28,6 +28,14 @@ private:
     bool pass_end = false;
 
 public:
+    State()
+    {
+        pieces[center_idx - balance_idx - 1] = 1;
+        pieces[center_idx + balance_idx] = 1;
+        enemy_pieces[center_idx - balance_idx] = 1;
+        enemy_pieces[center_idx + balance_idx - 1] = 1;
+    }
+
     State(std::vector<int> r)
     {
         pieces[center_idx - balance_idx - 1] = 1;
@@ -421,8 +429,14 @@ public:
 
     void append_new_child(int action, double policy)
     {
-        Node next_node = Node(get_model(), get_state().next(action), policy);
+        // 成功したとき
+        Node next_node = Node(get_model(), get_state().next(action, 0), policy);
         this->child_nodes.push_back(next_node);
+        if (action != 16){
+            // 失敗したとき
+            Node next_node = Node(get_model(), get_state().next(action, 1), policy);
+            this->child_nodes.push_back(next_node);
+        }
     }
 
     std::vector<double> nodes_to_scores()
@@ -475,7 +489,6 @@ public:
             for (int i = 0; i < len_policies; i++)
             {
                 int action = get_state().legal_actions().at(i);
-                State next_state = get_state().next(action);
                 double policy = policies.at(i);
                 append_new_child(action, policy);
             }

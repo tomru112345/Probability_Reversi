@@ -87,8 +87,13 @@ def pv_mcts_scores(model, state, temperature):
                 # 子ノードの展開
                 self.child_nodes = []
                 for action, policy in zip(self.state.legal_actions(), policies):
+                    # 成功したとき
                     self.child_nodes.append(
-                        Node(self.state.next(action), policy))
+                        Node(self.state.next(action, 0), policy))
+                    if action != 16:
+                        # 失敗したとき
+                        self.child_nodes.append(
+                            Node(self.state.next(action, 1), policy))
                 return value
 
             # 子ノードが存在する時
@@ -182,7 +187,7 @@ if __name__ == '__main__':
         # 行動の取得
         action = next_action(state)
         # 次の状態の取得
-        state = state.next(action)
+        state = state.next(action, np.random.rand())
 
         # 文字列表示
         print(state)
