@@ -228,7 +228,7 @@ def greedy_policy(V):
     print()
     return pi
 
-@watch.watch
+
 def guess():
     V = value_iter()
     pi = greedy_policy(V)
@@ -255,7 +255,7 @@ def one_game(black_win, white_win, first_ai=True):
 
         # 行動の取得
         actions = [np.random.choice(state.legal_actions(), p=pi[board_idx_dict[(tuple(state.pieces), tuple(
-                        state.enemy_pieces), state.depth % 2, state.pass_end)]]), random_action(state)]
+            state.enemy_pieces), state.depth % 2, state.pass_end)]]), random_action(state)]
         if not first_ai:
             actions.reverse()
         if state.is_first_player():
@@ -263,7 +263,7 @@ def one_game(black_win, white_win, first_ai=True):
         else:
             action = actions[1]
 
-                # 次の状態の取得
+            # 次の状態の取得
         state = state.next(action, np.random.rand())
     return (black_win, white_win)
 
@@ -274,14 +274,16 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, bisible=False):
         black_win = 0
         white_win = 0
         for _ in range(n):
-            black_win, white_win = one_game(black_win, white_win, first_ai=True)
+            black_win, white_win = one_game(
+                black_win, white_win, first_ai=True)
 
         print(f"[optimal vs randam] {black_win} : {white_win}")
 
         black_win = 0
         white_win = 0
         for _ in range(n):
-            black_win, white_win = one_game(black_win, white_win, first_ai=False)
+            black_win, white_win = one_game(
+                black_win, white_win, first_ai=False)
         print(f"[randam vs optimal] {black_win} : {white_win}")
 
         black_win = 0
@@ -303,10 +305,10 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, bisible=False):
                         elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
                             black_win += 1
                     break
-                
+
                 # 行動の取得
                 action = np.random.choice(state.legal_actions(), p=pi[board_idx_dict[(
-                        tuple(state.pieces), tuple(state.enemy_pieces), state.depth % 2, state.pass_end)]])
+                    tuple(state.pieces), tuple(state.enemy_pieces), state.depth % 2, state.pass_end)]])
                 # 次の状態の取得
                 state = state.next(action, set_ratio=np.random.rand())
                 # print(state)

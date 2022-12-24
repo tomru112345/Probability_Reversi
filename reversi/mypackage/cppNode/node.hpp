@@ -28,14 +28,6 @@ private:
     bool pass_end = false;
 
 public:
-    State()
-    {
-        pieces[center_idx - balance_idx - 1] = 1;
-        pieces[center_idx + balance_idx] = 1;
-        enemy_pieces[center_idx - balance_idx] = 1;
-        enemy_pieces[center_idx + balance_idx - 1] = 1;
-    }
-
     State(std::vector<int> r)
     {
         pieces[center_idx - balance_idx - 1] = 1;
@@ -162,14 +154,21 @@ public:
         return (get_depth() % 2 == 0);
     }
 
-    State next(int action)
+    State next(int action, float set_ratio)
     {
         State state = State(get_pieces(), get_enemy_pieces(), get_ratio_box(), get_depth() + 1);
         if (action != 16)
         {
             int ac_x = action % 4;
             int ac_y = action / 4;
-            state.is_legal_action_xy(ac_x, ac_y, true);
+            if (set_ratio * 100 < ratio_box[ac_x + ac_y * 4])
+            {
+                state.is_legal_action_xy(ac_x, ac_y, true, true);
+            }
+            else
+            {
+                state.is_legal_action_xy(ac_x, ac_y, true, false);
+            }
         }
 
         std::vector<int> w = state.get_pieces();
@@ -301,7 +300,7 @@ public:
         return false;
     }
 
-    bool is_legal_action_xy(int x, int y, bool flip = false)
+    bool is_legal_action_xy(int x, int y, bool flip = false, bool success_flg = true)
     {
         if (get_enemy_pieces()[x + y * 4] == 1 || get_pieces()[x + y * 4] == 1)
         {
@@ -309,7 +308,8 @@ public:
         }
         if (flip)
         {
-            if (rand() % 101 <= get_ratio_box()[x + y * 4])
+            // if (rand() % 101 <= get_ratio_box()[x + y * 4])
+            if (success_flg)
             {
                 std::vector<int> tmp_p = get_pieces();
                 tmp_p[x + y * 4] = 1;
@@ -327,6 +327,7 @@ public:
                 return false;
             }
         }
+
         bool flag = false;
         for (int i = 0; i < get_dxy().size(); i++)
         {
@@ -346,200 +347,6 @@ std::tuple<std::vector<double>, double> predict(pybind11::object model, State st
     std::tuple<std::vector<double>, double> tupleValue = res.cast<std::tuple<std::vector<double>, double>>();
     return tupleValue;
 }
-
-// class Node
-// {
-// private:
-//     pybind11::object model;
-//     State state;
-//     float p = 0.0F;
-//     float w = 0.0F;
-//     int n = 0;
-//     std::vector<Node> child_nodes;
-
-// public:
-//     Node()
-//     {
-//         pybind11::object model;
-//         State state;
-//         float p = 0.0F;
-//         float w = 0.0F;
-//         int n = 0;
-//         std::vector<Node> child_nodes;
-//     }
-
-//     Node(pybind11::object m, State s, float np)
-//     {
-//         model = m;
-//         state = s;
-//         p = np;
-//         w = 0.0F;
-//         n = 0;
-//         std::vector<Node> child_nodes;
-//     }
-
-//     void set_state(State s)
-//     {
-//         state = s;
-//     }
-
-//     void set_w(float nw)
-//     {
-//         w = nw;
-//     }
-
-//     void set_n(int nn)
-//     {
-//         n = nn;
-//     }
-
-//     void set_child_nodes(std::vector<Node> nc)
-//     {
-//         child_nodes = nc;
-//     }
-
-//     pybind11::object get_model()
-//     {
-//         return model;
-//     }
-
-//     State get_state()
-//     {
-//         return state;
-//     }
-
-//     float get_w()
-//     {
-//         return w;
-//     }
-
-//     int get_n()
-//     {
-//         return n;
-//     }
-
-//     float get_p()
-//     {
-//         return p;
-//     }
-
-//     std::vector<Node> get_child_nodes()
-//     {
-//         return child_nodes;
-//     }
-
-//     void append_new_child(int action, float policy)
-//     {
-//         std::vector<Node> tmp_cn = get_child_nodes();
-//         Node next_node = Node(get_model(), get_state().next(action), policy);
-//         tmp_cn.push_back(next_node);
-//         set_child_nodes(tmp_cn);
-//     }
-
-//     std::vector<int> nodes_to_scores()
-//     {
-//         std::vector<int> scores;
-//         int len_nodes = (int)get_child_nodes().size();
-//         for (int i = 0; i < len_nodes; i++)
-//         {
-//             std::vector<Node> tmp_cn = get_child_nodes();
-//             scores.push_back(tmp_cn.at(i).get_n());
-//         }
-//         return scores;
-//     }
-
-//     float evaluate() // 局面の価値の計算
-//     {
-//         float value = 0.0F;
-
-//         // ゲーム終了時
-//         if (get_state().is_done())
-//         {
-//             // 勝敗結果で価値を取得
-//             if (get_state().is_lose())
-//             {
-//                 value = -1.0F;
-//             }
-//             else
-//             {
-//                 value = 0.0F;
-//             }
-
-//             // 累計価値と試行回数の更新
-//             set_w(get_w() + value);
-//             set_n(get_n() + 1);
-//             return value;
-//         }
-
-//         if (get_child_nodes().empty()) // 子ノードが存在しない時
-//         {
-//             // ニューラルネットワークの推論で方策と価値を取得
-//             std::tuple<std::vector<float>, float> result = predict(get_model(), get_state());
-//             std::vector<float> policies = std::get<0>(result);
-//             value = std::get<1>(result);
-
-//             // 累計価値と試行回数の更新
-//             set_w(get_w() + value);
-//             set_n(get_n() + 1);
-
-//             // 子ノードの展開
-//             int len_policies = (int)policies.size();
-//             for (int i = 0; i < len_policies; i++)
-//             {
-//                 int action = get_state().legal_actions().at(i);
-//                 State next_state = get_state().next(action);
-//                 float policy = policies.at(i);
-//                 append_new_child(action, policy);
-//             }
-//             return value;
-//         }
-//         else // 子ノードが存在する時
-//         {
-//             // アーク評価値が最大の子ノードの評価で価値を取得
-//             int argmax_i = next_child_node_index();
-//             std::cout << argmax_i << std::endl;
-//             std::vector<Node> tmp_cn = get_child_nodes();
-//             value = -(tmp_cn.at(argmax_i).evaluate());
-
-//             // 累計価値と試行回数の更新
-//             set_w(get_w() + value);
-//             set_n(get_n() + 1);
-//             return value;
-//         }
-//     }
-
-//     int next_child_node_index()
-//     {
-//         // アーク評価値の計算
-//         float C_PUCT = 1.0F;
-//         std::vector<int> scores = nodes_to_scores();
-//         int t = 0;
-//         for (int i = 0; i < scores.size(); i++)
-//         {
-//             t += scores.at(i);
-//         }
-
-//         std::vector<float> pucb_values;
-//         int len_child_nodes = (int)get_child_nodes().size();
-//         for (int i = 0; i < len_child_nodes; i++)
-//         {
-//             float tmp_v = 0.0F;
-//             if (get_child_nodes().at(i).get_n() != 0.0F)
-//             {
-//                 tmp_v = -(get_child_nodes().at(i).get_w() / get_child_nodes().at(i).get_n());
-//             }
-//             else
-//             {
-//                 tmp_v = 0.0F;
-//             }
-//             tmp_v += (C_PUCT * get_child_nodes().at(i).get_p() * (float)sqrt(t) / (float)(1 + get_child_nodes().at(i).get_n()));
-//             pucb_values.push_back(tmp_v);
-//         }
-//         // アーク評価値が最大の子ノードを返す
-//         int argmax_i = (int)std::distance(pucb_values.begin(), std::max_element(pucb_values.begin(), pucb_values.end()));
-//         return argmax_i;
-//     }
-// };
 
 class Node
 {

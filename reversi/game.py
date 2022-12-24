@@ -64,7 +64,7 @@ class State:
         """ゲーム終了かどうか"""
         return self.piece_count(self.pieces) + self.piece_count(self.enemy_pieces) == (SQUARE * SQUARE) or self.pass_end
 
-    def next(self, action, set_ratio=np.random.rand()):
+    def next(self, action: int, set_ratio: float = 0):
         """次の状態の取得"""
         state = State(self.pieces.copy(),
                       self.enemy_pieces.copy(), self.ratio_box.copy(), self.depth+1)
@@ -74,7 +74,6 @@ class State:
                 state.is_legal_action_xy(
                     action % SQUARE, int(action/SQUARE), True, True)
             else:
-                # print("!")
                 state.is_legal_action_xy(
                     action % SQUARE, int(action/SQUARE), True, False)
 
@@ -85,7 +84,6 @@ class State:
         # 2回連続パス判定
         if action == (SQUARE * SQUARE) and state.legal_actions() == [SQUARE * SQUARE]:
             state.pass_end = True
-        # print(state)
         return state
 
     def legal_actions(self):

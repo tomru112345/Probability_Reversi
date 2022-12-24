@@ -141,14 +141,21 @@ public:
         return (get_depth() % 2 == 0);
     }
 
-    State next(int action)
+    State next(int action, float set_ratio)
     {
         State state = State(get_pieces(), get_enemy_pieces(), get_ratio_box(), get_depth() + 1);
         if (action != 16)
         {
             int ac_x = action % 4;
             int ac_y = action / 4;
-            state.is_legal_action_xy(ac_x, ac_y, true);
+            if (set_ratio * 100 < ratio_box[ac_x + ac_y * 4])
+            {
+                state.is_legal_action_xy(ac_x, ac_y, true, true);
+            }
+            else
+            {
+                state.is_legal_action_xy(ac_x, ac_y, true, false);
+            }
         }
 
         std::vector<int> w = state.get_pieces();
@@ -163,11 +170,6 @@ public:
         }
         return state;
     }
-
-    // vector<int> legal_actions();
-    // bool is_legal_action_xy_dxy(int x, int y, int dx, int dy, bool flip = false);
-    // bool is_legal_action_xy_dxy_penalty(int x, int y, int dx, int dy, bool flip = false);
-    // bool is_legal_action_xy(int x, int y, bool flip = false);
 
     std::vector<int> legal_actions()
     {
@@ -285,7 +287,7 @@ public:
         return false;
     }
 
-    bool is_legal_action_xy(int x, int y, bool flip = false)
+    bool is_legal_action_xy(int x, int y, bool flip = false, bool success_flg = true)
     {
         if (get_enemy_pieces()[x + y * 4] == 1 || get_pieces()[x + y * 4] == 1)
         {
@@ -293,7 +295,8 @@ public:
         }
         if (flip)
         {
-            if (rand() % 101 <= get_ratio_box()[x + y * 4])
+            // if (rand() % 101 <= get_ratio_box()[x + y * 4])
+            if (success_flg)
             {
                 std::vector<int> tmp_p = get_pieces();
                 tmp_p[x + y * 4] = 1;
@@ -311,6 +314,7 @@ public:
                 return false;
             }
         }
+
         bool flag = false;
         for (int i = 0; i < get_dxy().size(); i++)
         {
