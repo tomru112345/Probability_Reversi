@@ -15,7 +15,7 @@ def create_ratiobox_set_value(p: int = 10):
             ratio_num += 1
 
 
-p = 5
+p = 10
 
 create_ratiobox_set_value(p)
 

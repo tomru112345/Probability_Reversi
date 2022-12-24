@@ -4,6 +4,7 @@ import numpy as np
 from datetime import datetime
 from pathlib import Path
 import sys
+import watch
 import pickle
 import os
 
@@ -14,8 +15,7 @@ def write_data(history):
     """学習データの保存"""
     now = datetime.now()
     os.makedirs(f'./value_iteration_data/', exist_ok=True)  # フォルダがない時は生成
-    path = './value_iteration_data/{:04}{:02}{:02}{:02}{:02}{:02}.history'.format(
-        now.year, now.month, now.day, now.hour, now.minute, now.second)
+    path = './value_iteration_data/{}.history'.format(p)
     with open(path, mode='wb') as f:
         pickle.dump(history, f)
 
@@ -228,7 +228,7 @@ def greedy_policy(V):
     print()
     return pi
 
-
+@watch.watch
 def guess():
     V = value_iter()
     pi = greedy_policy(V)
@@ -236,7 +236,7 @@ def guess():
 
 
 def one_game(black_win, white_win, first_ai=True):
-    state = State()
+    state = State(default_ratio_box)
     # ゲーム終了までループ
     while True:
         # ゲーム終了時
@@ -264,7 +264,7 @@ def one_game(black_win, white_win, first_ai=True):
             action = actions[1]
 
                 # 次の状態の取得
-        state = state.next(action)
+        state = state.next(action, np.random.rand())
     return (black_win, white_win)
 
 
@@ -287,20 +287,10 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, bisible=False):
         black_win = 0
         white_win = 0
         for _ in range(n):
-            state = State()
+            state = State(default_ratio_box)
             # ゲーム終了までループ
             while True:
                 # ゲーム終了時
-
-                # 文字列表示
-                if bisible:
-                    print(V[board_idx_dict[(tuple(state.pieces), tuple(
-                        state.enemy_pieces), state.depth % 2, state.pass_end)]])
-                    print(state.legal_actions())
-                    print(pi[board_idx_dict[(tuple(state.pieces), tuple(
-                        state.enemy_pieces), state.depth % 2, state.pass_end)]])
-                    print(state)
-
                 if state.is_done():
                     if state.is_first_player():
                         if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
@@ -313,16 +303,13 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, bisible=False):
                         elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
                             black_win += 1
                     break
+                
                 # 行動の取得
-                if not state.is_first_player():
-                    action = np.random.choice(state.legal_actions(), p=pi[board_idx_dict[(tuple(state.pieces), tuple(
-                        state.enemy_pieces), state.depth % 2, state.pass_end)]])
-                else:
-                    action = np.random.choice(state.legal_actions(), p=pi[board_idx_dict[(
+                action = np.random.choice(state.legal_actions(), p=pi[board_idx_dict[(
                         tuple(state.pieces), tuple(state.enemy_pieces), state.depth % 2, state.pass_end)]])
-
                 # 次の状態の取得
-                state = state.next(action)
+                state = state.next(action, set_ratio=np.random.rand())
+                # print(state)
 
         print(f"[optimal vs optimal] {black_win} : {white_win}")
 
@@ -339,4 +326,4 @@ if __name__ == '__main__':
     V = history[0]
     pi = history[1]
     board_idx_dict = history[2]
-    play(V=V, pi=pi, board_idx_dict=board_idx_dict, n=10000, bisible=False)
+    play(V=V, pi=pi, board_idx_dict=board_idx_dict, n=100000, bisible=False)

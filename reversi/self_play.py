@@ -61,7 +61,6 @@ def play(model):
         policies = [0] * DN_OUTPUT_SIZE
         for action, policy in zip(state.legal_actions(), scores):
             policies[action] = policy
-        # history.append([[state.pieces, state.enemy_pieces], policies, None])
         history.append(
             [[state.get_pieces(), state.get_enemy_pieces(), state.get_ratio_box()], policies, 0])
 

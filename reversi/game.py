@@ -74,6 +74,7 @@ class State:
                 state.is_legal_action_xy(
                     action % SQUARE, int(action/SQUARE), True, True)
             else:
+                # print("!")
                 state.is_legal_action_xy(
                     action % SQUARE, int(action/SQUARE), True, False)
 
@@ -232,4 +233,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    np.random.seed(seed=32)
+    for i in range(2):
+        main()
