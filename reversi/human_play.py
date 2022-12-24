@@ -14,6 +14,7 @@ import tkinter as tk
 import pickle
 from settings import SQUARE, default_ratio_box
 import os
+import numpy as np
 from datetime import datetime
 
 # tensorflow の warning の設定
@@ -71,7 +72,8 @@ class GameUI(tk.Frame):
     def turn_of_human(self, event):
         """人間のターン"""
         # ゲーム終了時
-        self.history.append([self.state.get_pieces(), self.state.get_enemy_pieces(), self.state.get_ratio_box(), self.state.get_depth()])
+        self.history.append([self.state.get_pieces(), self.state.get_enemy_pieces(
+        ), self.state.get_ratio_box(), self.state.get_depth()])
         if self.state.is_done():
             if self.state.is_lose():
                 self.human_match_result[self.play_cnt - 1] = -1
@@ -115,7 +117,7 @@ class GameUI(tk.Frame):
             return
 
         # 次の状態の取得
-        self.state = self.state.next(action)
+        self.state = self.state.next(action, np.random.rand())
         self.on_draw()
 
         # AIのターン (人間同士で戦う場合コメントアウトにする)
@@ -123,7 +125,8 @@ class GameUI(tk.Frame):
 
     def turn_of_ai(self):
         """AIのターン"""
-        self.history.append([self.state.get_pieces(), self.state.get_enemy_pieces(), self.state.get_ratio_box(), self.state.get_depth()])
+        self.history.append([self.state.get_pieces(), self.state.get_enemy_pieces(
+        ), self.state.get_ratio_box(), self.state.get_depth()])
         # ゲーム終了時
         if self.state.is_done():
             return
@@ -133,7 +136,7 @@ class GameUI(tk.Frame):
         action = pv_mcts_action(self.model, self.state, 0.0)
 
         # 次の状態の取得
-        self.state = self.state.next(action)
+        self.state = self.state.next(action, np.random.rand())
 
         # 前の選択の更新
         self.before_action = action

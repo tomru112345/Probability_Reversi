@@ -67,7 +67,7 @@ def play(model):
         # 行動の取得
         action = np.random.choice(state.legal_actions(), p=scores)
         # 次の状態の取得
-        state = state.next(action)
+        state = state.next(action, np.random.rand())
 
     # 学習データに価値を追加
     value = first_player_value(state)

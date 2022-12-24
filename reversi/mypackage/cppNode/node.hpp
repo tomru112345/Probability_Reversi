@@ -429,14 +429,17 @@ public:
 
     void append_new_child(int action, double policy)
     {
-        // 成功したとき
-        Node next_node = Node(get_model(), get_state().next(action, 0), policy);
+        Node next_node = Node(get_model(), get_state().next(action, rand() % 100), policy);
         this->child_nodes.push_back(next_node);
-        if (action != 16){
-            // 失敗したとき
-            Node next_node = Node(get_model(), get_state().next(action, 1), policy);
-            this->child_nodes.push_back(next_node);
-        }
+        // 成功したとき
+        // Node next_node = Node(get_model(), get_state().next(action, 0), policy);
+        // this->child_nodes.push_back(next_node);
+        // if (action != 16)
+        // {
+        //     // 失敗したとき
+        //     Node next_node = Node(get_model(), get_state().next(action, 1), policy);
+        //     this->child_nodes.push_back(next_node);
+        // }
     }
 
     std::vector<double> nodes_to_scores()

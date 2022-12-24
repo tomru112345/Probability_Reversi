@@ -15,6 +15,14 @@ private:
     bool pass_end = false;
 
 public:
+    State()
+    {
+        pieces[center_idx - balance_idx - 1] = 1;
+        pieces[center_idx + balance_idx] = 1;
+        enemy_pieces[center_idx - balance_idx] = 1;
+        enemy_pieces[center_idx + balance_idx - 1] = 1;
+    }
+
     State(std::vector<int> r)
     {
         pieces[center_idx - balance_idx - 1] = 1;

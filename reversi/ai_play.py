@@ -110,7 +110,7 @@ class AIBattle():
         # 行動の取得, ターンの方策の更新
         action, self.turn_policies = self.next_action(self.state)
         # 次の状態の取得
-        self.state = self.state.next(action)
+        self.state = self.state.next(action, np.random.rand())
 
         # 前の選択の更新
         self.before_action = action
