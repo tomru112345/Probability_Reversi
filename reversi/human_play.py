@@ -5,11 +5,9 @@
 # パッケージのインポート
 # from game import State
 from cppState import State
-# from pv_mcts import pv_mcts_action
-from cppNode import pv_mcts_action
+from pv_mcts import pv_mcts_action
 from keras.models import load_model
 from pathlib import Path
-from threading import Thread
 import tkinter as tk
 import pickle
 from settings import SQUARE, default_ratio_box
@@ -34,6 +32,9 @@ class GameUI(tk.Frame):
 
         # ゲーム状態の生成
         self.state = State(default_ratio_box)
+
+        # PV MCTSで行動選択を行う関数の生成
+        self.next_action = pv_mcts_action(model, 0.0)
 
         # 一つ前の行動選択が何かを保持する
         self.before_action = None
@@ -132,8 +133,7 @@ class GameUI(tk.Frame):
             return
 
         # 行動の取得
-        # action = self.next_action(self.state)
-        action = pv_mcts_action(self.model, self.state, 0.0)
+        action = self.next_action(self.state)
 
         # 次の状態の取得
         self.state = self.state.next(action, np.random.rand())

@@ -10,12 +10,10 @@ from math import sqrt
 from keras.models import load_model
 from pathlib import Path
 import numpy as np
-import watch
 from settings import default_ratio_box
 
 # パラメータの準備
-# PV_EVALUATE_COUNT = 50  # 1推論あたりのシミュレーション回数（本家は1600）
-PV_EVALUATE_COUNT = 12
+PV_EVALUATE_COUNT = 12  # 1推論あたりのシミュレーション回数（本家は1600）
 
 
 def predict(model, state: State):
@@ -39,14 +37,11 @@ def predict(model, state: State):
     return policies, value
 
 
-# @watch.watch
 def nodes_to_scores(nodes):
     """ノードのリストを試行回数のリストに変換"""
     scores = []
     for c in nodes:
         scores.append(c.n)
-
-    # scores = [c.n for c in nodes]
     return scores
 
 
@@ -139,7 +134,6 @@ def pv_mcts_scores(model, state, temperature):
 
 def pv_mcts_action(model, temperature=0):
     """モンテカルロ木探索で行動選択"""
-    # @watch.watch
     def pv_mcts_action(state):
         scores = pv_mcts_scores(model, state, temperature)
         return np.random.choice(a=state.legal_actions(), p=scores)
@@ -166,8 +160,26 @@ def boltzman(xs, temperature):
     return [x / sum(xs) for x in xs]
 
 
+def print_state(state):
+    """文字列表示"""
+    ox = (u'\u25CF', u'\u25CB') if state.is_first_player() else (
+        u'\u25CB', u'\u25CF')
+    str = ''
+    for i in range(16):
+        if state.get_pieces()[i] == 1:
+            str += ox[0]
+        elif state.get_enemy_pieces()[i] == 1:
+            str += ox[1]
+        else:
+            str += '-'
+        if i % 4 == 3:
+            str += '\n'
+    print(str)
+
+
 # 動作確認
 if __name__ == '__main__':
+    np.random.seed(seed=32)
     # モデルの読み込み
     path = sorted(Path(f'./model/').glob('*.h5'))[-1]
     model = load_model(str(path))
@@ -190,4 +202,5 @@ if __name__ == '__main__':
         state = state.next(action, np.random.rand())
 
         # 文字列表示
-        print(state)
+        # print(state)
+        print_state(state)

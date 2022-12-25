@@ -14,7 +14,6 @@ import os
 # パラメータの準備
 DN_FILTERS = 128  # 畳み込み層のカーネル数（本家は256）
 DN_RESIDUAL_NUM = 16  # 残差ブロックの数（本家は19）
-# DN_INPUT_SHAPE = (SQUARE, SQUARE, 2)
 DN_INPUT_SHAPE = (SQUARE, SQUARE, 3)  # 入力シェイプ
 DN_OUTPUT_SIZE = SQUARE * SQUARE + 1  # 行動数(配置先(6*6)+パス(1))
 
@@ -42,8 +41,7 @@ def residual_block():
 
 def dual_network():
     """デュアルネットワークの作成"""
-    # モデル作成済みの場合は無処理
-    if os.path.exists(f'./model/best.h5'):
+    if os.path.exists(f'./model/best.h5'):  # モデル作成済みの場合は無処理
         return
 
     # 入力層

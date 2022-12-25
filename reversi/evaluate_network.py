@@ -6,8 +6,7 @@
 import numpy as np
 # from game import State
 from cppState import State
-# from pv_mcts import pv_mcts_action
-from cppNode import pv_mcts_action
+from pv_mcts import pv_mcts_action
 from keras.models import load_model
 from keras import backend as K
 from shutil import copy
@@ -15,8 +14,7 @@ from settings import default_ratio_box
 
 
 # パラメータの準備
-# EN_GAME_COUNT = 10  # 1評価あたりのゲーム数（本家は400）
-EN_GAME_COUNT = 50
+EN_GAME_COUNT = 50  # 1評価あたりのゲーム数（本家は400）
 EN_TEMPERATURE = 1.0  # ボルツマン分布の温度
 
 
@@ -28,7 +26,7 @@ def first_player_point(ended_state: State):
     return 0.5
 
 
-def play(model0, model1, EN_TEMPERATURE):
+def play(next_actions: int):
     """1ゲームの実行"""
     # 状態の生成
     state = State(default_ratio_box)
@@ -39,11 +37,10 @@ def play(model0, model1, EN_TEMPERATURE):
         if state.is_done():
             break
 
-        # 行動の取得
-        if state.is_first_player():
-            action = pv_mcts_action(model0, state, EN_TEMPERATURE)
-        else:
-            action = pv_mcts_action(model1, state, EN_TEMPERATURE)
+        next_action = next_actions[0] if state.is_first_player(
+        ) else next_actions[1]
+
+        action: int = next_action(state)
 
         # 次の状態の取得
         state = state.next(action, np.random.rand())
@@ -67,14 +64,19 @@ def evaluate_network():
     # ベストプレイヤーのモデルの読み込み
     model1 = load_model(f'./model/best.h5')
 
+    # PV MCTSで行動選択を行う関数の生成
+    next_action0 = pv_mcts_action(model0, EN_TEMPERATURE)
+    next_action1 = pv_mcts_action(model1, EN_TEMPERATURE)
+    next_actions = (next_action0, next_action1)
+
     # 複数回の対戦を繰り返す
     total_point = 0
     for i in range(EN_GAME_COUNT):
         # 1ゲームの実行
         if i % 2 == 0:
-            total_point += play(model0, model1, EN_TEMPERATURE)
+            total_point += play(next_actions)
         else:
-            total_point += 1 - play(model1, model0, EN_TEMPERATURE)
+            total_point += 1 - play(list(reversed(next_actions)))
 
         # 出力
         print('\rEvaluate {}/{}'.format(i + 1, EN_GAME_COUNT), end='')
@@ -89,8 +91,7 @@ def evaluate_network():
     del model0
     del model1
 
-    # ベストプレイヤーの交代
-    if average_point > 0.5:
+    if average_point > 0.5:  # ベストプレイヤーの交代
         update_best_player()
         return True
     else:

@@ -564,7 +564,6 @@ std::vector<double> boltzman(std::vector<double> xs, double temperature)
 
 std::vector<double> pv_mcts_scores(pybind11::object model, State state, double temperature)
 {
-
     Node root_node = Node(model, state, 0);
     std::vector<double> scores;
     for (int i = 0; i < PV_EVALUATE_COUNT; i++)
