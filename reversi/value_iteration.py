@@ -21,8 +21,7 @@ def write_data(history):
 
 def load_data():
     """学習データの読み込み"""
-    history_path = sorted(
-        Path(f'./value_iteration_data/').glob('*.history'))[-1]
+    history_path = Path(f'./value_iteration_data/{p}.history')
     with history_path.open(mode='rb') as f:
         return pickle.load(f)
 
@@ -234,7 +233,7 @@ def guess():
     return V, pi
 
 
-def one_game(black_win, white_win, first_ai=True):
+def one_game(black_win, white_win, draw, first_ai=True):
     state = State(default_ratio_box)
     # ゲーム終了までループ
     while True:
@@ -245,11 +244,16 @@ def one_game(black_win, white_win, first_ai=True):
                     black_win += 1
                 elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
                     white_win += 1
+                else:
+                    draw += 1
+
             else:
                 if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
                     white_win += 1
                 elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
                     black_win += 1
+                else:
+                    draw += 1
             break
 
         # 行動の取得
@@ -264,7 +268,7 @@ def one_game(black_win, white_win, first_ai=True):
 
             # 次の状態の取得
         state = state.next(action, np.random.rand())
-    return (black_win, white_win)
+    return (black_win, white_win, draw)
 
 
 def play(V=None, pi=None, board_idx_dict=None, n=100, bisible=False):
@@ -272,21 +276,24 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, bisible=False):
     for _ in range(1):
         black_win = 0
         white_win = 0
+        draw = 0
         for _ in range(n):
-            black_win, white_win = one_game(
-                black_win, white_win, first_ai=True)
+            black_win, white_win, draw = one_game(
+                black_win, white_win, draw, first_ai=True)
 
-        print(f"[optimal vs randam] {black_win} : {white_win}")
+        print(f"[optimal vs randam] {black_win} : {white_win} : {draw}")
 
         black_win = 0
         white_win = 0
+        draw = 0
         for _ in range(n):
-            black_win, white_win = one_game(
-                black_win, white_win, first_ai=False)
-        print(f"[randam vs optimal] {black_win} : {white_win}")
+            black_win, white_win, draw = one_game(
+                black_win, white_win, draw, first_ai=False)
+        print(f"[randam vs optimal] {black_win} : {white_win} : {draw}")
 
         black_win = 0
         white_win = 0
+        draw = 0
         for _ in range(n):
             state = State(default_ratio_box)
             # ゲーム終了までループ
@@ -298,11 +305,15 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, bisible=False):
                             black_win += 1
                         elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
                             white_win += 1
+                        else:
+                            draw += 1
                     else:
                         if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
                             white_win += 1
                         elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
                             black_win += 1
+                        else:
+                            draw += 1
                     break
 
                 # 行動の取得
@@ -312,17 +323,17 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, bisible=False):
                 state = state.next(action, set_ratio=np.random.rand())
                 # print(state)
 
-        print(f"[optimal vs optimal] {black_win} : {white_win}")
+        print(f"[optimal vs optimal] {black_win} : {white_win} : {draw}")
 
 
 # 動作確認
 if __name__ == '__main__':
-    state = State()
-    search(state=state)
-    print()
-    del state
-    V, pi = guess()
-    write_data([V, pi, board_idx_dict])
+    # state = State()
+    # search(state=state)
+    # print()
+    # del state
+    # V, pi = guess()
+    # write_data([V, pi, board_idx_dict])
     history = load_data()
     V = history[0]
     pi = history[1]
