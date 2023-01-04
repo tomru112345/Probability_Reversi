@@ -1,3 +1,8 @@
+# ====================
+# 最適方策の作成 (価値反復法ベース)
+# ====================
+
+# パッケージのインポート
 from game import State, random_action
 from settings import default_ratio_box, p
 import numpy as np
@@ -13,17 +18,10 @@ sys.setrecursionlimit(10 ** 9)
 def write_data(history):
     """学習データの保存"""
     now = datetime.now()
-    os.makedirs(f'./value_iteration_data/', exist_ok=True)  # フォルダがない時は生成
-    path = './value_iteration_data/{}.history'.format(p)
+    os.makedirs(f'./optimal_policy/', exist_ok=True)  # フォルダがない時は生成
+    path = './optimal_policy/{}.history'.format(p)
     with open(path, mode='wb') as f:
         pickle.dump(history, f)
-
-
-def load_data():
-    """学習データの読み込み"""
-    history_path = Path(f'./value_iteration_data/{p}.history')
-    with history_path.open(mode='rb') as f:
-        return pickle.load(f)
 
 
 def reward(state: State, next_state: State):
@@ -233,109 +231,11 @@ def guess():
     return V, pi
 
 
-def one_game(black_win, white_win, draw, first_ai=True):
-    state = State(default_ratio_box)
-    # ゲーム終了までループ
-    while True:
-        # ゲーム終了時
-        if state.is_done():
-            if state.is_first_player():
-                if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
-                    black_win += 1
-                elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
-                    white_win += 1
-                else:
-                    draw += 1
-
-            else:
-                if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
-                    white_win += 1
-                elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
-                    black_win += 1
-                else:
-                    draw += 1
-            break
-
-        # 行動の取得
-        actions = [np.random.choice(state.legal_actions(), p=pi[board_idx_dict[(tuple(state.pieces), tuple(
-            state.enemy_pieces), state.depth % 2, state.pass_end)]]), random_action(state)]
-        if not first_ai:
-            actions.reverse()
-        if state.is_first_player():
-            action = actions[0]
-        else:
-            action = actions[1]
-
-            # 次の状態の取得
-        state = state.next(action, np.random.rand())
-    return (black_win, white_win, draw)
-
-
-def play(V=None, pi=None, board_idx_dict=None, n=100, bisible=False):
-    np.random.seed(seed=32)
-    for _ in range(1):
-        black_win = 0
-        white_win = 0
-        draw = 0
-        for _ in range(n):
-            black_win, white_win, draw = one_game(
-                black_win, white_win, draw, first_ai=True)
-
-        print(f"[optimal vs randam] {black_win} : {white_win} : {draw}")
-
-        black_win = 0
-        white_win = 0
-        draw = 0
-        for _ in range(n):
-            black_win, white_win, draw = one_game(
-                black_win, white_win, draw, first_ai=False)
-        print(f"[randam vs optimal] {black_win} : {white_win} : {draw}")
-
-        black_win = 0
-        white_win = 0
-        draw = 0
-        for _ in range(n):
-            state = State(default_ratio_box)
-            # ゲーム終了までループ
-            while True:
-                # ゲーム終了時
-                if state.is_done():
-                    if state.is_first_player():
-                        if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
-                            black_win += 1
-                        elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
-                            white_win += 1
-                        else:
-                            draw += 1
-                    else:
-                        if state.piece_count(state.pieces) > state.piece_count(state.enemy_pieces):
-                            white_win += 1
-                        elif state.piece_count(state.pieces) < state.piece_count(state.enemy_pieces):
-                            black_win += 1
-                        else:
-                            draw += 1
-                    break
-
-                # 行動の取得
-                action = np.random.choice(state.legal_actions(), p=pi[board_idx_dict[(
-                    tuple(state.pieces), tuple(state.enemy_pieces), state.depth % 2, state.pass_end)]])
-                # 次の状態の取得
-                state = state.next(action, set_ratio=np.random.rand())
-                # print(state)
-
-        print(f"[optimal vs optimal] {black_win} : {white_win} : {draw}")
-
-
 # 動作確認
 if __name__ == '__main__':
-    # state = State()
-    # search(state=state)
-    # print()
-    # del state
-    # V, pi = guess()
-    # write_data([V, pi, board_idx_dict])
-    history = load_data()
-    V = history[0]
-    pi = history[1]
-    board_idx_dict = history[2]
-    play(V=V, pi=pi, board_idx_dict=board_idx_dict, n=100000, bisible=False)
+    state = State()
+    search(state=state)
+    print()
+    del state
+    V, pi = guess()
+    write_data([V, pi, board_idx_dict])

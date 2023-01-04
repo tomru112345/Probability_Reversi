@@ -1,6 +1,7 @@
 # ====================
 # AIとAIの対戦
 # ====================
+
 # パッケージのインポート
 # from game import State
 from cppState import State
@@ -132,9 +133,11 @@ class AIBattle():
         """現状の石の個数の表示"""
         if self.state.is_first_player():
             black_pieces = self.state.piece_count(self.state.get_pieces())
-            white_pieces = self.state.piece_count(self.state.get_enemy_pieces())
+            white_pieces = self.state.piece_count(
+                self.state.get_enemy_pieces())
         else:
-            black_pieces = self.state.piece_count(self.state.get_enemy_pieces())
+            black_pieces = self.state.piece_count(
+                self.state.get_enemy_pieces())
             white_pieces = self.state.piece_count(self.state.get_pieces())
         self.black_pieces = black_pieces
         self.white_pieces = white_pieces
