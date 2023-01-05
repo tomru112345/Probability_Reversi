@@ -3,8 +3,7 @@
 # ====================
 
 # パッケージのインポート
-from game import random_action
-from cppState import State
+from game import State, random_action
 from pv_mcts import pv_mcts_scores
 from settings import default_ratio_box, p, file1
 import numpy as np

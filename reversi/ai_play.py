@@ -3,8 +3,8 @@
 # ====================
 
 # パッケージのインポート
-# from game import State
-from cppState import State
+from game import State
+# from cppState import State
 from pv_mcts import pv_mcts_action_policy
 from datetime import datetime
 import settings

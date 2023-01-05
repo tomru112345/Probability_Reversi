@@ -3,8 +3,8 @@
 # ====================
 
 # パッケージのインポート
-# from game import State
-from cppState import State
+from game import State
+# from cppState import State
 from pv_mcts import pv_mcts_scores
 from dual_network import DN_OUTPUT_SIZE
 from datetime import datetime

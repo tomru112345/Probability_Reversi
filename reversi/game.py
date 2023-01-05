@@ -44,6 +44,21 @@ class State:
             # 確率値の初期化
             self.ratio_box = default_ratio_box
 
+    def get_pieces(self):
+        return self.pieces
+    
+    def get_enemy_pieces(self):
+        return self.enemy_pieces
+
+    def get_ratio_box(self):
+        return self.ratio_box
+
+    def get_depth(self):
+        return self.depth
+
+    def get_pass_end(self):
+        return self.pass_end
+
     def piece_count(self, pieces):
         """石の数の取得"""
         count = 0

@@ -3,14 +3,14 @@
 # ====================
 
 # パッケージのインポート
-# from game import State
-from cppState import State
+from game import State
+# from cppState import State
 from pv_mcts import pv_mcts_action
 from keras.models import load_model
 from pathlib import Path
 import tkinter as tk
 import pickle
-from settings import SQUARE, default_ratio_box
+from settings import SQUARE, default_ratio_box, file1
 import os
 import numpy as np
 from datetime import datetime
@@ -18,7 +18,7 @@ from datetime import datetime
 # tensorflow の warning の設定
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # ベストプレイヤーのモデルの読み込み
-model = load_model(f'./model/best.h5')
+model = load_model(file1)
 
 
 class GameUI(tk.Frame):

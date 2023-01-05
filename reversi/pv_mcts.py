@@ -3,8 +3,8 @@
 # ====================
 
 # パッケージのインポート
-# from game import State
-from cppState import State
+from game import State
+# from cppState import State
 from dual_network import DN_INPUT_SHAPE, DN_OUTPUT_SIZE
 from math import sqrt
 from keras.models import load_model

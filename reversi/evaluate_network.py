@@ -4,8 +4,8 @@
 
 # パッケージのインポート
 import numpy as np
-# from game import State
-from cppState import State
+from game import State
+# from cppState import State
 from pv_mcts import pv_mcts_action
 from keras.models import load_model
 from keras import backend as K

@@ -3,7 +3,8 @@
 # ====================
 
 # パッケージのインポート
-from cppState import State
+from game import State
+# from cppState import State
 from pv_mcts import pv_mcts_scores
 import settings
 from settings import SQUARE, default_ratio_box, p, file1
