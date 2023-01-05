@@ -64,7 +64,6 @@ def play(V=None, pi=None, board_idx_dict=None, model=model, first_optimal=True):
     draw = 0
     # ターン数
     turn_num = 1
-
     # ゲーム終了までループ
     while True:
         # ゲーム終了時
@@ -92,18 +91,40 @@ def play(V=None, pi=None, board_idx_dict=None, model=model, first_optimal=True):
         ]
 
         tags = ['optimal', 'ai']
-
         if not first_optimal:
             pi_s.reverse()
             tags.reverse()
 
         if state.is_first_player():
-            print(pi_s[0])
-            action = np.random.choice(state.legal_actions(), p=pi_s[0])
-            # ヒートマップの作成
-            create_color_map(state.legal_actions(), pi_s[0], turn_num, tags[0])
+            if tags[0] == 'ai':
+                print("ai: {}".format(pi_s[0]))
+                print("optimal: {}".format(pi_s[1]))
+                print()
+            else:
+                print("ai: {}".format(pi_s[1]))
+                print("optimal: {}".format(pi_s[0]))
+                print()
+
+            if tags[0] == 'optimal' and turn_num == 1:  # AI との初動を合わせる
+                action = state.legal_actions()[1]
+                # ヒートマップの作成
+                create_color_map(state.legal_actions(), [
+                                 0.0, 1.0, 0.0, 0.0], turn_num, tags[0])
+            else:
+                action = np.random.choice(state.legal_actions(), p=pi_s[0])
+                # ヒートマップの作成
+                create_color_map(state.legal_actions(),
+                                 pi_s[0], turn_num, tags[0])
         else:
-            print(pi_s[1])
+            if tags[1] == 'ai':
+                print("ai: {}".format(pi_s[1]))
+                print("optimal: {}".format(pi_s[0]))
+                print()
+            else:
+                print("ai: {}".format(pi_s[0]))
+                print("optimal: {}".format(pi_s[1]))
+                print()
+
             action = np.random.choice(state.legal_actions(), p=pi_s[1])
             # ヒートマップの作成
             create_color_map(state.legal_actions(), pi_s[1], turn_num, tags[1])

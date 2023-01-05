@@ -196,4 +196,4 @@ if __name__ == '__main__':
     pi = history[1]
     board_idx_dict = history[2]
     play(V=V, pi=pi, board_idx_dict=board_idx_dict,
-         n=100, model=model, bisible=False)
+         n=10000, model=model, bisible=False)
