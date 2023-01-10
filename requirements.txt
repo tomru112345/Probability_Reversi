@@ -5,4 +5,4 @@ tensorflow-gpu==2.8.0
 protobuf==3.20.0
 torch==1.11.0
 pybind11==2.10.1
-
+seaborn==0.12.2
