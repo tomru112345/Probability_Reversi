@@ -15,10 +15,10 @@ def create_ratiobox_set_value(p: int = 10):
             ratio_num += 1
 
 
-p = 1
+p = 3
 
 create_ratiobox_set_value(p)
 
 # ai 同士の対戦用ファイルパス
-file1 = f'./model/best_1.h5'
+file1 = f'./model/best_{p}.h5'
 file2 = f'./model/best.h5'

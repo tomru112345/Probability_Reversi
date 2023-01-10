@@ -120,7 +120,7 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, model=None, bisible=False)
         for _ in range(n):
             black_win, white_win, draw = one_game(
                 black_win, white_win, draw, first_optimal=True)
-            print("\r[optimal vs randam] {} : {} : {}".format(
+            print("\r[optimal vs randam] {} & {} & {}".format(
                 black_win, white_win, draw), end='')
         print()
 
@@ -130,7 +130,7 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, model=None, bisible=False)
         for _ in range(n):
             black_win, white_win, draw = one_game(
                 black_win, white_win, draw, first_optimal=False)
-            print("\r[randam vs optimal] {} : {} : {}".format(
+            print("\r[randam vs optimal] {} & {} & {}".format(
                 black_win, white_win, draw), end='')
         print()
 
@@ -166,7 +166,7 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, model=None, bisible=False)
                 state = state.next(action, np.random.rand())
                 # print(state)
 
-        print(f"[optimal vs optimal] {black_win} : {white_win} : {draw}")
+        print(f"[optimal vs optimal] {black_win} & {white_win} & {draw}")
     else:
         black_win = 0
         white_win = 0
@@ -174,7 +174,7 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, model=None, bisible=False)
         for _ in range(n):
             black_win, white_win, draw = one_game_vs_ai(
                 black_win, white_win, draw, first_optimal=True)
-            print("\r[optimal vs ai] {} : {} : {}".format(
+            print("\r[optimal vs ai] {} & {} & {}".format(
                 black_win, white_win, draw), end='')
         print()
 
@@ -184,12 +184,13 @@ def play(V=None, pi=None, board_idx_dict=None, n=100, model=None, bisible=False)
         for _ in range(n):
             black_win, white_win, draw = one_game_vs_ai(
                 black_win, white_win, draw, first_optimal=False)
-            print("\r[ai vs optimal] {} : {} : {}".format(
+            print("\r[ai vs optimal] {} & {} & {}".format(
                 black_win, white_win, draw), end='')
         print()
 
 
 if __name__ == '__main__':
+    print(file1)
     history = load_data()
     V = history[0]
     pi = history[1]

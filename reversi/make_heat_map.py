@@ -25,7 +25,7 @@ os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 # AIのベストプレイヤーのモデルの読み込み
 model = load_model(file1)
 
-first_optimal = True
+first_optimal = False
 if first_optimal:
     save_path = f'./heat_map/{p}/first_optimal/'
 else:
@@ -51,6 +51,16 @@ def create_color_map(action_list, pi, turn_num, tag):
     plt.figure()
     plt.imshow(turn_policies_np, cmap=plt.cm.jet,
                interpolation='nearest', vmin=0, vmax=1)
+    plt.axis("off")
+    # Loop over data dimensions and create text annotations.
+    for i in range(4):
+        for j in range(4):
+            if 0.3 < turn_policies_np[i, j] < 0.8:
+                set_color = "black"
+            else:
+                set_color = "white"
+            plt.text(j, i, format(turn_policies_np[i, j], '.5f'),
+                     ha="center", va="center", color=set_color)
     plt.title('{} [{}]'.format(turn_num, tag))
     plt.colorbar()
     plt.savefig(save_path + '{}_{}.png'.format(turn_num, tag))
@@ -97,14 +107,14 @@ def play(V=None, pi=None, board_idx_dict=None, model=model, first_optimal=True):
             tags.reverse()
 
         if state.is_first_player():
-            if tags[0] == 'ai':
-                print("ai: {}".format(pi_s[0]))
-                print("optimal: {}".format(pi_s[1]))
-                print()
-            else:
-                print("ai: {}".format(pi_s[1]))
-                print("optimal: {}".format(pi_s[0]))
-                print()
+            # if tags[0] == 'ai':
+            #     print("ai: {}".format(pi_s[0]))
+            #     print("optimal: {}".format(pi_s[1]))
+            #     print()
+            # else:
+            #     print("ai: {}".format(pi_s[1]))
+            #     print("optimal: {}".format(pi_s[0]))
+            #     print()
 
             if tags[0] == 'optimal' and turn_num == 1:  # AI との初動を合わせる
                 action = state.legal_actions()[1]
@@ -117,14 +127,14 @@ def play(V=None, pi=None, board_idx_dict=None, model=model, first_optimal=True):
                 create_color_map(state.legal_actions(),
                                  pi_s[0], turn_num, tags[0])
         else:
-            if tags[1] == 'ai':
-                print("ai: {}".format(pi_s[1]))
-                print("optimal: {}".format(pi_s[0]))
-                print()
-            else:
-                print("ai: {}".format(pi_s[0]))
-                print("optimal: {}".format(pi_s[1]))
-                print()
+            # if tags[1] == 'ai':
+            #     print("ai: {}".format(pi_s[1]))
+            #     print("optimal: {}".format(pi_s[0]))
+            #     print()
+            # else:
+            #     print("ai: {}".format(pi_s[0]))
+            #     print("optimal: {}".format(pi_s[1]))
+            #     print()
 
             action = np.random.choice(state.legal_actions(), p=pi_s[1])
             # ヒートマップの作成
