@@ -25,11 +25,8 @@ os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
 # AIのベストプレイヤーのモデルの読み込み
 model = load_model(file1)
 
-first_optimal = False
-if first_optimal:
-    save_path = f'./heat_map/{p}/first_optimal/'
-else:
-    save_path = f'./heat_map/{p}/first_ai/'
+is_optimal = False
+save_path = f'./heat_map/'
 os.makedirs(save_path, exist_ok=True)  # フォルダがない時は生成
 
 
@@ -40,7 +37,7 @@ def load_optimal_data():
         return pickle.load(f)
 
 
-def create_color_map(action_list, pi, turn_num, tag):
+def create_color_map(action_list, pi, tag):
     # ヒートマップを作成表示
     heat_map_list = [0.0] * (SQUARE*SQUARE)
     for i in range(SQUARE*SQUARE):
@@ -59,94 +56,27 @@ def create_color_map(action_list, pi, turn_num, tag):
                 set_color = "black"
             else:
                 set_color = "white"
-            plt.text(j, i, format(turn_policies_np[i, j], '.5f'),
-                     ha="center", va="center", color=set_color)
-    plt.title('{} [{}]'.format(turn_num, tag))
+            plt.text(j, i, format(turn_policies_np[i, j], '.3f'),
+                     ha="center", va="center", color=set_color, fontsize=20)
+    plt.title('{} [{}]'.format(p, tag), fontsize=20)
     plt.colorbar()
-    plt.savefig(save_path + '{}_{}.png'.format(turn_num, tag))
+    plt.savefig(save_path + '{}_{}.png'.format(p, tag))
     plt.close()
 
 
-def play(V=None, pi=None, board_idx_dict=None, model=model, first_optimal=True):
+def play(V=None, pi=None, board_idx_dict=None, model=model, is_optimal=True):
     np.random.seed(seed=32)
-    state = State(default_ratio_box)
-    black_win = 0
-    white_win = 0
-    draw = 0
-    # ターン数
-    turn_num = 1
-    # ゲーム終了までループ
-    while True:
-        # ゲーム終了時
-        if state.is_done():
-            if state.is_first_player():
-                if state.piece_count(state.get_pieces()) > state.piece_count(state.get_enemy_pieces()):
-                    black_win += 1
-                elif state.piece_count(state.get_pieces()) < state.piece_count(state.get_enemy_pieces()):
-                    white_win += 1
-                else:
-                    draw += 1
-            else:
-                if state.piece_count(state.get_pieces()) > state.piece_count(state.get_enemy_pieces()):
-                    white_win += 1
-                elif state.piece_count(state.get_pieces()) < state.piece_count(state.get_enemy_pieces()):
-                    black_win += 1
-                else:
-                    draw += 1
-            break
-
-        pi_s = [
-            pi[board_idx_dict[(tuple(state.get_pieces()), tuple(
-                state.get_enemy_pieces()), state.get_depth() % 2, state.get_pass_end())]],
-            pv_mcts_scores(model, state, 1.0)
-        ]
-
-        tags = ['optimal', 'ai']
-        if not first_optimal:
-            pi_s.reverse()
-            tags.reverse()
-
-        if state.is_first_player():
-            # if tags[0] == 'ai':
-            #     print("ai: {}".format(pi_s[0]))
-            #     print("optimal: {}".format(pi_s[1]))
-            #     print()
-            # else:
-            #     print("ai: {}".format(pi_s[1]))
-            #     print("optimal: {}".format(pi_s[0]))
-            #     print()
-
-            if tags[0] == 'optimal' and turn_num == 1:  # AI との初動を合わせる
-                action = state.legal_actions()[1]
-                # ヒートマップの作成
-                create_color_map(state.legal_actions(), [
-                                 0.0, 1.0, 0.0, 0.0], turn_num, tags[0])
-            else:
-                action = np.random.choice(state.legal_actions(), p=pi_s[0])
-                # ヒートマップの作成
-                create_color_map(state.legal_actions(),
-                                 pi_s[0], turn_num, tags[0])
-        else:
-            # if tags[1] == 'ai':
-            #     print("ai: {}".format(pi_s[1]))
-            #     print("optimal: {}".format(pi_s[0]))
-            #     print()
-            # else:
-            #     print("ai: {}".format(pi_s[0]))
-            #     print("optimal: {}".format(pi_s[1]))
-            #     print()
-
-            action = np.random.choice(state.legal_actions(), p=pi_s[1])
-            # ヒートマップの作成
-            create_color_map(state.legal_actions(), pi_s[1], turn_num, tags[1])
-
-        # 次の状態の取得
-        state = state.next(action, np.random.rand())
-
-        # ターン数の更新
-        turn_num += 1
-
-    print(f"{black_win} : {white_win} : {draw}")
+    state = State(pieces=[0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0,
+                  0, 0, 0], enemy_pieces=[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], ratio_box=default_ratio_box, depth=1)
+    pi_s = [pi[board_idx_dict[(tuple(state.get_pieces()), tuple(state.get_enemy_pieces(
+    )), state.get_depth() % 2, state.get_pass_end())]], pv_mcts_scores(model, state, 1.0)]
+    tags = ['optimal', 'ai']
+    if not is_optimal:
+        pi_s.reverse()
+        tags.reverse()
+    print(state)
+    # ヒートマップの作成
+    create_color_map(state.legal_actions(), pi_s[0], tags[0])
 
 
 if __name__ == '__main__':
@@ -155,4 +85,4 @@ if __name__ == '__main__':
     pi = history[1]
     board_idx_dict = history[2]
     play(V=V, pi=pi, board_idx_dict=board_idx_dict,
-         model=model, first_optimal=first_optimal)
+         model=model, is_optimal=is_optimal)
