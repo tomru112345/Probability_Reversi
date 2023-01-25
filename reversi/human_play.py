@@ -10,38 +10,39 @@ from keras.models import load_model
 from pathlib import Path
 import tkinter as tk
 import pickle
-from settings import SQUARE, default_ratio_box, file1
+from settings import SQUARE, create_ratiobox_set_value
 import os
 import numpy as np
 from datetime import datetime
 
 # tensorflow の warning の設定
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-# ベストプレイヤーのモデルの読み込み
-model = load_model(file1)
 
 
 class GameUI(tk.Frame):
     """ゲームUIの定義"""
 
-    def __init__(self, master=None, model=None, first_ai=False):
+    def __init__(self, master=None, first_ai=False):
         """初期化"""
         tk.Frame.__init__(self, master)
         self.master.title('確率リバーシ')
         self.master.resizable(width=False, height=False)
 
+        # 確率の設定値の保持
+        self.num = 0
         # ゲーム状態の生成
-        self.state = State(default_ratio_box)
-
+        default_ratio_box = create_ratiobox_set_value(self.num)
+        self.state = State(ratio_box=default_ratio_box)
+        # ベストプレイヤーのモデルの読み込み
+        self.model = load_model(f'./model/600/best_{self.num}.h5')
         # PV MCTSで行動選択を行う関数の生成
-        self.next_action = pv_mcts_action(model, 0.0)
+        self.next_action = pv_mcts_action(self.model, 0.0)
 
         # 一つ前の行動選択が何かを保持する
         self.before_action = None
-        self.model = model
 
         self.history = []
-        self.human_match_result = [0] * 10
+        self.human_match_result = [0] * 20
 
         self.play_cnt = 1
 
@@ -51,6 +52,10 @@ class GameUI(tk.Frame):
         self.c.bind('<Button-1>', self.turn_of_human)
         self.c.pack()
 
+        self.ai_win_num = 0
+        self.human_win_num = 0
+        print(f"# 確率の設定値 {self.num}")
+
         # AI が先行かどうか
         self.first_ai = first_ai
         if self.first_ai:
@@ -59,10 +64,12 @@ class GameUI(tk.Frame):
         # 描画の更新
         self.on_draw()
 
-    def reset(self):
+    def reset(self, num):
         """リセット関数"""
         # 一つ前の行動選択が何かを保持する
         self.before_action = None
+        default_ratio_box = create_ratiobox_set_value(num)
+        self.state = State(ratio_box=default_ratio_box)
         # AI が先行かどうか
         if self.first_ai:
             self.turn_of_ai()
@@ -75,23 +82,51 @@ class GameUI(tk.Frame):
         # ゲーム終了時
         self.history.append([self.state.get_pieces(), self.state.get_enemy_pieces(
         ), self.state.get_ratio_box(), self.state.get_depth()])
+
         if self.state.is_done():
             if self.state.is_lose():
                 self.human_match_result[self.play_cnt - 1] = -1
+                self.ai_win_num += 1
             elif self.state.is_draw():
                 self.human_match_result[self.play_cnt - 1] = 0
             else:
                 self.human_match_result[self.play_cnt - 1] = 1
-            self.state = State(default_ratio_box)
+                self.human_win_num += 1
+
             self.play_cnt += 1
-            if self.play_cnt == 6:
+            if self.play_cnt == 11:  # 先攻後攻入れ替え
+                if (self.first_ai):
+                    print(
+                        f"先攻[ai]: {self.ai_win_num}, 後攻[human]: {self.human_win_num}")
+                else:
+                    print(
+                        f"先攻[human]: {self.human_win_num}, 後攻[ai]: {self.ai_win_num}")
                 self.first_ai = True
-            if self.play_cnt == 11:
-                self.write_data()
-                exit()
-            self.reset()
+                self.ai_win_num = 0
+                self.human_win_num = 0
+            if self.play_cnt == 21:  # 次の確率の設定値に切り替え
+                self.write_data(self.num)
+                if (self.first_ai):
+                    print(
+                        f"先攻[ai]: {self.ai_win_num}, 後攻[human]: {self.human_win_num}")
+                else:
+                    print(
+                        f"先攻[human]: {self.human_win_num}, 後攻[ai]: {self.ai_win_num}")
+                self.first_ai = False
+                self.ai_win_num = 0
+                self.human_win_num = 0
+                if self.num + 1 == 11:
+                    exit()
+                else:
+                    self.play_cnt = 1
+                    self.num += 1
+                    # ベストプレイヤーのモデルの再読み込み
+                    self.model = load_model(f'./model/600/best_{self.num}.h5')
+                    print(f"# 確率の設定値 {self.num}")
+                    # PV MCTSで行動選択を行う関数の再生成
+                    self.next_action = pv_mcts_action(self.model, 0.0)
+            self.reset(self.num)
             self.on_draw()
-            return
 
         # 先手でない時 (人間同士で戦う場合コメントアウトにする)
         if not self.first_ai and not self.state.is_first_player():
@@ -130,18 +165,19 @@ class GameUI(tk.Frame):
         ), self.state.get_ratio_box(), self.state.get_depth()])
         # ゲーム終了時
         if self.state.is_done():
-            return
+            self.state = self.state.next(16, 1)
+            pass
+        else:
+            # 行動の取得
+            action = self.next_action(self.state)
 
-        # 行動の取得
-        action = self.next_action(self.state)
+            # 次の状態の取得
+            self.state = self.state.next(action, np.random.rand())
 
-        # 次の状態の取得
-        self.state = self.state.next(action, np.random.rand())
+            # 前の選択の更新
+            self.before_action = action
 
-        # 前の選択の更新
-        self.before_action = action
-
-        self.on_draw()
+            self.on_draw()
 
     def draw_piece(self, index, first_player):
         """石の描画"""
@@ -170,22 +206,26 @@ class GameUI(tk.Frame):
             if black_pieces > white_pieces:
                 self.c.create_text(
                     x, y, text=f'勝利', fill="#FFFFFF", font=('Yu Gothic UI', 100), anchor="center")
+                self.human_win_num += 1
             elif black_pieces == white_pieces:
                 self.c.create_text(
                     x, y, text=f'引き分け', fill="#FFFFFF", font=('Yu Gothic UI', 100), anchor="center")
             else:
                 self.c.create_text(
                     x, y, text=f'敗北', fill="#FFFFFF", font=('Yu Gothic UI', 100), anchor="center")
+                self.ai_win_num += 1
         else:
             if black_pieces < white_pieces:
                 self.c.create_text(
                     x, y, text=f'勝利', fill="#FFFFFF", font=('Yu Gothic UI', 100), anchor="center")
+                self.human_win_num += 1
             elif black_pieces == white_pieces:
                 self.c.create_text(
                     x, y, text=f'引き分け', fill="#FFFFFF", font=('Yu Gothic UI', 100), anchor="center")
             else:
                 self.c.create_text(
                     x, y, text=f'敗北', fill="#FFFFFF", font=('Yu Gothic UI', 100), anchor="center")
+                self.ai_win_num += 1
 
     def draw_ratio(self, index):
         """確率をマス目に表示"""
@@ -283,12 +323,12 @@ class GameUI(tk.Frame):
 
         self.draw_turn_player()
 
-    def write_data(self):
+    def write_data(self, num):
         """学習データの保存"""
         now = datetime.now()
-        os.makedirs(f'./human_play/', exist_ok=True)  # フォルダがない時は生成
-        path = './human_play/{:04}{:02}{:02}{:02}{:02}{:02}.history'.format(
-            now.year, now.month, now.day, now.hour, now.minute, now.second)
+        os.makedirs(f'./human_play/{num}/', exist_ok=True)  # フォルダがない時は生成
+        path = './human_play/{}/{:04}{:02}{:02}{:02}{:02}{:02}.history'.format(
+            num, now.year, now.month, now.day, now.hour, now.minute, now.second)
         result = [self.history, self.human_match_result]
         with open(path, mode='wb') as f:
             pickle.dump(result, f)
@@ -297,6 +337,6 @@ class GameUI(tk.Frame):
 # 動作確認
 if __name__ == '__main__':
     # ゲームUIの実行
-    f = GameUI(model=model)
+    f = GameUI()
     f.pack()
     f.mainloop()

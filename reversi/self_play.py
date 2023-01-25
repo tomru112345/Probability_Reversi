@@ -16,7 +16,8 @@ import os
 from settings import default_ratio_box
 
 # パラメータの準備
-SP_GAME_COUNT = 300  # セルフプレイを行うゲーム数（本家は25000）
+# セルフプレイを行うゲーム数（本家は25000）
+SP_GAME_COUNT = 300  # 今回は各確率の設定値ごとに学習をするためこの回数にした(1000 回毎に本当は学習したい)
 SP_TEMPERATURE = 1.0  # ボルツマン分布の温度パラメータ
 
 

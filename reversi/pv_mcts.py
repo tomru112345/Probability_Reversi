@@ -4,7 +4,6 @@
 
 # パッケージのインポート
 from game import State
-# from cppState import State
 from dual_network import DN_INPUT_SHAPE, DN_OUTPUT_SIZE
 from math import sqrt
 from keras.models import load_model
@@ -13,7 +12,8 @@ import numpy as np
 from settings import default_ratio_box
 
 # パラメータの準備
-PV_EVALUATE_COUNT = 12  # 1推論あたりのシミュレーション回数（本家は1600）
+# 1推論あたりのシミュレーション回数（本家は1600）
+PV_EVALUATE_COUNT = 12  # 時間を考慮して 12 回
 
 
 def predict(model, state: State):

@@ -13,11 +13,12 @@ def create_ratiobox_set_value(p: int = 10):
             ratio_num = 3
         else:
             ratio_num += 1
+    return default_ratio_box
 
 
 p = 10
 
-create_ratiobox_set_value(p)
+default_ratio_box = create_ratiobox_set_value(p)
 
 # ai 同士の対戦用ファイルパス
 file1 = f'./model/200/best_{p}.h5'

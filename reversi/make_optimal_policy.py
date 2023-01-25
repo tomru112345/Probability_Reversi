@@ -25,6 +25,7 @@ def write_data(history):
 
 
 def reward(state: State, next_state: State):
+    """報酬関数"""
     if not state.is_done():
         if next_state.is_done():
             if not state.is_first_player():
@@ -56,6 +57,7 @@ state_d = {4: [], 5: [], 6: [], 7: [], 8: [], 9: [],
 
 
 def search(state: State):
+    """全盤面パターンの探索"""
     global all_board, board_idx_dict, cnt
     if not (tuple(state.pieces), tuple(
             state.enemy_pieces), state.depth % 2, state.pass_end) in board_idx_dict:
@@ -88,6 +90,7 @@ def search(state: State):
 
 
 def value_iter_onestep():
+    """価値反復法の 1 ステップ"""
     global all_board, board_idx_dict, cnt
     # # 価値関数の設定
 
@@ -161,6 +164,7 @@ def value_iter_onestep():
 
 
 def value_iter():
+    """価値反復法"""
     return value_iter_onestep()
 
 
@@ -185,6 +189,7 @@ def argmin(d: dict):
 
 
 def greedy_policy(V):
+    """貪欲方策"""
     global all_board, board_idx_dict
     pi = [0] * len(all_board)
     cnt = 0
@@ -226,6 +231,7 @@ def greedy_policy(V):
 
 
 def guess():
+    """最適方策の探索用関数"""
     V = value_iter()
     pi = greedy_policy(V)
     return V, pi
