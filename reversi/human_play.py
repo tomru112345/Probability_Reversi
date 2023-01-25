@@ -115,11 +115,11 @@ class GameUI(tk.Frame):
                 self.first_ai = False
                 self.ai_win_num = 0
                 self.human_win_num = 0
-                if self.num + 1 == 11:
+                if self.num + 5 >= 11:
                     exit()
                 else:
                     self.play_cnt = 1
-                    self.num += 1
+                    self.num += 5
                     # ベストプレイヤーのモデルの再読み込み
                     self.model = load_model(f'./model/600/best_{self.num}.h5')
                     print(f"# 確率の設定値 {self.num}")
