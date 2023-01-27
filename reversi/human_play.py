@@ -232,7 +232,7 @@ class GameUI(tk.Frame):
         x = (index % SQUARE)*100+50
         y = int(index/SQUARE)*100+50
         self.c.create_text(
-            x, y, text=str(self.state.get_ratio_box()[index]), fill="#FF0461", font=('Yu Gothic UI', 15), anchor="center")
+            x, y, text=str(self.state.get_ratio_box()[index]), fill="#FF0461", font=('Yu Gothic UI', 25, 'bold'), anchor="center")
 
     def draw_legal_action(self):
         """合法手を表示"""

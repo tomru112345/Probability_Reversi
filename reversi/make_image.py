@@ -108,7 +108,7 @@ class GameUI(tk.Frame):
         x = (index % SQUARE)*100+50 + 100
         y = int(index/SQUARE)*100+50 + 100
         self.c.create_text(
-            x, y, text=str(self.state.get_ratio_box()[index]), fill="#FF0461", font=('Yu Gothic UI', 50), anchor="center")
+            x, y, text=str(self.state.get_ratio_box()[index]), fill="#FF0461", font=('Yu Gothic UI', 50, 'bold'), anchor="center")
 
     def draw_select_icon(self):
         """どこを選択したか表示"""
@@ -136,9 +136,9 @@ class GameUI(tk.Frame):
                 self.draw_piece(i, not self.state.is_first_player())
 
             self.draw_ratio(i)
-            # 前のターン何を選んだか表示
-            if self.action == i:
-                self.draw_select_icon()
+            # 最適方策を表示
+            # if self.action == i:
+            #     self.draw_select_icon()
 
 
 def main():
@@ -147,6 +147,6 @@ def main():
     f.mainloop()
 
 
-combine_images()
-combine_heat_maps()
-# main()
+# combine_images()
+# combine_heat_maps()
+main()
