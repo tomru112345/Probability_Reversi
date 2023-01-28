@@ -59,15 +59,15 @@ for turn in turns:
 
     if turn:
         # 学習データ(400)(後攻)の勝率
-        ai_400_win = [8386, 750, 5707, 5293, 4442,
+        ai_400_win = [8386, 6848, 5707, 5293, 4442,
                       4501, 3828, 3989, 3572, 3886, 3952]
-        ai_400_lose = [1614, 9084, 3541, 4207, 4883,
+        ai_400_lose = [1614, 2645, 3541, 4207, 4883,
                        5030, 5399, 5419, 5943, 5645, 5629]
     else:
         # 学習データ(400)(先攻)の勝率
-        ai_400_win = [0, 806, 1740, 2309, 3162,
+        ai_400_win = [0, 846, 1740, 2309, 3162,
                       3632, 3846, 4099, 4237, 3871, 4201]
-        ai_400_lose = [10000, 9142, 8077, 7508, 6582,
+        ai_400_lose = [10000, 8982, 8077, 7508, 6582,
                        6080, 5832, 5539, 5362, 5729, 5397]
 
     if turn:
@@ -108,7 +108,7 @@ for turn in turns:
         'gene_1': gene_1,
         'gene_2': gene_2,
         'gene_3': gene_3,
-        # 'gene_4': gene_4,
+        'gene_4': gene_4,
         # 'gene_5': gene_5
     })
 
@@ -118,7 +118,7 @@ for turn in turns:
     ax.plot('x', 'gene_1', data=df, label='最適方策同士', marker='o')
     ax.plot('x', 'gene_2', data=df, label='ランダム方策', marker='o')
     ax.plot('x', 'gene_3', data=df, label='200周学習データ', marker='o')
-    # ax.plot('x', 'gene_4', data=df, label='400周学習データ', marker='o')
+    ax.plot('x', 'gene_4', data=df, label='400周学習データ', marker='o')
     # ax.plot('x', 'gene_5', data=df, label='600周学習データ', marker='o')
     # ax.legend(prop={"family": "MS Gothic"})
     ax.set_xlabel("確率の設定値", fontname="MS Gothic")
@@ -130,6 +130,12 @@ for turn in turns:
     # plt.show()
     save_path = f'./line_graph/'
     os.makedirs(save_path, exist_ok=True)  # フォルダがない時は生成
+    if turn:
+        plt.savefig(save_path + '{}.png'.format("AI_SecondRowWinRate"))
+    else:
+        plt.savefig(save_path + '{}.png'.format("AI_FirstRowWinRate"))
+
+    ax.legend(prop={"family": "MS Gothic"})
     if turn:
         plt.savefig(save_path + '{}.pdf'.format("AI_SecondRowWinRate"))
     else:
