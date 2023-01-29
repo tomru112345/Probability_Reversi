@@ -72,15 +72,15 @@ for turn in turns:
 
     if turn:
         # 学習データ(600)(後攻)の勝率
-        ai_600_win = [9050, 969, 5573, 4986, 4786,
+        ai_600_win = [9050, 1634, 5573, 4986, 4786,
                       4223, 4274, 4048, 3724, 3768, 3967]
-        ai_600_lose = [950, 8883, 3360, 4369, 4714,
+        ai_600_lose = [950, 7990, 3360, 4369, 4714,
                        5122, 5177, 5506, 5841, 5788, 5587]
     else:
         # 学習データ(600)(先攻)の勝率
-        ai_600_win = [0, 948, 1689, 2442, 3254,
+        ai_600_win = [0, 969, 1689, 2442, 3254,
                       3469, 4022, 4142, 4343, 4250, 4210]
-        ai_600_lose = [10000, 8924, 8123, 7351, 6500,
+        ai_600_lose = [10000, 8898, 8123, 7351, 6500,
                        6187, 5609, 5442, 5240, 5364, 5390]
 
     optimal_win_late = [0] * 11
@@ -109,7 +109,7 @@ for turn in turns:
         'gene_2': gene_2,
         'gene_3': gene_3,
         'gene_4': gene_4,
-        # 'gene_5': gene_5
+        'gene_5': gene_5
     })
 
     fig = plt.figure()
@@ -119,7 +119,7 @@ for turn in turns:
     ax.plot('x', 'gene_2', data=df, label='ランダム方策', marker='o')
     ax.plot('x', 'gene_3', data=df, label='200周学習データ', marker='o')
     ax.plot('x', 'gene_4', data=df, label='400周学習データ', marker='o')
-    # ax.plot('x', 'gene_5', data=df, label='600周学習データ', marker='o')
+    ax.plot('x', 'gene_5', data=df, label='600周学習データ', marker='o')
     # ax.legend(prop={"family": "MS Gothic"})
     ax.set_xlabel("確率の設定値", fontname="MS Gothic")
     if turn:

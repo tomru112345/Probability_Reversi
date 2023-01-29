@@ -16,7 +16,7 @@ def create_ratiobox_set_value(p: int = 10):
     return default_ratio_box
 
 
-p = 1
+p = 8
 
 default_ratio_box = create_ratiobox_set_value(p)
 
