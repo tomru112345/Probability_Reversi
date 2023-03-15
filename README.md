@@ -15,6 +15,8 @@ docker run --gpus=all --name reversi-container -it reversi-env:latest /bin/bash
 
 ## C++ の pybind11 用コマンド
 
+C++ コードは現状バグっているので Python での学習をおすすめする
+
 ### コードを Python 用にビルド
 
 ```bash
@@ -34,19 +36,14 @@ python setup.py install
 python -m pip install -r requirements.txt
 ```
 
-## 深層学習
+## 学習方法
 
-### 特徴
+基本的に参考書テキスト「AlphaZero 深層学習・強化学習・探索 人工知能プログラミング実践入門」を参照してほしい
 
-- 層の数が多くなる
-  - 学習時間がかかる
-- ユニット数が多くなる
-  - 重要性の低い特徴を抽出して「過学習」になりやすい
-
-## 学習率の確認方法
+### 学習開始
 
 ```bash
-tensorboard --logdir=./reversi/log/
+python train_cycle.py
 ```
 
 ## 学習速度の向上へ
